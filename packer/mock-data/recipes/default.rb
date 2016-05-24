@@ -8,7 +8,7 @@ require 'cheffish'
 Chef::Config.ssl_verify_mode :verify_none
 
 config = {
-  :chef_server_url => "https://chef-server.chef-automate.com",
+  :chef_server_url => "https://localhost",
   :options => {
     :client_name => 'pivotal',
     :signing_key_filename => '/etc/opscode/pivotal.pem'
