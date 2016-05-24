@@ -26,6 +26,13 @@ Vagrant.configure(2) do |config|
     10.251.0.12 build-node.chef-automate.com
     " | sudo tee -a /etc/hosts
   HOSTS_FILE
+  
+  # cache rules everything around me
+  if Vagrant.has_plugin?("vagrant-cachier")
+    config.cache.scope = :box
+    config.cache.auto_detect = true
+    config.cache.enable :apt
+  end
 
   # Provision a Chef server with push jobs installed
   config.vm.define "server" do |cs|
@@ -83,6 +90,7 @@ Vagrant.configure(2) do |config|
            delivery['chef_username'] = "delivery"
            delivery['chef_private_key'] = "/etc/delivery/delivery.pem"
            delivery['chef_server'] = "https://chef-server.chef-automate.com/organizations/chefautomate"
+           insights['enable'] = true
          EOH
        end
       RENDER_DELIVERY_RB
