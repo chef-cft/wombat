@@ -7,7 +7,7 @@
 # you're doing.
 Vagrant.configure(2) do |config|
 
-  config.vm.box = "opscode-ubuntu-14.04"
+  config.vm.box = "bento/ubuntu-14.04"
   
   # Configure all systems with the Chef apt repos
   config.vm.provision "shell", inline: <<-APT_REPOS
@@ -19,14 +19,14 @@ Vagrant.configure(2) do |config|
   
   # Ensure all systems know about each other
   config.vm.provision "shell", inline: <<-HOSTS_FILE.gsub(/^\s+/, "")
-    grep -q '10.251.0.10 chef-server' /etc/hosts || \
+    grep -q '172.31.54.10 chef-server' /etc/hosts || \
     echo "
-    10.251.0.10 chef-server.chef-automate.com
-    10.251.0.11 delivery-server.chef-automate.com
-    10.251.0.12 build-node.chef-automate.com
+    172.31.54.10 chef-server.chef-automate.com
+    172.31.54.11 delivery-server.chef-automate.com
+    172.31.54.12 build-node.chef-automate.com
     " | sudo tee -a /etc/hosts
   HOSTS_FILE
-  
+
   # cache rules everything around me
   if Vagrant.has_plugin?("vagrant-cachier")
     config.cache.scope = :box
@@ -37,7 +37,7 @@ Vagrant.configure(2) do |config|
   # Provision a Chef server with push jobs installed
   config.vm.define "server" do |cs|
   
-    cs.vm.network "private_network", ip: "10.251.0.10"
+    cs.vm.network "private_network", ip: "172.31.54.10"
     
     cs.vm.provider "virtualbox" do |v|
       v.memory = 2048
@@ -53,7 +53,7 @@ Vagrant.configure(2) do |config|
       sudo opscode-push-jobs-server-ctl reconfigure
       sudo chef-server-ctl install chef-manage
       sudo chef-server-ctl reconfigure
-      sudo chef-manage-ctl reconfigure
+      sudo chef-manage-ctl reconfigure --accept-license
       sudo chef-server-ctl user-create delivery eval user noreply@chef.io 'eval4me!' --filename /vagrant/delivery-user.pem 2>&1
       sudo chef-server-ctl org-create chefautomate 'chef automate evaluation' --filename /vagrant/chefautomate-validator.pem -a delivery 2>&1
     CONFIG_CS
@@ -61,13 +61,13 @@ Vagrant.configure(2) do |config|
   end
   
   config.vm.define "build_node" do |bn|
-    bn.vm.network "private_network", ip: "10.251.0.12"
+    bn.vm.network "private_network", ip: "172.31.54.12"
     bn.vm.hostname = "build-node.chef-automate.com"
   end
   
   config.vm.define "delivery" do |d|
   
-    d.vm.network "private_network", ip: "10.251.0.11"
+    d.vm.network "private_network", ip: "172.31.54.11"
     d.vm.hostname = "delivery-server.chef-automate.com"
     d.vm.provider "virtualbox" do |v|
       v.memory = 2048
@@ -99,15 +99,16 @@ Vagrant.configure(2) do |config|
     d.vm.provision "shell", inline: <<-RECONFIG_DS
       sudo delivery-ctl reconfigure
       [ -e /etc/delivery/builder_key ] || sudo ssh-keygen -t rsa -N '' -b 2048 -f /etc/delivery/builder_key
-      sudo delivery-ctl create-enterprise chefautomate --ssh-pub-key-file=/etc/delivery/builder_key.pub && \
+      sudo delivery-ctl create-enterprise chefautomate --password eval4me! --ssh-pub-key-file=/etc/delivery/builder_key.pub > /vagrant/delivery-admin.creds
+      sudo delivery-ctl create-user chefautomate delivery --password delivery > /vagrant/delivery.creds
       sudo delivery-ctl install-build-node chefautomate \
-      --fqdn build-node.chef-automate.com \
-      --username vagrant \
-      --password vagrant \
-      --installer $(ls /var/cache/apt/archives/chefdk_*_amd64.deb)
+        --fqdn build-node.chef-automate.com \
+        --username vagrant \
+        --password vagrant \
+        --installer $(ls /var/cache/apt/archives/chefdk_*_amd64.deb)
     RECONFIG_DS
     
- 
+
   end
   
 end
