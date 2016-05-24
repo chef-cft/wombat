@@ -1,0 +1,33 @@
+{
+  "variables": {
+    "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+    "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
+    "aws_region": "{{env `AWS_REGION`}}"
+  },
+
+  "builders": [
+    { "type": "amazon-ebs",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "region": "{{user `aws_region`}}",
+      "source_ami": "ami-8c4cb0ec",
+      "instance_type": "c3.xlarge",
+      "communicator": "ssh",
+      "associate_public_ip_address": true,
+      "ssh_private_ip": false,
+      "ssh_username": "ubuntu",
+      "ssh_pty" : true,
+      "ami_name": "automate-chef-server-{{timestamp}}"
+    }
+  ],
+
+  "provisioners" : [ 
+    {
+      "scripts": [
+        "scripts/add-repo.sh",
+        "scripts/delivery-server.sh"
+      ],
+      "type": "shell"
+    }
+  ]
+}

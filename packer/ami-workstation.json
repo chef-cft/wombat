@@ -1,0 +1,37 @@
+{
+  "variables": {
+    "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+    "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
+    "aws_region": "{{env `AWS_REGION`}}",
+    "winrm_username": "Administrator",
+    "winrm_password": "RL9@T40BTmXh"
+  },
+
+  "builders": [
+    { "type": "amazon-ebs",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "region": "{{user `aws_region`}}",
+      "source_ami": "ami-87c037e7",
+      "instance_type": "m3.large",
+      "communicator": "winrm",
+      "associate_public_ip_address": true,
+      "ssh_private_ip": false,
+      "winrm_port": 5985,
+      "winrm_username": "{{user `winrm_username`}}",
+      "winrm_password": "{{user `winrm_password`}}",
+      "user_data_file":"../scripts/bootstrap-aws.txt",
+      "ami_name": "automate-workstation-{{timestamp}}"
+    }
+  ],
+
+  "provisioners" : [ 
+    {
+      "type": "chef-solo",
+      "guest_os_type": "windows",
+      "cookbook_paths": [ "../cookbooks/vendored" ],
+      "run_list": [ "cad-workstation" ]
+    }
+  ]
+
+}
