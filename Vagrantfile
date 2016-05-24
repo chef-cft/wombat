@@ -102,10 +102,10 @@ Vagrant.configure(2) do |config|
       sudo delivery-ctl create-enterprise chefautomate --password eval4me! --ssh-pub-key-file=/etc/delivery/builder_key.pub > /vagrant/delivery-admin.creds
       sudo delivery-ctl create-user chefautomate delivery --password delivery > /vagrant/delivery.creds
       sudo delivery-ctl install-build-node chefautomate \
-        --fqdn build-node.chef-automate.com \
-        --username vagrant \
-        --password vagrant \
-        --installer $(ls /var/cache/apt/archives/chefdk_*_amd64.deb)
+      --fqdn build-node.chef-automate.com \
+      --username vagrant \
+      --password vagrant \
+      --installer $(ls /var/cache/apt/archives/chefdk_*_amd64.deb)
     RECONFIG_DS
     
 
