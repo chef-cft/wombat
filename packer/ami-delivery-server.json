@@ -32,15 +32,19 @@
     {
       "type": "file",
       "source": "keys/delivery-user.pem",
-      "destination": "/etc/delivery/delivery.pem"
+      "destination": "/tmp/delivery.pem"
     },
     {
       "type": "file",
       "source": "files/delivery.rb",
-      "destination": "/etc/delivery/delivery.rb"
+      "destination": "/tmp/delivery.rb"
     },
     { 
-      "inline": [ "sudo delivery-ctl reconfigure" ],
+      "inline": [ 
+        "sudo cp /tmp/delivery.pem /etc/delivery/delivery.pem",
+        "sudo cp /tmp/delivery.rb /etc/delivery/delivery.rb",
+        "sudo delivery-ctl reconfigure"
+      ],
       "type": "shell"
     }
   ]
