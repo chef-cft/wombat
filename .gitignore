@@ -1,5 +1,3 @@
 delivery.license
-*.pem
 .vagrant
-*.creds
 terraform.tfstate
