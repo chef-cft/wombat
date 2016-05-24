@@ -28,6 +28,17 @@
         "scripts/chef-server.sh"
       ],
       "type": "shell"
+    },
+    {
+      "type": "file",
+      "source": "mock-data/recipes/default.rb",
+      "destination": "/tmp/create-user-org.rb"
+    },
+    { 
+      "scripts": [
+        "scripts/chef-server-data.sh"
+      ],
+      "type": "shell"
     }
   ]
 }
