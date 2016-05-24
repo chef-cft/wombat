@@ -7,7 +7,7 @@
 # you're doing.
 Vagrant.configure(2) do |config|
 
-  config.vm.box = "bento/ubuntu-14.04"
+  config.vm.box = "opscode-ubuntu-14.04"
   
   # Configure all systems with the Chef apt repos
   config.vm.provision "shell", inline: <<-APT_REPOS

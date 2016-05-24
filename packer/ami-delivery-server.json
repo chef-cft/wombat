@@ -28,6 +28,20 @@
         "scripts/delivery-server.sh"
       ],
       "type": "shell"
+    },
+    {
+      "type": "file",
+      "source": "keys/delivery-user.pem",
+      "destination": "/etc/delivery/delivery.pem"
+    },
+    {
+      "type": "file",
+      "source": "files/delivery.rb",
+      "destination": "/etc/delivery/delivery.rb"
+    },
+    { 
+      "inline": [ "sudo delivery-ctl reconfigure" ],
+      "type": "shell"
     }
   ]
 }
