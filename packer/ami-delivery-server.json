@@ -39,10 +39,16 @@
       "source": "files/delivery.rb",
       "destination": "/tmp/delivery.rb"
     },
+    {
+      "type": "file",
+      "source": "files/delivery.license",
+      "destination": "/tmp/delivery.license"
+    },
     { 
       "inline": [ 
         "sudo cp /tmp/delivery.pem /etc/delivery/delivery.pem",
         "sudo cp /tmp/delivery.rb /etc/delivery/delivery.rb",
+        "sudo cp /tmp/delivery.license /var/opt/delivery/license/delivery.license",
         "sudo delivery-ctl reconfigure"
       ],
       "type": "shell"
