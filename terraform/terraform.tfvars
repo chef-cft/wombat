@@ -10,7 +10,7 @@ customer = "automate-eval"
 # build nodes, and vice versa.
 
 # Default AMIs for building the demo
-ami-chef-server = "ami-55e51b35"
+ami-chef-server = "ami-4e748a2e"
 ami-delivery-server = "ami-00e31d60"
 ami-delivery-builder-1 = "ami-8c4cb0ec"
 ami-workstation = ""

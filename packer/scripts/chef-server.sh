@@ -1,4 +1,5 @@
 echo '127.0.0.1 chef-server.chef-automate.com' | sudo tee -a /etc/hosts
+sudo hostname chef-server.chef-automate.com
 sudo apt-get install chef-server-core
 sudo chef-server-ctl install opscode-push-jobs-server
 sudo chef-server-ctl reconfigure

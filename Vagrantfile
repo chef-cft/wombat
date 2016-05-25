@@ -75,7 +75,9 @@ Vagrant.configure(2) do |config|
     end
       
     d.vm.provision "shell", inline: <<-CONFIG_DS
-      sudo apt-get install delivery chefdk
+      sudo apt-get install chefdk #delivery
+      wget https://chef.bintray.com/current-apt/ubuntu/14.04/delivery_0.4.317-1_amd64.deb -O /tmp/delivery_0.4.317-1_amd64.deb
+      sudo dpkg -i /tmp/delivery_0.4.317-1_amd64.deb
       [ -d /var/opt/delivery/license ] || sudo mkdir /var/opt/delivery/license/
       sudo cp /vagrant/delivery.license /var/opt/delivery/license/delivery.license
       [ -d /etc/delivery ] || sudo mkdir /etc/delivery && sudo chmod 0644 /etc/delivery
