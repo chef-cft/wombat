@@ -1,3 +1,3 @@
 delivery.license
 .vagrant
-terraform.tfstate
+terraform.tfstate*
