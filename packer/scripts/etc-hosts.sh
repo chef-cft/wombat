@@ -1,3 +1,5 @@
+#!/bin/bash -eux
+
 grep -q '172.31.54.10 chef-server' /etc/hosts || \
 echo "
 172.31.54.10 chef-server.chef-automate.com
