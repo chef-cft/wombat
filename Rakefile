@@ -43,10 +43,6 @@ namespace :terraform do
     @delivery_server_ami = delivery
     @workstation_ami = workstation
     rendered_tfvars = ERB.new(File.read('terraform/templates/terraform.tfvars.erb')).result
-    # tfvars = File.read('terraform/terraform.tfvars')
-    # replace = tfvars.gsub(/(ami-chef-server) = (\"ami-.*\")/, '\1 = ' + "\"#{chef_server}\"")
-    # replace1 = replace.gsub(/(ami-delivery-server) = (\"ami-.*\")/, '\1 = ' + "\"#{delivery}\"")
-    # replace2 = replace1.gsub(/(ami-workstation) = (\"ami-.*\")/, '\1 = ' + "\"#{workstation}\"")
     File.open('terraform/terraform.tfvars', "w") {|file| file.puts rendered_tfvars }
     puts "\n" + rendered_tfvars
   end
