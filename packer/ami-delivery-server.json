@@ -2,7 +2,13 @@
   "variables": {
     "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
     "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
-    "aws_region": "{{env `AWS_REGION`}}"
+    "aws_region": "{{env `AWS_REGION`}}",
+    "azure_client_id": "{{env `AZURE_CLIENT_ID`}}",
+    "azure_tenant_id": "{{env `AZURE_TENANT_ID`}}",
+    "azure_client_secret": "{{env `AZURE_CLIENT_SECRET`}}",
+    "azure_subscription_id": "{{env `AZURE_SUBSCRIPTION_ID`}}",
+    "azure_storage_account": "{{env `AZURE_STORAGE_ACCOUNT`}}",
+    "azure_resource_group": "{{env `AZURE_RESOURCE_GROUP`}}"
   },
 
   "builders": [
@@ -18,6 +24,23 @@
       "ssh_username": "ubuntu",
       "ssh_pty" : true,
       "ami_name": "automate-delivery-server-{{timestamp}}"
+    },
+    {
+      "type": "azure-arm",
+      "client_id": "{{user `azure_client_id`}}",
+      "client_secret": "{{user `azure_client_secret`}}",
+      "resource_group_name": "{{user `azure_resource_group`}}",
+      "storage_account": "{{user `azure_storage_account`}}",
+      "subscription_id": "{{user `azure_subscription_id`}}",
+      "tenant_id": "{{user `azure_tenant_id`}}",
+      "capture_container_name": "images",
+      "capture_name_prefix": "chef-server",
+      "image_publisher": "Canonical",
+      "image_offer": "UbuntuServer",
+      "image_sku": "14.04.3-LTS",
+      "location": "West US",
+      "vm_size": "Standard_A4",
+      "os_type": "Linux"
     }
   ],
 
