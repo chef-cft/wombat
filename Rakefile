@@ -4,17 +4,17 @@ require 'erb'
 namespace :packerize do
   desc 'Build Chef Server'
   task :chef_server do
-    sh "cd packer && packer build -only=aws-ebs ami-chef-server.json | tee -a logs/ami-chef-server.log"
+    sh "cd packer && packer build -only=amazon-ebs ami-chef-server.json | tee -a logs/ami-chef-server.log"
   end
 
   desc 'Build Delivery template'
   task :delivery_server do
-    sh "cd packer && packer build -only=aws-ebs ami-delivery-server.json | tee -a logs/ami-delivery-server.log"
+    sh "cd packer && packer build -only=amazon-ebs ami-delivery-server.json | tee -a logs/ami-delivery-server.log"
   end
 
   desc 'Build Workstation'
   task workstation: [:vendor] do
-    sh "cd packer && packer build -only=aws-ebs ami-workstation.json | tee -a logs/ami-workstation.log"
+    sh "cd packer && packer build -only=amazon-ebs ami-workstation.json | tee -a logs/ami-workstation.log"
   end
 
   desc 'Cleanup Vendor directory'

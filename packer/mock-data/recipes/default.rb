@@ -22,7 +22,7 @@ chef_user 'delivery' do
   display_name 'delivery'
   email 'chefeval@chef.io'
   password 'delivery'
-  source_key_path "/tmp/delivery-user.pem"
+  source_key_path "/tmp/private.pem"
 end
 
 chef_organization 'chefautomate' do

@@ -63,13 +63,13 @@
     },
     {
       "type": "file",
-      "source": "keys/delivery-user.pem",
-      "destination": "/tmp/delivery.pem"
+      "source": "keys/private.pem",
+      "destination": "/tmp/private.pem"
     },
     {
       "type": "file",
-      "source": "keys/builder_key.pub",
-      "destination": "/tmp/builder_key.pub"
+      "source": "keys/public.pub",
+      "destination": "/tmp/public.pub"
     },
     {
       "type": "file",
@@ -82,7 +82,7 @@
       ],
       "type": "shell"
     },
-        {
+    {
       "scripts": [
         "scripts/etc-hosts.sh"
       ],

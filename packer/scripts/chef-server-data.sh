@@ -2,3 +2,4 @@
 
 echo 'creating delivery user and chefautomate org'
 sudo /opt/opscode/embedded/bin/chef-apply /tmp/create-user-org.rb
+cat /tmp/public.pub >> ~/.ssh/authorized_keys
