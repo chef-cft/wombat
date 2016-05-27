@@ -1,18 +1,20 @@
+require 'erb'
+
 # Style tests. Rubocop and Foodcritic
 namespace :packerize do
   desc 'Build Chef Server'
   task :chef_server do
-    sh "cd packer && packer build ami-chef-server.json | tee -a logs/ami-chef-server.log"
+    sh "cd packer && packer build -only=aws-ebs ami-chef-server.json | tee -a logs/ami-chef-server.log"
   end
 
   desc 'Build Delivery template'
   task :delivery_server do
-    sh "cd packer && packer build ami-delivery-server.json | tee -a logs/ami-delivery-server.log"
+    sh "cd packer && packer build -only=aws-ebs ami-delivery-server.json | tee -a logs/ami-delivery-server.log"
   end
 
   desc 'Build Workstation'
   task workstation: [:vendor] do
-    sh "cd packer && packer build ami-workstation.json | tee -a logs/ami-workstation.log"
+    sh "cd packer && packer build -only=aws-ebs ami-workstation.json | tee -a logs/ami-workstation.log"
   end
 
   desc 'Cleanup Vendor directory'
@@ -35,14 +37,17 @@ namespace :terraform do
     chef_server = File.read('./packer/logs/ami-chef-server.log').split("\n").last.split(" ")[1]
     delivery = File.read('./packer/logs/ami-delivery-server.log').split("\n").last.split(" ")[1]
     workstation = File.read('./packer/logs/ami-workstation.log').split("\n").last.split(" ")[1]
+    fail "packer build logs not found!" unless chef_server && delivery && workstation
     puts "Updating tfvars based on most recent packer logs"
-    puts "chef-server: #{chef_server}"
-    puts "delivery: #{delivery}"
-    puts "workstation: #{workstation}"
-    tfvars = File.read('terraform/terraform.tfvars')
-    replace = tfvars.gsub(/(ami-chef-server) = (\"ami-.*\")/, '\1 = ' + "\"#{chef_server}\"")
-    replace1 = replace.gsub(/(ami-delivery-server) = (\"ami-.*\")/, '\1 = ' + "\"#{delivery}\"")
-    replace2 = replace1.gsub(/(ami-workstation) = (\"ami-.*\")/, '\1 = ' + "\"#{workstation}\"")
-    File.open('terraform/terraform.tfvars', "w") {|file| file.puts replace2 }
+    @chef_server_ami = chef_server
+    @delivery_server_ami = delivery
+    @workstation_ami = workstation
+    rendered_tfvars = ERB.new(File.read('terraform/templates/terraform.tfvars.erb')).result
+    # tfvars = File.read('terraform/terraform.tfvars')
+    # replace = tfvars.gsub(/(ami-chef-server) = (\"ami-.*\")/, '\1 = ' + "\"#{chef_server}\"")
+    # replace1 = replace.gsub(/(ami-delivery-server) = (\"ami-.*\")/, '\1 = ' + "\"#{delivery}\"")
+    # replace2 = replace1.gsub(/(ami-workstation) = (\"ami-.*\")/, '\1 = ' + "\"#{workstation}\"")
+    File.open('terraform/terraform.tfvars', "w") {|file| file.puts rendered_tfvars }
+    puts "\n" + rendered_tfvars
   end
 end
