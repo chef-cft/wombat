@@ -1,0 +1,12 @@
+# We have to define these, but we leave them blank so that Terraform
+# knows to read them from environment vars or ~/.aws/credentials
+access_key = ""
+secret_key = ""
+key_name = ""
+customer = "automate-eval"
+
+# Default AMIs for building the demo
+ami-chef-server = "<%= @chef_server_ami %>"
+ami-delivery-server = "<%= @delivery_server_ami %>"
+ami-delivery-builder-1 = "ami-8c4cb0ec"
+ami-workstation = "<%= @workstation_ami %>"
