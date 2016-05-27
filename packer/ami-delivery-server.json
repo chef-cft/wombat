@@ -17,22 +17,16 @@
       "ssh_private_ip": false,
       "ssh_username": "ubuntu",
       "ssh_pty" : true,
-      "ami_name": "automate-chef-server-{{timestamp}}"
+      "ami_name": "automate-delivery-server-{{timestamp}}"
     }
   ],
 
-  "provisioners" : [ 
+  "provisioners" : [
     {
       "scripts": [
-        "scripts/add-repo.sh",
-        "scripts/delivery-server.sh"
+        "scripts/delivery-install.sh"
       ],
       "type": "shell"
-    },
-    {
-      "type": "file",
-      "source": "keys/delivery-user.pem",
-      "destination": "/tmp/delivery.pem"
     },
     {
       "type": "file",
@@ -44,12 +38,30 @@
       "source": "files/delivery.license",
       "destination": "/tmp/delivery.license"
     },
-    { 
-      "inline": [ 
-        "sudo cp /tmp/delivery.pem /etc/delivery/delivery.pem",
-        "sudo cp /tmp/delivery.rb /etc/delivery/delivery.rb",
-        "sudo cp /tmp/delivery.license /var/opt/delivery/license/delivery.license",
-        "sudo delivery-ctl reconfigure"
+    {
+      "type": "file",
+      "source": "keys/delivery-user.pem",
+      "destination": "/tmp/delivery.pem"
+    },
+    {
+      "type": "file",
+      "source": "keys/builder_key.pub",
+      "destination": "/tmp/builder_key.pub"
+    },
+    {
+      "type": "file",
+      "source": "files/cli.toml",
+      "destination": "/tmp/cli.toml"
+    },
+    {
+      "scripts": [
+        "scripts/delivery-configure.sh"
+      ],
+      "type": "shell"
+    },
+        {
+      "scripts": [
+        "scripts/etc-hosts.sh"
       ],
       "type": "shell"
     }
