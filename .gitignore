@@ -1,3 +1,4 @@
 delivery.license
 .vagrant
 terraform.tfstate*
+*.log
