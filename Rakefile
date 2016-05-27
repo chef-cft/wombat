@@ -33,11 +33,11 @@ task packerize: ['packerize:delivery_server', 'packerize:chef_server', 'packeriz
 
 namespace :terraform do
   desc 'Update AMIS'
-  task :update_amis do
-    chef_server = File.read('./packer/logs/ami-chef-server.log').split("\n").last.split(" ")[1]
-    delivery = File.read('./packer/logs/ami-delivery-server.log').split("\n").last.split(" ")[1]
-    workstation = File.read('./packer/logs/ami-workstation.log').split("\n").last.split(" ")[1]
-    fail "packer build logs not found!" unless chef_server && delivery && workstation
+  task :update_amis, :chef_server_ami, :delivery_server_ami, :workstation_ami do |t, args|
+    chef_server = args[:chef_server_ami] || File.read('./packer/logs/ami-chef-server.log').split("\n").last.split(" ")[1]
+    delivery = args[:delivery_server_ami] || File.read('./packer/logs/ami-delivery-server.log').split("\n").last.split(" ")[1]
+    workstation = args[:workstation_ami] || File.read('./packer/logs/ami-workstation.log').split("\n").last.split(" ")[1]
+    fail "packer build logs not found, nor were image ids provided" unless chef_server && delivery && workstation
     puts "Updating tfvars based on most recent packer logs"
     @chef_server_ami = chef_server
     @delivery_server_ami = delivery
