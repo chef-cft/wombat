@@ -47,7 +47,6 @@
   "provisioners" : [
     { 
       "scripts": [
-        "scripts/add-repo.sh",
         "scripts/chef-server.sh"
       ],
       "type": "shell"
