@@ -21,7 +21,7 @@ namespace :packerize do
   end
 
   task vendor: [:cleanup_vendor] do
-    sh 'berks vendor -b packer/cookbooks/cad-workstation/Berksfile packer/vendored-cookbooks'
+    sh 'berks vendor -b packer/cookbooks/workstation/Berksfile packer/vendored-cookbooks'
   end
 end
 
