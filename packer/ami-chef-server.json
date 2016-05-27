@@ -39,7 +39,7 @@
       "image_offer": "UbuntuServer",
       "image_sku": "14.04.3-LTS",
       "location": "West US",
-      "vm_size": "Standard_A4",
+      "vm_size": "Standard_D3_V2",
       "os_type": "Linux"
     }
   ],
