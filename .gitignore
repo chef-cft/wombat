@@ -1,4 +1,5 @@
 delivery.license
 .vagrant
 terraform.tfstate*
+vendored-cookbooks
 *.log

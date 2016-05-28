@@ -21,7 +21,7 @@ variable "num_builders" {
 
 variable "ami-chef-server" {}
 variable "ami-delivery-server" {}
-variable "ami-delivery-builder-1" {}
+variable "ami-delivery-builder" {}
 variable "ami-workstation" {}
 
 provider "aws" {
@@ -185,8 +185,8 @@ resource "aws_instance" "delivery-server" {
     }
 }
 
-resource "aws_instance" "delivery-builder-1" {
-    ami                         = "${var.ami-delivery-builder-1}"
+resource "aws_instance" "delivery-builder" {
+    ami                         = "${var.ami-delivery-builder}"
     availability_zone           = "${var.az}"
     instance_type               = "c3.large"
     key_name                    = "${var.key_name}"
@@ -279,8 +279,8 @@ output "chef-server" {
 output "delivery-server" {
     value = "${aws_instance.delivery-server.public_ip}"
 }
-output "delivery-builder-1" {
-    value = "${aws_instance.delivery-builder-1.public_ip}"
+output "delivery-builder" {
+    value = "${aws_instance.delivery-builder.public_ip}"
 }
 output "workstation" {
     value = "${aws_instance.workstation.public_ip}"

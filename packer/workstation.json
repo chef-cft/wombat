@@ -20,17 +20,29 @@
       "winrm_port": 5985,
       "winrm_username": "{{user `winrm_username`}}",
       "winrm_password": "{{user `winrm_password`}}",
-      "user_data_file":"../scripts/bootstrap-aws.txt",
+      "user_data_file": "scripts/bootstrap-aws.txt",
       "ami_name": "automate-workstation-{{timestamp}}"
     }
   ],
 
-  "provisioners" : [ 
+  "provisioners" : [
+    {
+      "type": "file",
+      "source": "keys/private.pem",
+      "destination": "C:\\Windows\\Temp\\private.pem"
+    },
+    {
+      "type": "windows-shell",
+      "inline": [
+        "mkdir %UserProfile%\\.chef",
+        "copy C:\\Windows\\Temp\\private.pem %UserProfile%\\.chef\\private.pem"
+      ]
+    },
     {
       "type": "chef-solo",
       "guest_os_type": "windows",
-      "cookbook_paths": [ "../cookbooks/vendored" ],
-      "run_list": [ "cad-workstation" ]
+      "cookbook_paths": [ "vendored-cookbooks" ],
+      "run_list": [ "workstation" ]
     }
   ]
 
