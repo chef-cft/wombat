@@ -23,7 +23,7 @@
       "ssh_private_ip": false,
       "ssh_username": "ubuntu",
       "ssh_pty" : true,
-      "ami_name": "automate-chef-server-{{timestamp}}"
+      "ami_name": "automate-delivery-builder-{{timestamp}}"
     },
     {
       "type": "azure-arm",
@@ -34,7 +34,7 @@
       "subscription_id": "{{user `azure_subscription_id`}}",
       "tenant_id": "{{user `azure_tenant_id`}}",
       "capture_container_name": "images",
-      "capture_name_prefix": "chef-server",
+      "capture_name_prefix": "delivery-builder",
       "image_publisher": "Canonical",
       "image_offer": "UbuntuServer",
       "image_sku": "14.04.3-LTS",
@@ -55,7 +55,7 @@
       "source": "keys/public.pub",
       "destination": "/tmp/public.pub"
     },
-    { 
+    {
       "scripts": [
         "scripts/build-node.sh",
         "scripts/etc-hosts.sh"
