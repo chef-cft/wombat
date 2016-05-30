@@ -1,7 +1,7 @@
 #!/bin/bash -eux
 
-echo '127.0.0.1 delivery-server.chef-automate.com' | sudo tee -a /etc/hosts
-sudo hostname delivery-server.chef-automate.com
+echo '127.0.0.1 delivery-server.chef-automate.com delivery-server' | sudo tee -a /etc/hosts
+sudo hostnamectl set-hostname delivery-server
 sudo apt-get install jq
 wget -q https://packages.chef.io/stable/ubuntu/12.04/chefdk_0.14.25-1_amd64.deb -O /tmp/chefdk_0.14.25-1_amd64.deb
 sudo dpkg -i /tmp/chefdk_0.14.25-1_amd64.deb
