@@ -1,7 +1,7 @@
 #!/bin/bash -eux
 
-echo '127.0.0.1 chef-server.chef-automate.com' | sudo tee -a /etc/hosts
-sudo hostname chef-server.chef-automate.com
+echo '127.0.0.1 chef-server.chef-automate.com chef-server' | sudo tee -a /etc/hosts
+sudo hostnamectl set-hostname chef-server
 wget -q https://packages.chef.io/stable/ubuntu/14.04/chef-server-core_12.6.0-1_amd64.deb -O /tmp/chef-server-core_12.6.0-1_amd64.deb
 sudo dpkg -i /tmp/chef-server-core_12.6.0-1_amd64.deb
 sudo mkdir -p /var/opt/opscode/nginx/ca/

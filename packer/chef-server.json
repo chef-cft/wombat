@@ -45,12 +45,6 @@
   ],
 
   "provisioners" : [
-    { 
-      "scripts": [
-        "scripts/chef-server.sh"
-      ],
-      "type": "shell"
-    },
     {
       "type": "file",
       "source": "keys/private.pem",
@@ -66,9 +60,10 @@
       "source": "mock-data/recipes/default.rb",
       "destination": "/tmp/create-user-org.rb"
     },
-    { 
+    {
       "scripts": [
-        "scripts/chef-server-data.sh",
+        "scripts/chef-server-install.sh",
+        "scripts/chef-server-configure.sh",
         "scripts/etc-hosts.sh"
       ],
       "type": "shell"
