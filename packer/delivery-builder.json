@@ -57,6 +57,7 @@
     },
     {
       "scripts": [
+        "scripts/authorized_keys.sh",
         "scripts/build-node.sh",
         "scripts/etc-hosts.sh"
       ],

@@ -62,6 +62,7 @@
     },
     {
       "scripts": [
+        "scripts/authorized_keys.sh",
         "scripts/chef-server-install.sh",
         "scripts/chef-server-configure.sh",
         "scripts/etc-hosts.sh"

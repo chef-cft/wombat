@@ -29,12 +29,12 @@ chef_user 'workstation' do
   chef_server config
   admin true
   display_name 'workstation'
-  email 'chefeval@chef.io'
+  email 'workstation@chef.io'
   password 'workstation'
   source_key_path "/tmp/private.pem"
 end
 
 chef_organization 'chefautomate' do
-  members 'delivery'
+  members ['delivery', 'workstation']
   chef_server config
 end
