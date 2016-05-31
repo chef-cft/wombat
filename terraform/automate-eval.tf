@@ -9,6 +9,9 @@ variable "az" {
 variable "customer" {
     default = "venture-industries"
 }
+variable "key_file" {
+    default = "../packer/keys/private.pem"
+}
 variable "key_name" {
     default = "USER_REGION"
 }
@@ -166,6 +169,21 @@ resource "aws_instance" "chef-server" {
         "Name" = "automate-eval chef server"
         "TTL" = "${var.ttl}"
     }
+
+    provisioner "remote-exec" {
+      connection {
+        user = "ubuntu"
+        host = "${aws_instance.chef-server.public_ip}"
+        timeout = "1m"
+        key_file = "${var.key_file}"
+      }
+      inline = [
+        "sudo hostnamectl set-hostname chef-server",
+        "sudo chef-server-ctl reconfigure",
+        "sudo chef-manage-ctl reconfigure",
+        "sudo opscode-push-jobs-server-ctl reconfigure"
+      ]
+    }
 }
 
 resource "aws_instance" "delivery-server" {
@@ -183,9 +201,22 @@ resource "aws_instance" "delivery-server" {
       "Name" = "automate-eval delivery server"
       "TTL" = "${var.ttl}"
     }
+
+    provisioner "remote-exec" {
+      connection {
+        user = "ubuntu"
+        host = "${aws_instance.delivery-server.public_ip}"
+        timeout = "1m"
+        key_file = "${var.key_file}"
+      }
+      inline = [
+        "sudo hostnamectl set-hostname delivery-server",
+        "sudo delivery-ctl reconfigure"
+      ]
+    }
 }
 
-resource "aws_instance" "delivery-builder" {
+resource "aws_instance" "delivery-builder-1" {
     ami                         = "${var.ami-delivery-builder}"
     availability_zone           = "${var.az}"
     instance_type               = "c3.large"
@@ -199,6 +230,18 @@ resource "aws_instance" "delivery-builder" {
       "Customer" = "${var.customer}"
       "Name" = "automate-eval delivery build node 1"
       "TTL" = "${var.ttl}"
+    }
+
+    provisioner "remote-exec" {
+      connection {
+        user = "ubuntu"
+        host = "${aws_instance.delivery-server.public_ip}"
+        timeout = "1m"
+        key_file = "${var.key_file}"
+      }
+      inline = [
+        "sudo hostnamectl set-hostname delivery-builder-1"
+      ]
     }
 }
 
@@ -279,8 +322,8 @@ output "chef-server" {
 output "delivery-server" {
     value = "${aws_instance.delivery-server.public_ip}"
 }
-output "delivery-builder" {
-    value = "${aws_instance.delivery-builder.public_ip}"
+output "delivery-builder-1" {
+    value = "${aws_instance.delivery-builder-1.public_ip}"
 }
 output "workstation" {
     value = "${aws_instance.workstation.public_ip}"
