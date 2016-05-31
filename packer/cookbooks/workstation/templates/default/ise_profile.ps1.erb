@@ -1,0 +1,11 @@
+# Load posh-git example profile
+. '<%= @home %>\Documents\WindowsPowerShell\Modules\posh-git\profile.example.ps1'
+
+# Load PSReadline
+Import-Module PSReadLine
+
+# set home
+$env:HOME = $env:USERPROFILE
+
+# setup environment for ChefDK
+chef shell-init powershell | Invoke-Expression
