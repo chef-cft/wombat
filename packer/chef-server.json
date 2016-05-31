@@ -61,6 +61,11 @@
       "destination": "/tmp/create-user-org.rb"
     },
     {
+      "type": "file",
+      "source": "keys/chef-server_chef-automate_com.crt",
+      "destination": "/tmp/chef-server_chef-automate_com.crt"
+    },
+    {
       "scripts": [
         "scripts/authorized_keys.sh",
         "scripts/chef-server-install.sh",
