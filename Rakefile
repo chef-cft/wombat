@@ -4,22 +4,22 @@ require 'erb'
 namespace :packerize do
   desc 'Build Chef Server'
   task :chef_server do
-    sh "cd packer && packer build -only=amazon-ebs chef-server.json | tee -a logs/ami-chef-server.log"
+    sh "cd packer && packer build -only=amazon-ebs chef-server.json | tee logs/ami-chef-server.log"
   end
 
   desc 'Build Delivery Server'
   task :delivery_server do
-    sh "cd packer && packer build -only=amazon-ebs delivery-server.json | tee -a logs/ami-delivery-server.log"
+    sh "cd packer && packer build -only=amazon-ebs delivery-server.json | tee logs/ami-delivery-server.log"
   end
 
   desc 'Build Delivery Builder'
   task :delivery_builder do
-    sh "cd packer && packer build -only=amazon-ebs delivery-builder.json | tee -a logs/ami-delivery-builder.log"
+    sh "cd packer && packer build -only=amazon-ebs delivery-builder.json | tee logs/ami-delivery-builder.log"
   end
 
   desc 'Build Workstation'
   task workstation: [:vendor] do
-    sh "cd packer && packer build -only=amazon-ebs workstation.json | tee -a logs/ami-workstation.log"
+    sh "cd packer && packer build -only=amazon-ebs workstation.json | tee logs/ami-workstation.log"
   end
 
   desc 'Cleanup Vendor directory'
@@ -52,5 +52,20 @@ namespace :terraform do
     rendered_tfvars = ERB.new(File.read('terraform/templates/terraform.tfvars.erb')).result
     File.open('terraform/terraform.tfvars', "w") {|file| file.puts rendered_tfvars }
     puts "\n" + rendered_tfvars
+  end
+
+  desc 'Terraform plan'
+  task :plan do
+    sh 'cd terraform && terraform plan'
+  end
+
+  desc 'Terraform apply'
+  task :apply do
+    sh 'cd terraform && terraform apply'
+  end
+
+  desc 'Terraform destroy'
+  task :destroy do
+    sh 'cd terraform && terraform destroy -force'
   end
 end
