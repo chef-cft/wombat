@@ -1,0 +1,20 @@
+driver:
+  name: vagrant
+
+provisioner:
+  name: chef_zero
+  chef_omnibus_install_options: -P chefdk
+  chef_omnibus_root: c:/opscode/chefdk
+
+platforms:
+  - name: windows-2012r2
+    driver_config:
+      box: mwrock/Windows2012R2
+
+suites:
+  - name: default
+    run_list:
+      - recipe[workstation]
+
+verifier:
+  name: inspec

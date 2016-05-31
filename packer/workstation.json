@@ -32,10 +32,19 @@
       "destination": "C:\\Windows\\Temp\\private.pem"
     },
     {
-      "type": "windows-shell",
+      "type": "file",
+      "source": "keys/chef-server_chef-automate_com.crt",
+      "destination": "C:\\Windows\\Temp\\chef-server_chef-automate_com.crt"
+    },
+    {
+      "type": "powershell",
       "inline": [
-        "mkdir %UserProfile%\\.chef",
-        "copy C:\\Windows\\Temp\\private.pem %UserProfile%\\.chef\\private.pem"
+        "mkdir $env:UserProfile\\.chef",
+        "mkdir $env:UserProfile\\.chef\\trusted_certs",
+        "mkdir $env:UserProfile\\.ssh",
+        "cp C:\\Windows\\Temp\\private.pem $env:UserProfile\\.chef\\private.pem",
+        "cp C:\\Windows\\Temp\\chef-server_chef-automate_com.crt $env:UserProfile\\.chef\\trusted_certs\\chef-server_chef-automate_com.crt",
+        "cp C:\\Windows\\Temp\\private.pem $env:UserProfile\\.ssh\\id_rsa"
       ]
     },
     {

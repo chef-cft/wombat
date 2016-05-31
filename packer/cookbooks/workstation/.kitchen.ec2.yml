@@ -1,0 +1,29 @@
+
+---
+driver:
+  name: ec2
+  aws_ssh_key_id: <%= ENV["EC2_SSH_KEY_NAME"] %>
+  security_group_ids: ["sg-401e0e25"]
+  region: us-west-2
+  availability_zone: b
+  instance_type: m3.large
+
+provisioner:
+  name: chef_zero
+  chef_omnibus_install_options: -P chefdk
+  chef_omnibus_root: c:/opscode/chefdk
+
+platforms:
+  - name: windows-2012r2
+    driver:
+      image_id: ami-1719f677
+    transport:
+      ssh_key: /Users/cheeseplus/.ssh/<%= ENV["EC2_SSH_KEY_PATH"] %>
+
+suites:
+  - name: default
+    run_list:
+      - recipe[workstation]
+
+verifier:
+  name: inspec

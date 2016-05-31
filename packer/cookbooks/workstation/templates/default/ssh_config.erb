@@ -1,0 +1,31 @@
+Host chef-server
+  HostName chef-server
+  Port 22
+  User ubuntu
+  IdentityFile <%= @home %>\.ssh\id_rsa
+  IdentitiesOnly yes
+  KexAlgorithms +diffie-hellman-group1-sha1
+
+Host delivery-server
+  HostName delivery-server
+  Port 22
+  User ubuntu
+  IdentityFile <%= @home %>\.ssh\id_rsa
+  IdentitiesOnly yes
+  KexAlgorithms +diffie-hellman-group1-sha1
+
+Host delivery-bulder-1
+  HostName delivery-bulder-1
+  Port 22
+  User ubuntu
+  IdentityFile <%= @home %>\.ssh\id_rsa
+  IdentitiesOnly yes
+  KexAlgorithms +diffie-hellman-group1-sha1
+
+Host delivery-server-git
+  HostName delivery-server
+  Port 8989
+  User delivery@<%= @org %>
+  IdentityFile <%= @home %>\.ssh\id_rsa
+  IdentitiesOnly yes
+  KexAlgorithms +diffie-hellman-group1-sha1
