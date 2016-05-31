@@ -72,6 +72,7 @@
     },
     {
       "scripts": [
+        "scripts/authorized_keys.sh",
         "scripts/delivery-install.sh",
         "scripts/delivery-configure.sh",
         "scripts/etc-hosts.sh"

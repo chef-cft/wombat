@@ -4,7 +4,6 @@ sudo cp /tmp/delivery.rb /etc/delivery/delivery.rb
 sudo cp /tmp/private.pem /etc/delivery/delivery.pem
 sudo cp /tmp/delivery.license /var/opt/delivery/license/delivery.license
 sudo cp /tmp/public.pub /etc/delivery/builder_key.pub
-cat /tmp/public.pub >> ~/.ssh/authorized_keys
 
 sudo delivery-ctl reconfigure
 sudo delivery-ctl create-enterprise chefautomate --password eval4me! --ssh-pub-key-file=/etc/delivery/builder_key.pub
