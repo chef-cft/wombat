@@ -71,6 +71,16 @@
       "destination": "/tmp/cli.toml"
     },
     {
+      "type": "file",
+      "source": "keys/delivery_server.crt",
+      "destination": "/tmp/delivery_server.crt"
+    },
+    {
+      "type": "file",
+      "source": "keys/delivery_server.key",
+      "destination": "/tmp/delivery_server.key"
+    },
+    {
       "scripts": [
         "scripts/authorized_keys.sh",
         "scripts/delivery-install.sh",

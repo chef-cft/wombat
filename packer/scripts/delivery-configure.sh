@@ -4,6 +4,8 @@ sudo cp /tmp/delivery.rb /etc/delivery/delivery.rb
 sudo cp /tmp/private.pem /etc/delivery/delivery.pem
 sudo cp /tmp/delivery.license /var/opt/delivery/license/delivery.license
 sudo cp /tmp/public.pub /etc/delivery/builder_key.pub
+sudo cp /tmp/delivery_server.crt /var/opt/delivery/nginx/ca/delivery-server.chef-automate.com.crt
+sudo cp /tmp/delivery_server.key /var/opt/delivery/nginx/ca/delivery-server.chef-automate.com.key
 
 sudo delivery-ctl reconfigure
 sudo delivery-ctl create-enterprise chefautomate --password eval4me! --ssh-pub-key-file=/etc/delivery/builder_key.pub

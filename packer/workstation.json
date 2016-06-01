@@ -33,12 +33,12 @@
     },
     {
       "type": "file",
-      "source": "keys/chef-server_chef-automate_com.crt",
+      "source": "keys/chef_server.crt",
       "destination": "C:\\Windows\\Temp\\chef-server_chef-automate_com.crt"
     },
     {
       "type": "file",
-      "source": "keys/delivery-server_chef-automate_com.crt",
+      "source": "keys/delivery_server.crt",
       "destination": "C:\\Windows\\Temp\\delivery-server_chef-automate_com.crt"
     },
     {

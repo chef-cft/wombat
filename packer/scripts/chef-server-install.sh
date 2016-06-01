@@ -5,6 +5,8 @@ sudo hostnamectl set-hostname chef-server
 wget -q https://packages.chef.io/stable/ubuntu/14.04/chef-server-core_12.6.0-1_amd64.deb -O /tmp/chef-server-core_12.6.0-1_amd64.deb
 sudo dpkg -i /tmp/chef-server-core_12.6.0-1_amd64.deb
 sudo mkdir -p /var/opt/opscode/nginx/ca/
+sudo cp /tmp/chef_server.crt /var/opt/opscode/nginx/ca/chef-server.chef-automate.com.crt
+sudo cp /tmp/chef_server.key /var/opt/opscode/nginx/ca/chef-server.chef-automate.com.key
 sudo chef-server-ctl install opscode-push-jobs-server
 sudo chef-server-ctl reconfigure
 sudo opscode-push-jobs-server-ctl reconfigure
