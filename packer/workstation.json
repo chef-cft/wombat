@@ -20,7 +20,7 @@
       "winrm_port": 5985,
       "winrm_username": "{{user `winrm_username`}}",
       "winrm_password": "{{user `winrm_password`}}",
-      "user_data_file": "scripts/bootstrap-aws.txt",
+      "user_data_file": "{{template_dir}}/scripts/bootstrap-aws.txt",
       "ami_name": "automate-workstation-{{timestamp}}"
     }
   ],
@@ -58,7 +58,7 @@
     {
       "type": "chef-solo",
       "guest_os_type": "windows",
-      "cookbook_paths": [ "vendored-cookbooks" ],
+      "cookbook_paths": [ "{{template_dir}}/vendored-cookbooks" ],
       "run_list": [ "workstation" ]
     }
   ]
