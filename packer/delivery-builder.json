@@ -69,7 +69,6 @@
     },
     {
       "type": "chef-solo",
-      "guest_os_type": "linux",
       "cookbook_paths": [ "{{template_dir}}/vendored-cookbooks" ],
       "run_list": [ "build-node" ]
     }
