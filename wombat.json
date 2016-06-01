@@ -1,0 +1,7 @@
+{
+  "versions": {
+    "chef-server": "12.6.0",
+    "chefdk": "0.14.25",
+    "delivery": "0.4.317"
+  }
+}

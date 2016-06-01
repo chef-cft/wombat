@@ -1,25 +1,26 @@
 require 'erb'
+require 'json'
 
 # Style tests. Rubocop and Foodcritic
 namespace :packerize do
   desc 'Build Chef Server'
   task :chef_server do
-    sh "cd packer && packer build -only=amazon-ebs chef-server.json | tee logs/ami-chef-server.log"
+    sh build_command('chef-server.json')
   end
 
   desc 'Build Delivery Server'
   task :delivery_server do
-    sh "cd packer && packer build -only=amazon-ebs delivery-server.json | tee logs/ami-delivery-server.log"
+    sh build_command('delivery-server.json')
   end
 
   desc 'Build Delivery Builder'
   task :delivery_builder do
-    sh "cd packer && packer build -only=amazon-ebs delivery-builder.json | tee logs/ami-delivery-builder.log"
+    sh build_command('delivery-builder.json')
   end
 
   desc 'Build Workstation'
   task workstation: [:vendor] do
-    sh "cd packer && packer build -only=amazon-ebs workstation.json | tee logs/ami-workstation.log"
+    sh build_command('workstation.json')
   end
 
   desc 'Cleanup Vendor directory'
@@ -32,6 +33,21 @@ namespace :packerize do
   end
 end
 
+def version(thing)
+  file = File.read('wombat.json')
+  hash = JSON.parse(file)
+  hash['versions'][thing]
+end
+
+def build_command(template)
+  base = template.split('.json')[0]
+  cmd = %W(packer build packer/#{template} | tee packer/logs/ami-#{base}.log)
+  cmd.insert(2, "--only amazon-ebs")
+  cmd.insert(2, "--var chefdk='#{version('chefdk')}'")
+  cmd.insert(2, "--var delivery='#{version('delivery')}'")
+  cmd.insert(2, "--var chef-server='#{version('chef-server')}'")
+  cmd.join(' ')
+end
 
 desc 'Build all AMIs'
 task packerize: ['packerize:chef_server', 'packerize:delivery_server', 'packerize:delivery_builder', 'packerize:workstation']
