@@ -168,7 +168,7 @@ resource "aws_instance" "chef-server" {
     key_name                    = "${var.key_name}"
     subnet_id                   = "${aws_subnet.delivery.id}"
     vpc_security_group_ids      = ["${aws_security_group.automate-eval.id}"]
-    associate_public_ip_address = true
+    associate_public_ip_address = false
     private_ip                  = "172.31.54.10"
 
     tags {
@@ -200,7 +200,7 @@ resource "aws_instance" "delivery-server" {
     key_name                    = "${var.key_name}"
     subnet_id                   = "${aws_subnet.delivery.id}"
     vpc_security_group_ids      = ["${aws_security_group.automate-eval.id}"]
-    associate_public_ip_address = true
+    associate_public_ip_address = false
     private_ip                  = "172.31.54.11"
 
     tags {
@@ -230,7 +230,7 @@ resource "aws_instance" "delivery-builder-1" {
     key_name                    = "${var.key_name}"
     subnet_id                   = "${aws_subnet.delivery.id}"
     vpc_security_group_ids      = ["${aws_security_group.automate-eval.id}"]
-    associate_public_ip_address = true
+    associate_public_ip_address = false
     private_ip                  = "172.31.54.12"
 
     tags {
@@ -323,15 +323,6 @@ resource "aws_security_group" "automate-eval" {
     }
 }
 
-output "chef-server" {
-    value = "${aws_instance.chef-server.public_ip}"
-}
-output "delivery-server" {
-    value = "${aws_instance.delivery-server.public_ip}"
-}
-output "delivery-builder-1" {
-    value = "${aws_instance.delivery-builder-1.public_ip}"
-}
 output "workstation" {
     value = "${aws_instance.workstation.public_ip}"
 }
