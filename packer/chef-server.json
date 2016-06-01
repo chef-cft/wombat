@@ -62,8 +62,13 @@
     },
     {
       "type": "file",
-      "source": "keys/chef-server_chef-automate_com.crt",
-      "destination": "/tmp/chef-server_chef-automate_com.crt"
+      "source": "keys/chef_server.crt",
+      "destination": "/tmp/chef_server.crt"
+    },
+    {
+      "type": "file",
+      "source": "keys/chef_server.key",
+      "destination": "/tmp/chef_server.key"
     },
     {
       "scripts": [
