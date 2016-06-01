@@ -21,11 +21,18 @@ variable "ttl" {
 variable "num_builders" {
     default = 0
 }
-
-variable "ami-chef-server" {}
-variable "ami-delivery-server" {}
-variable "ami-delivery-builder" {}
-variable "ami-workstation" {}
+variable "ami-chef-server" {
+  default = "ami-f3f10893"
+}
+variable "ami-delivery-server" {
+  default = "ami-6abf460a"
+}
+variable "ami-delivery-builder" {
+  default = "ami-8c4cb0ec"
+}
+variable "ami-workstation" {
+  default = "ami-e8f90088"
+}
 
 provider "aws" {
     access_key = "${var.access_key}"
