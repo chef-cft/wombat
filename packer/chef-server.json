@@ -73,7 +73,7 @@
     },
     {
       "environment_vars": [
-        "CHEF_SRVR_VER={{user `chef-server`}}"
+        "CHEF_SERVER_VER={{user `chef-server`}}"
       ],
       "scripts": [
         "{{template_dir}}/scripts/authorized_keys.sh",
