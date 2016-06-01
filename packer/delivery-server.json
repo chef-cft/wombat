@@ -8,7 +8,11 @@
     "azure_client_secret": "{{env `AZURE_CLIENT_SECRET`}}",
     "azure_subscription_id": "{{env `AZURE_SUBSCRIPTION_ID`}}",
     "azure_storage_account": "{{env `AZURE_STORAGE_ACCOUNT`}}",
-    "azure_resource_group": "{{env `AZURE_RESOURCE_GROUP`}}"
+    "azure_resource_group": "{{env `AZURE_RESOURCE_GROUP`}}",
+    "chefdk": "0.14.25",
+    "delivery": "0.4.317",
+    "domain": "chef-automate.com",
+    "enterprise": "chefautomate"
   },
 
   "builders": [
@@ -47,45 +51,41 @@
   "provisioners" : [
     {
       "type": "file",
-      "source": "files/delivery.rb",
-      "destination": "/tmp/delivery.rb"
+      "source": "{{template_dir}}/files/",
+      "destination": "/tmp"
     },
     {
       "type": "file",
-      "source": "files/delivery.license",
-      "destination": "/tmp/delivery.license"
-    },
-    {
-      "type": "file",
-      "source": "keys/private.pem",
+      "source": "{{template_dir}}/keys/private.pem",
       "destination": "/tmp/private.pem"
     },
     {
       "type": "file",
-      "source": "keys/public.pub",
+      "source": "{{template_dir}}/keys/public.pub",
       "destination": "/tmp/public.pub"
     },
     {
       "type": "file",
-      "source": "files/cli.toml",
-      "destination": "/tmp/cli.toml"
-    },
-    {
-      "type": "file",
-      "source": "keys/delivery_server.crt",
+      "source": "{{template_dir}}/keys/delivery_server.crt",
       "destination": "/tmp/delivery_server.crt"
     },
     {
       "type": "file",
-      "source": "keys/delivery_server.key",
+      "source": "{{template_dir}}/keys/delivery_server.key",
       "destination": "/tmp/delivery_server.key"
     },
     {
+      "environment_vars": [
+        "CHEFDK_VER={{user `chefdk`}}",
+        "DELIVERY_VER={{user `delivery`}}",
+        "DOMAIN={{user `domain`}}",
+        "ENTERPRISE={{user `enterprise`}}"
+      ],
       "scripts": [
-        "scripts/authorized_keys.sh",
-        "scripts/delivery-install.sh",
-        "scripts/delivery-configure.sh",
-        "scripts/etc-hosts.sh"
+        "{{template_dir}}/scripts/authorized_keys.sh",
+        "{{template_dir}}/scripts/delivery-install.sh",
+        "{{template_dir}}/scripts/delivery-configure.sh",
+        "{{template_dir}}/scripts/etc-hosts.sh"
       ],
       "type": "shell"
     }
