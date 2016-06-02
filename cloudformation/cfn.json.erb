@@ -16,7 +16,7 @@
     "Version": {
       "Description": "Version",
       "Type": "String",
-      "Default": "0.0.1"
+      "Default": "<%= @version %>"
     },
     "KeyName": {
       "Description": "Name of an existing ec2 KeyPair to enable SSH access",
@@ -42,22 +42,22 @@
     "ChefServerAMI": {
       "Type": "String",
       "Default": "<%= @chef_server_ami %>",
-      "Description": "AMI ID for the CAD Chef Server"
+      "Description": "AMI ID for the Chef Server"
     },
     "DeliveryServerAMI": {
       "Type": "String",
       "Default": "<%= @delivery_server_ami %>",
-      "Description": "AMI ID for the CAD Delivery Server"
+      "Description": "AMI ID for the Delivery Server"
     },
     "BuildNodeAMI": {
       "Type": "String",
       "Default": "<%= @delivery_builder_ami %>",
-      "Description": "AMI ID for CAD Build Node 1"
+      "Description": "AMI ID for Build Node 1"
     },
     "WindowsWorkstationAMI": {
       "Type": "String",
       "Default": "<%= @workstation_ami %>",
-      "Description": "AMI ID for the CAD Windows Workstation"
+      "Description": "AMI ID for the Windows Workstation"
     }
   },
   "Resources": {
