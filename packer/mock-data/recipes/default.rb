@@ -39,16 +39,22 @@ chef_organization "#{ENV['ORG']}" do
   chef_server config
 end
 
+conf_with_org = config.merge({
+   :chef_server_url => "#{config[:chef_server_url]}/organizations/#{ENV['ORG']}"
+})
+  
 chef_node "build-node-1.#{ENV['DOMAIN']}" do
   tag 'delivery-build-node'
-  chef_server config.merge({
-      :chef_server_url => "#{config[:chef_server_url]}/organizations/#{ENV['ORG']}"
-  })
+  chef_server conf_with_org
 end
 
 chef_client "build-node-1.#{ENV['DOMAIN']}" do
   source_key_path '/tmp/private.pem'
-  chef_server config.merge({
-      :chef_server_url => "#{config[:chef_server_url]}/organizations/#{ENV['ORG']}"
-  })
+  chef_server conf_with_org
+end
+
+chef_acl "" do
+  rights :all, user: %w(delivery workstation)
+  recursive true
+  chef_server conf_with_org
 end
