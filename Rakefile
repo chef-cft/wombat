@@ -85,3 +85,25 @@ namespace :terraform do
     sh 'cd terraform && terraform destroy -force'
   end
 end
+
+namespace :cfn do
+  desc 'Generate Cloud Formation Template'
+  task :generate, :chef_server_ami, :delivery_server_ami, :delivery_builder_ami, :workstation_ami do |t, args|
+    chef_server = args[:chef_server_ami] || File.read('./packer/logs/ami-chef-server.log').split("\n").last.split(" ")[1]
+    delivery = args[:delivery_server_ami] || File.read('./packer/logs/ami-delivery-server.log').split("\n").last.split(" ")[1]
+    builder = args[:delivery_builder_ami] || File.read('./packer/logs/ami-delivery-builder.log').split("\n").last.split(" ")[1]
+    workstation = args[:workstation_ami] || File.read('./packer/logs/ami-workstation.log').split("\n").last.split(" ")[1]
+    fail "packer build logs not found, nor were image ids provided" unless chef_server && delivery && builder && workstation
+    puts "Updating CloudFormation template on most recent packer logs"
+    file = File.read('wombat.json')
+    wombat = JSON.parse(file)
+    @chef_server_ami = chef_server
+    @delivery_server_ami = delivery
+    @delivery_builder_ami = builder
+    @workstation_ami = workstation
+    @availability_zone = wombat['aws']['availability_zone']
+    @demo = wombat['demo']
+    rendered_cfn = ERB.new(File.read('cloudformation/cfn.json.erb')).result
+    File.open("cloudformation/#{@demo}.json", "w") {|file| file.puts rendered_cfn }
+  end
+end

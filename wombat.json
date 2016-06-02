@@ -1,4 +1,8 @@
 {
+  "demo": "automate-eval",
+  "aws": {
+    "availability_zone": "us-west-2c"
+  },
   "versions": {
     "chef-server": "12.6.0",
     "chefdk": "0.14.25",
