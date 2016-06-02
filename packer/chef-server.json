@@ -9,7 +9,9 @@
     "azure_subscription_id": "{{env `AZURE_SUBSCRIPTION_ID`}}",
     "azure_storage_account": "{{env `AZURE_STORAGE_ACCOUNT`}}",
     "azure_resource_group": "{{env `AZURE_RESOURCE_GROUP`}}",
-    "chef-server": "12.6.0"
+    "chef-server": "12.6.0",
+    "domain": "chef-automate.com",
+    "org": "chefautomate"
   },
 
   "builders": [
@@ -73,7 +75,9 @@
     },
     {
       "environment_vars": [
-        "CHEF_SERVER_VER={{user `chef-server`}}"
+        "CHEF_SERVER_VER={{user `chef-server`}}",
+        "DOMAIN={{user `domain`}}",
+        "ORG={{user `org`}}"
       ],
       "scripts": [
         "{{template_dir}}/scripts/apt.sh",
