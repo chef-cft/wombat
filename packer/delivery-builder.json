@@ -77,7 +77,7 @@
       "environment_vars": [
         "CHEFDK_VER={{user `chefdk`}}",
         "DOMAIN={{user `domain`}}",
-        "ORG={{user `chef-org`}}"
+        "ORG={{user `org`}}"
       ],
       "scripts": [
         "{{template_dir}}/scripts/authorized_keys.sh",
