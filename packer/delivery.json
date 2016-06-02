@@ -27,7 +27,7 @@
       "ssh_private_ip": false,
       "ssh_username": "ubuntu",
       "ssh_pty" : true,
-      "ami_name": "automate-delivery-server-{{timestamp}}"
+      "ami_name": "automate-delivery-{{timestamp}}"
     },
     {
       "type": "azure-arm",
@@ -38,7 +38,7 @@
       "subscription_id": "{{user `azure_subscription_id`}}",
       "tenant_id": "{{user `azure_tenant_id`}}",
       "capture_container_name": "images",
-      "capture_name_prefix": "delivery-server",
+      "capture_name_prefix": "delivery",
       "image_publisher": "Canonical",
       "image_offer": "UbuntuServer",
       "image_sku": "14.04.3-LTS",

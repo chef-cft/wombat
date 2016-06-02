@@ -24,10 +24,10 @@ variable "num_builders" {
 variable "ami-chef-server" {
   default = "ami-f3f10893"
 }
-variable "ami-delivery-server" {
+variable "ami-delivery" {
   default = "ami-6abf460a"
 }
-variable "ami-delivery-builder" {
+variable "ami-build-node" {
   default = "ami-8c4cb0ec"
 }
 variable "ami-workstation" {
@@ -193,8 +193,8 @@ resource "aws_instance" "chef-server" {
     }
 }
 
-resource "aws_instance" "delivery-server" {
-    ami                         = "${var.ami-delivery-server}"
+resource "aws_instance" "delivery" {
+    ami                         = "${var.ami-delivery}"
     availability_zone           = "${var.az}"
     instance_type               = "c3.xlarge"
     key_name                    = "${var.key_name}"
@@ -212,19 +212,19 @@ resource "aws_instance" "delivery-server" {
     provisioner "remote-exec" {
       connection {
         user = "ubuntu"
-        host = "${aws_instance.delivery-server.public_ip}"
+        host = "${aws_instance.delivery.public_ip}"
         timeout = "1m"
         key_file = "${var.key_file}"
       }
       inline = [
-        "sudo hostnamectl set-hostname delivery-server",
+        "sudo hostnamectl set-hostname delivery",
         "sudo delivery-ctl reconfigure"
       ]
     }
 }
 
-resource "aws_instance" "delivery-builder-1" {
-    ami                         = "${var.ami-delivery-builder}"
+resource "aws_instance" "build-node-1" {
+    ami                         = "${var.ami-build-node}"
     availability_zone           = "${var.az}"
     instance_type               = "c3.large"
     key_name                    = "${var.key_name}"
@@ -242,12 +242,12 @@ resource "aws_instance" "delivery-builder-1" {
     provisioner "remote-exec" {
       connection {
         user = "ubuntu"
-        host = "${aws_instance.delivery-server.public_ip}"
+        host = "${aws_instance.delivery.public_ip}"
         timeout = "1m"
         key_file = "${var.key_file}"
       }
       inline = [
-        "sudo hostnamectl set-hostname delivery-builder-1"
+        "sudo hostnamectl set-hostname build-node-1"
       ]
     }
 }

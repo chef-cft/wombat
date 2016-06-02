@@ -22,7 +22,7 @@ Vagrant.configure(2) do |config|
     grep -q '172.31.54.10 chef-server' /etc/hosts || \
     echo "
     172.31.54.10 chef-server.chef-automate.com
-    172.31.54.11 delivery-server.chef-automate.com
+    172.31.54.11 delivery.chef-automate.com
     172.31.54.12 build-node.chef-automate.com
     " | sudo tee -a /etc/hosts
   HOSTS_FILE
@@ -68,7 +68,7 @@ Vagrant.configure(2) do |config|
   config.vm.define "delivery" do |d|
   
     d.vm.network "private_network", ip: "172.31.54.11"
-    d.vm.hostname = "delivery-server.chef-automate.com"
+    d.vm.hostname = "delivery.chef-automate.com"
     d.vm.provider "virtualbox" do |v|
       v.memory = 2048
       v.cpus = 2
@@ -88,7 +88,7 @@ Vagrant.configure(2) do |config|
       delivery_rb.recipe = <<-RENDER_DELIVERY_RB
        file "/etc/delivery/delivery.rb" do
          content <<-EOH.gsub /^\s+/, ""
-           delivery_fqdn "delivery-server.chef-automate.com"
+           delivery_fqdn "delivery.chef-automate.com"
            delivery['chef_username'] = "delivery"
            delivery['chef_private_key'] = "/etc/delivery/delivery.pem"
            delivery['chef_server'] = "https://chef-server.chef-automate.com/organizations/chefautomate"

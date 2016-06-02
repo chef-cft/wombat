@@ -39,7 +39,7 @@
     {
       "type": "file",
       "source": "{{template_dir}}/keys/delivery_server.crt",
-      "destination": "C:\\Windows\\Temp\\delivery-server_chef-automate_com.crt"
+      "destination": "C:\\Windows\\Temp\\delivery_chef-automate_com.crt"
     },
     {
       "type": "powershell",
@@ -49,10 +49,10 @@
         "mkdir $env:UserProfile\\.ssh",
         "cp C:\\Windows\\Temp\\private.pem $env:UserProfile\\.chef\\private.pem",
         "cp C:\\Windows\\Temp\\chef-server_chef-automate_com.crt $env:UserProfile\\.chef\\trusted_certs\\chef-server_chef-automate_com.crt",
-        "cp C:\\Windows\\Temp\\delivery-server_chef-automate_com.crt $env:UserProfile\\.chef\\trusted_certs\\delivery-server_chef-automate_com.crt",
+        "cp C:\\Windows\\Temp\\delivery_chef-automate_com.crt $env:UserProfile\\.chef\\trusted_certs\\delivery_chef-automate_com.crt",
         "cp C:\\Windows\\Temp\\private.pem $env:UserProfile\\.ssh\\id_rsa",
         "Import-Certificate -FilePath $env:UserProfile\\.chef\\trusted_certs\\chef-server_chef-automate_com.crt -CertStoreLocation Cert:\\LocalMachine\\Root",
-        "Import-Certificate -FilePath $env:UserProfile\\.chef\\trusted_certs\\delivery-server_chef-automate_com.crt -CertStoreLocation Cert:\\LocalMachine\\Root"
+        "Import-Certificate -FilePath $env:UserProfile\\.chef\\trusted_certs\\delivery_chef-automate_com.crt -CertStoreLocation Cert:\\LocalMachine\\Root"
       ]
     },
     {

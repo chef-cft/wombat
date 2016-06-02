@@ -26,7 +26,7 @@
       "ssh_private_ip": false,
       "ssh_username": "ubuntu",
       "ssh_pty" : true,
-      "ami_name": "automate-delivery-builder-{{timestamp}}"
+      "ami_name": "automate-build-node-{{timestamp}}"
     },
     {
       "type": "azure-arm",
@@ -37,7 +37,7 @@
       "subscription_id": "{{user `azure_subscription_id`}}",
       "tenant_id": "{{user `azure_tenant_id`}}",
       "capture_container_name": "images",
-      "capture_name_prefix": "delivery-builder",
+      "capture_name_prefix": "build-node",
       "image_publisher": "Canonical",
       "image_offer": "UbuntuServer",
       "image_sku": "14.04.3-LTS",
@@ -94,7 +94,7 @@
         "delivery_build": {
           "trusted_certs": {
             "chef-server": "/tmp/chef_server.crt",
-            "delivery-server": "/tmp/delivery_server.crt"
+            "delivery": "/tmp/delivery_server.crt"
           }
         }
       }

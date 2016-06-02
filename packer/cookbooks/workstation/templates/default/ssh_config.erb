@@ -6,24 +6,24 @@ Host chef-server
   IdentitiesOnly yes
   KexAlgorithms +diffie-hellman-group1-sha1
 
-Host delivery-server
-  HostName delivery-server
+Host delivery
+  HostName delivery
   Port 22
   User ubuntu
   IdentityFile <%= @home %>\.ssh\id_rsa
   IdentitiesOnly yes
   KexAlgorithms +diffie-hellman-group1-sha1
 
-Host delivery-bulder-1
-  HostName delivery-bulder-1
+Host build-node-1
+  HostName build-node-1
   Port 22
   User ubuntu
   IdentityFile <%= @home %>\.ssh\id_rsa
   IdentitiesOnly yes
   KexAlgorithms +diffie-hellman-group1-sha1
 
-Host delivery-server-git
-  HostName delivery-server
+Host delivery-git
+  HostName delivery
   Port 8989
   User delivery@<%= @org %>
   IdentityFile <%= @home %>\.ssh\id_rsa

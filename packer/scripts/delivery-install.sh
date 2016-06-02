@@ -1,7 +1,7 @@
 #!/bin/bash -eux
 
-echo "127.0.0.1 delivery-server.$DOMAIN delivery-server" | sudo tee -a /etc/hosts
-sudo hostnamectl set-hostname delivery-server
+echo "127.0.0.1 delivery.$DOMAIN delivery" | sudo tee -a /etc/hosts
+sudo hostnamectl set-hostname delivery
 sudo wget -q https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -O /usr/local/bin/jq
 sudo chmod +x /usr/local/bin/jq
 wget -q https://packages.chef.io/stable/ubuntu/12.04/chefdk_$CHEFDK_VER-1_amd64.deb -O /tmp/chefdk_$CHEFDK_VER-1_amd64.deb

@@ -7,7 +7,7 @@
       "us-west-2": {
         "chef-server": "ami-83d129e3",
         "delivery": "ami-29d42c49",
-        "delivery-builder": "ami-27d12947",
+        "build-node": "ami-27d12947",
         "workstation": "ami-f7d32b97"
       }
     }
