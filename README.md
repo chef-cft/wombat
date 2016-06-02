@@ -97,8 +97,8 @@ customer = "automate-eval"
 
 # Customize AMIs for building the demo
 ami-chef-server = ""
-ami-delivery-server = ""
-ami-delivery-builder = ""
+ami-delivery = ""
+ami-build-node = ""
 ami-workstation = ""
 
 ```

@@ -39,14 +39,14 @@ chef_organization "#{ENV['ORG']}" do
   chef_server config
 end
 
-chef_node "delivery-builder-1.#{ENV['DOMAIN']}" do
+chef_node "build-node-1.#{ENV['DOMAIN']}" do
   tag 'delivery-build-node'
   chef_server config.merge({
       :chef_server_url => "#{config[:chef_server_url]}/organizations/#{ENV['ORG']}"
   })
 end
 
-chef_client "delivery-builder-1.#{ENV['DOMAIN']}" do
+chef_client "build-node-1.#{ENV['DOMAIN']}" do
   source_key_path '/tmp/private.pem'
   chef_server config.merge({
       :chef_server_url => "#{config[:chef_server_url]}/organizations/#{ENV['ORG']}"

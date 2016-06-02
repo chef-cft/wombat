@@ -26,7 +26,7 @@ namespace :aws do
 
   desc 'Pack AMIs'
   task :pack_amis do
-    %w(chef-server delivery-server delivery-builder workstation).each do |template|
+    %w(chef-server delivery build-node workstation).each do |template|
       Rake::Task['aws:pack_ami'].invoke("#{template}.json")
       Rake::Task['aws:pack_ami'].reenable
     end
@@ -35,8 +35,8 @@ namespace :aws do
   desc 'Update AMIS in wombat.json'
   task :update_amis, :chef_server_ami, :delivery_server_ami, :delivery_builder_ami, :workstation_ami do |t, args|
     wombat['aws']['amis'][ENV['AWS_REGION']]['chef-server'] = args[:chef_server_ami] || File.read('./packer/logs/ami-chef-server.log').split("\n").last.split(" ")[1]
-    wombat['aws']['amis'][ENV['AWS_REGION']]['delivery'] = args[:delivery_server_ami] || File.read('./packer/logs/ami-delivery-server.log').split("\n").last.split(" ")[1]
-    wombat['aws']['amis'][ENV['AWS_REGION']]['delivery-builder'] = args[:delivery_builder_ami] || File.read('./packer/logs/ami-delivery-builder.log').split("\n").last.split(" ")[1]
+    wombat['aws']['amis'][ENV['AWS_REGION']]['delivery'] = args[:delivery_server_ami] || File.read('./packer/logs/ami-delivery.log').split("\n").last.split(" ")[1]
+    wombat['aws']['amis'][ENV['AWS_REGION']]['build-node'] = args[:delivery_builder_ami] || File.read('./packer/logs/ami-build-node.log').split("\n").last.split(" ")[1]
     wombat['aws']['amis'][ENV['AWS_REGION']]['workstation'] = args[:workstation_ami] || File.read('./packer/logs/ami-workstation.log').split("\n").last.split(" ")[1]
     # fail "packer build logs not found, nor were image ids provided" unless chef_server && delivery && builder && workstation
     puts "Updating wombat.json based on most recent packer logs"
@@ -50,7 +50,7 @@ namespace :aws do
     puts "Generate CloudFormation template"
     @chef_server_ami = wombat['aws']['amis'][ENV['AWS_REGION']]['chef-server']
     @delivery_server_ami = wombat['aws']['amis'][ENV['AWS_REGION']]['delivery']
-    @delivery_builder_ami =  wombat['aws']['amis'][ENV['AWS_REGION']]['delivery-builder']
+    @delivery_builder_ami =  wombat['aws']['amis'][ENV['AWS_REGION']]['build-node']
     @workstation_ami = wombat['aws']['amis'][ENV['AWS_REGION']]['workstation']
     @availability_zone = wombat['aws']['availability_zone']
     @demo = wombat['demo']
@@ -76,8 +76,8 @@ namespace :tf do
   desc 'Update AMIS in tfvars'
   task :update_amis, :chef_server_ami, :delivery_server_ami, :delivery_builder_ami, :workstation_ami do |t, args|
     chef_server = args[:chef_server_ami] || File.read('./packer/logs/ami-chef-server.log').split("\n").last.split(" ")[1]
-    delivery = args[:delivery_server_ami] || File.read('./packer/logs/ami-delivery-server.log').split("\n").last.split(" ")[1]
-    builder = args[:delivery_builder_ami] || File.read('./packer/logs/ami-delivery-builder.log').split("\n").last.split(" ")[1]
+    delivery = args[:delivery_server_ami] || File.read('./packer/logs/ami-delivery.log').split("\n").last.split(" ")[1]
+    builder = args[:delivery_builder_ami] || File.read('./packer/logs/ami-build-node.log').split("\n").last.split(" ")[1]
     workstation = args[:workstation_ami] || File.read('./packer/logs/ami-workstation.log').split("\n").last.split(" ")[1]
     fail "packer build logs not found, nor were image ids provided" unless chef_server && delivery && builder && workstation
     puts "Updating tfvars based on most recent packer logs"
