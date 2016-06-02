@@ -84,15 +84,15 @@
     },
     {
       "type": "chef-solo",
-      "cookbook_paths": [ "{{template_dir}}/vendored-cookbooks" ],
+      "cookbook_paths": [ "{{template_dir}}/vendored-cookbooks/build-node" ],
       "run_list": [ "apt", "build-node" ],
       "json": {
-          "delivery_build": {
-              "trusted_certs": {
-                  "chef-server": "/tmp/chef_server.crt",
-                  "delivery-server": "/tmp/delivery_server.crt"
-              }
+        "delivery_build": {
+          "trusted_certs": {
+            "chef-server": "/tmp/chef_server.crt",
+            "delivery-server": "/tmp/delivery_server.crt"
           }
+        }
       }
     }
   ]
