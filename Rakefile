@@ -121,11 +121,12 @@ end
 
 def create_stack(stack, region, keypair)
   template_file = "file://#{File.dirname(__FILE__)}/cloudformation/#{stack}.json"
+  timestamp = Time.now.gmtime.strftime("%Y%m%d%H%M%S")
   cmd = %W(aws cloudformation create-stack)
   cmd.insert(3, "--template-body #{template_file}")
   cmd.insert(3, "--parameters ParameterKey='KeyName',ParameterValue='#{keypair}'")
   cmd.insert(3, "--region #{region}")
-  cmd.insert(3, "--stack-name #{stack}")
+  cmd.insert(3, "--stack-name #{stack}-#{timestamp}")
   cmd.join(' ')
 end
 
