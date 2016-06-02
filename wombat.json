@@ -1,7 +1,7 @@
 {
   "aws": {
     "availability_zone": "us-west-2c",
-    "keypair": "cheeseplus-west-2",
+    "keypair": "",
     "region": "us-west-2",
     "amis": {
       "us-west-2": {
