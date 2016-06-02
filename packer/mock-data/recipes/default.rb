@@ -38,3 +38,17 @@ chef_organization 'chefautomate' do
   members ['delivery', 'workstation']
   chef_server config
 end
+
+chef_node 'delivery-builder-1.chef-automate.com' do
+  tag 'delivery-build-node'
+  chef_server config.merge({
+      :chef_server_url => "#{config[:chef_server_url]}/organizations/chefautomate"
+  })
+end
+
+chef_client 'delivery-builder-1.chef-automate.com' do
+  source_key_path '/tmp/private.pem'
+  chef_server config.merge({
+      :chef_server_url => "#{config[:chef_server_url]}/organizations/chefautomate"
+  })
+end

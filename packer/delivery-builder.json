@@ -48,6 +48,11 @@
   "provisioners" : [
     {
       "type": "file",
+      "source": "{{template_dir}}/files/",
+      "destination": "/tmp"
+    },
+    {
+      "type": "file",
       "source": "{{template_dir}}/keys/private.pem",
       "destination": "/tmp/private.pem"
     },
@@ -55,6 +60,16 @@
       "type": "file",
       "source": "{{template_dir}}/keys/public.pub",
       "destination": "/tmp/public.pub"
+    },
+    {
+      "type": "file",
+      "source": "{{template_dir}}/keys/chef_server.crt",
+      "destination": "/tmp/chef_server.crt"
+    },
+    {
+      "type": "file",
+      "source": "{{template_dir}}/keys/delivery_server.crt",
+      "destination": "/tmp/delivery_server.crt"
     },
     {
       "environment_vars": [
@@ -70,7 +85,15 @@
     {
       "type": "chef-solo",
       "cookbook_paths": [ "{{template_dir}}/vendored-cookbooks" ],
-      "run_list": [ "apt", "build-node" ]
+      "run_list": [ "apt", "build-node" ],
+      "json": {
+          "delivery_build": {
+              "trusted_certs": {
+                  "chef-server": "/tmp/chef_server.crt",
+                  "delivery-server": "/tmp/delivery_server.crt"
+              }
+          }
+      }
     }
   ]
 }
