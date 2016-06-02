@@ -5,5 +5,5 @@ sudo cp /tmp/private.pem /etc/chef/client.pem
 echo "
 chef_server_url 'https://chef-server.$DOMAIN/organizations/$ORG'
 client_key '/etc/chef/client.pem'
-node_name 'build-node-1.$DOMAIN'
+node_name 'build-node-1'
 " | sudo tee /etc/chef/client.rb

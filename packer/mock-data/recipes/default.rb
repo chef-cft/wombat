@@ -54,12 +54,7 @@ chef_client "build-node-1" do
 end
 
 chef_acl "" do
-  rights :all, user: %w(delivery workstation)
+  rights :all, user: %w(delivery workstation), clients: %w(build-node-1)
   recursive true
-  chef_server conf_with_org
-end
-
-chef_acl "nodes/build-node-1" do
-  rights [:read,:write,:update], clients: %w(build-node-1)
   chef_server conf_with_org
 end
