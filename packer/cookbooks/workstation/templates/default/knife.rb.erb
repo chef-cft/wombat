@@ -1,5 +1,8 @@
+current_dir = File.dirname(__FILE__)
+log_level            :info
+log_location         STDOUT
 node_name            'workstation'
 chef_server_url      '<%= @chef_server_url %>'
-client_key           'private.pem'
-trusted_certs_dir    'trusted_certs'
-cookbook_path        '<%= @home %>\cookbooks'
+client_key           '<%= @home %>/.chef/private.pem'
+trusted_certs_dir    '<%= @home %>/.chef/trusted_certs'
+cookbook_path        '<%= @home %>/.chef/cookbooks'
