@@ -34,21 +34,21 @@ chef_user 'workstation' do
   source_key_path "/tmp/private.pem"
 end
 
-chef_organization 'chefautomate' do
+chef_organization "#{ENV['ORG']}" do
   members ['delivery', 'workstation']
   chef_server config
 end
 
-chef_node 'delivery-builder-1.chef-automate.com' do
+chef_node "delivery-builder-1.#{ENV['DOMAIN']}" do
   tag 'delivery-build-node'
   chef_server config.merge({
-      :chef_server_url => "#{config[:chef_server_url]}/organizations/chefautomate"
+      :chef_server_url => "#{config[:chef_server_url]}/organizations/#{ENV['ORG']}"
   })
 end
 
-chef_client 'delivery-builder-1.chef-automate.com' do
+chef_client "delivery-builder-1.#{ENV['DOMAIN']}" do
   source_key_path '/tmp/private.pem'
   chef_server config.merge({
-      :chef_server_url => "#{config[:chef_server_url]}/organizations/chefautomate"
+      :chef_server_url => "#{config[:chef_server_url]}/organizations/#{ENV['ORG']}"
   })
 end

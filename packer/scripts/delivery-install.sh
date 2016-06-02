@@ -1,6 +1,6 @@
 #!/bin/bash -eux
 
-echo '127.0.0.1 delivery-server.chef-automate.com delivery-server' | sudo tee -a /etc/hosts
+echo "127.0.0.1 delivery-server.$DOMAIN delivery-server" | sudo tee -a /etc/hosts
 sudo hostnamectl set-hostname delivery-server
 sudo wget -q https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -O /usr/local/bin/jq
 sudo chmod +x /usr/local/bin/jq
