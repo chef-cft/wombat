@@ -1,0 +1,25 @@
+{
+  "aws": {
+    "availability_zone": "ap-southeast-2c",
+    "keypair": "keypair-ap-southeast-2",
+    "region": "ap-southeast-2",
+    "amis": {
+      "us-west-1": {
+        "chef-server": "ami-83d129e3",
+        "delivery": "ami-29d42c49",
+        "build-node": "ami-27d12947",
+        "workstation": "ami-f7d32b97"
+      }
+    }
+  },
+  "demo": "wombat",
+  "domain": "chordata.biz",
+  "enterprise": "mammalia",
+  "organization": "diprotodontia",
+  "version": "0.0.9",
+  "pkg-versions": {
+    "chef-server": "12.6.0",
+    "chefdk": "0.14.25",
+    "delivery": "0.4.317"
+  }
+}
