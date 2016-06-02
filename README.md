@@ -26,11 +26,67 @@ Follow the instructions at https://docs.chef.io/install_dk.html to install and c
 
 Downloads are here: https://www.packer.io/downloads.html . Place in your path for direct execution.
 
-##### 4) Install Terraform
+##### 4) Build AMIs with Packer
+
+```
+# build all AMIs
+$ rake aws:pack_amis
+
+# build one image
+$ rake aws:pack_ami[chef-server]
+
+# build one image directly for AWS
+$ cd packer
+$ packer build --only amazon-ebs chef-server.json
+
+```
+
+##### 5) Update wombat.json
+
+```
+# Update wombat.json with latest AMIs from packer logs
+$ rake aws:update_amis
+
+```
+
+##### 6) Create CloudFormation template
+
+```
+# Create CloudFormation template from wombat.json
+$ rake aws:create_cfn_template
+```
+
+##### 7) Deploy CloudFormation template
+
+###### via AWS CloudFormation Web UI
+
+Upload the created template from the `cloudformation` directory.
+
+###### via CLI
+
+*Requires:* aws-cli and configured ~/.aws/credentials
+
+```
+# Deploy CloudFormation template
+$ rake aws:create_cfn_stack
+```
+
+##### 8) Login to Windows Workstation
+
+From the AWS CloudFormation UI, select the Outputs tab for the desired stack.
+Use an RDP compatible client to login to the workstation with the embedded credentials.
+
+#### Terraform
+
+Terraform is intended for use as an intermediate format for the purposes of
+testing as part of a pipeline.
 
 Downloads are here: https://www.terraform.io/downloads.html . Place in your path for direct execution.
 
-##### 5) Create and populate `terraform.tfvars` in the `terraform` directory
+*Note:* `access_key` and `secret_key` need to be defined so Terraform knows to read them  
+from environment vars or ~/.aws/credentials
+
+Create and populate `terraform.tfvars` in the `terraform` directory
 
 ```
 access_key = ""
@@ -47,32 +103,14 @@ ami-workstation = ""
 
 ```
 
-* `access_key` and `secret_key` need to be defined so Terraform knows to read them  
-from environment vars or ~/.aws/credentials
-
-##### 6) Build Images with Packer
-
-```
-# build all images
-$ rake packerize
-
-# build one image
-$ rake packerize:chef_server
-
-# build one image directly for AWS
-$ cd packer
-$ packer build --only amazon-ebs chef-server.json
-
-```
-
-##### 7) Deploy images with Terraform
+##### Deploy images with Terraform
 
 ```
 # Check the plan
-$ rake terraform:plan
+$ rake tf:plan
 
 # Apply the plan
-$ rake terraform:apply
+$ rake tf:apply
 
 # alternatively
 $ cd terraform
@@ -92,11 +130,6 @@ To list the IPs of a running stack
 $ cd terraform
 $ terraform output
 ```
-
-#### TODO
-
-* Document Azure build process / Abstract existing AWS build process
-*
 
 LICENSE AND AUTHORS
 ===================
