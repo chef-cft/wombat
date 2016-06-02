@@ -6,4 +6,7 @@ description 'Installs/Configures build-node'
 long_description 'Installs/Configures build-node'
 version '0.1.0'
 
+depends 'apt'
+depends 'chef-sugar'
+depends 'delivery-base'
 depends 'delivery_build'

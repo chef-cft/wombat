@@ -76,6 +76,7 @@
         "CHEF_SERVER_VER={{user `chef-server`}}"
       ],
       "scripts": [
+        "{{template_dir}}/scripts/apt.sh",
         "{{template_dir}}/scripts/authorized_keys.sh",
         "{{template_dir}}/scripts/chef-server-install.sh",
         "{{template_dir}}/scripts/chef-server-configure.sh",

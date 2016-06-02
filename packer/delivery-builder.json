@@ -70,7 +70,7 @@
     {
       "type": "chef-solo",
       "cookbook_paths": [ "{{template_dir}}/vendored-cookbooks" ],
-      "run_list": [ "build-node" ]
+      "run_list": [ "apt", "build-node" ]
     }
   ]
 }

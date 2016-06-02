@@ -82,6 +82,7 @@
         "ENTERPRISE={{user `enterprise`}}"
       ],
       "scripts": [
+        "{{template_dir}}/scripts/apt.sh",
         "{{template_dir}}/scripts/authorized_keys.sh",
         "{{template_dir}}/scripts/delivery-install.sh",
         "{{template_dir}}/scripts/delivery-configure.sh",
