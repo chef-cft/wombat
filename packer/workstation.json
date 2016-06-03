@@ -4,7 +4,8 @@
     "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
     "aws_region": "{{env `AWS_REGION`}}",
     "winrm_username": "Administrator",
-    "winrm_password": "RL9@T40BTmXh"
+    "winrm_password": "RL9@T40BTmXh",
+    "build-nodes": "1"
   },
 
   "builders": [

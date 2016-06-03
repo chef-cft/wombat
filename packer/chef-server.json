@@ -11,7 +11,8 @@
     "azure_resource_group": "{{env `AZURE_RESOURCE_GROUP`}}",
     "chef-server": "12.6.0",
     "domain": "chef-automate.com",
-    "org": "chefautomate"
+    "org": "chefautomate",
+    "build-nodes": "1"
   },
 
   "builders": [
@@ -77,7 +78,8 @@
       "environment_vars": [
         "CHEF_SERVER_VER={{user `chef-server`}}",
         "DOMAIN={{user `domain`}}",
-        "ORG={{user `org`}}"
+        "ORG={{user `org`}}",
+        "BUILD_NODES={{user `build-nodes`}}"
       ],
       "scripts": [
         "{{template_dir}}/scripts/apt.sh",
