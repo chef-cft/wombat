@@ -67,13 +67,13 @@
     },
     {
       "type": "file",
-      "source": "{{template_dir}}/keys/delivery_server.crt",
-      "destination": "/tmp/delivery_server.crt"
+      "source": "{{template_dir}}/keys/delivery.crt",
+      "destination": "/tmp/delivery.crt"
     },
     {
       "type": "file",
-      "source": "{{template_dir}}/keys/delivery_server.key",
-      "destination": "/tmp/delivery_server.key"
+      "source": "{{template_dir}}/keys/delivery.key",
+      "destination": "/tmp/delivery.key"
     },
     {
       "environment_vars": [

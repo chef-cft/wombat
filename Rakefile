@@ -1,6 +1,15 @@
 require 'erb'
 require 'json'
 
+namespace :keys do
+  desc 'create keys'
+  task :create do
+    %w(chef-server delivery compliance).each do |server|
+      sh create_keys(server, wombat['org'], wombat['domain'])
+    end
+  end
+end
+
 namespace :vendor do
   desc 'Vendor build-node cookbooks'
   task :build_node do
@@ -16,11 +25,13 @@ namespace :vendor do
 end
 
 desc 'Vendor all cookbooks'
-task vendor: ['vendor:build-node', 'vendor:workstation']
+task vendor: ['vendor:build_node', 'vendor:workstation']
 
 namespace :aws do
   desc 'Pack an AMI'
   task :pack_ami, :template do |t, args|
+    Rake::Task['vendor:build_node'].invoke()
+    Rake::Task['vendor:workstation'].invoke()
     sh packer_build(args[:template], 'amazon-ebs')
   end
 
@@ -33,15 +44,18 @@ namespace :aws do
   end
 
   desc 'Update AMIS in wombat.json'
-  task :update_amis, :chef_server_ami, :delivery_server_ami, :delivery_builder_ami, :workstation_ami do |t, args|
-    wombat['aws']['amis'][ENV['AWS_REGION']]['chef-server'] = args[:chef_server_ami] || File.read('./packer/logs/ami-chef-server.log').split("\n").last.split(" ")[1]
-    wombat['aws']['amis'][ENV['AWS_REGION']]['delivery'] = args[:delivery_server_ami] || File.read('./packer/logs/ami-delivery.log').split("\n").last.split(" ")[1]
-    wombat['aws']['amis'][ENV['AWS_REGION']]['build-node'] = args[:delivery_builder_ami] || File.read('./packer/logs/ami-build-node.log').split("\n").last.split(" ")[1]
-    wombat['aws']['amis'][ENV['AWS_REGION']]['workstation'] = args[:workstation_ami] || File.read('./packer/logs/ami-workstation.log').split("\n").last.split(" ")[1]
+  task :update_amis, :chef_server_ami, :delivery_ami, :build_node_ami, :workstation_ami do |t, args|
+    copy = {}
+    copy = wombat
+    copy['aws']['amis'][ENV['AWS_REGION']]['chef-server'] = args[:chef_server_ami] || File.read('./packer/logs/ami-chef-server.log').split("\n").last.split(" ")[1]
+    copy['aws']['amis'][ENV['AWS_REGION']]['delivery'] = args[:delivery_ami] || File.read('./packer/logs/ami-delivery.log').split("\n").last.split(" ")[1]
+    copy['aws']['amis'][ENV['AWS_REGION']]['build-node']['1'] = args[:build_node_ami] || File.read('./packer/logs/ami-build-node.log').split("\n").last.split(" ")[1]
+    copy['aws']['amis'][ENV['AWS_REGION']]['workstation'] = args[:workstation_ami] || File.read('./packer/logs/ami-workstation.log').split("\n").last.split(" ")[1]
+    copy['last_updated'] = Time.now.gmtime.strftime("%Y%m%d%H%M%S")
     # fail "packer build logs not found, nor were image ids provided" unless chef_server && delivery && builder && workstation
     puts "Updating wombat.json based on most recent packer logs"
     File.open("wombat.json","w") do |f|
-      f.write(JSON.pretty_generate(wombat))
+      f.write(JSON.pretty_generate(copy))
     end
   end
 
@@ -49,8 +63,7 @@ namespace :aws do
   task :create_cfn_template do
     puts "Generate CloudFormation template"
     @chef_server_ami = wombat['aws']['amis'][ENV['AWS_REGION']]['chef-server']
-    @delivery_server_ami = wombat['aws']['amis'][ENV['AWS_REGION']]['delivery']
-    @delivery_builder_ami =  wombat['aws']['amis'][ENV['AWS_REGION']]['build-node']
+    @delivery_ami = wombat['aws']['amis'][ENV['AWS_REGION']]['delivery']
     @build_nodes = wombat['build-nodes'].to_i
     @delivery_builder_ami = {}
     1.upto(@build_nodes) do |i|
@@ -79,16 +92,16 @@ end
 
 namespace :tf do
   desc 'Update AMIS in tfvars'
-  task :update_amis, :chef_server_ami, :delivery_server_ami, :delivery_builder_ami, :workstation_ami do |t, args|
+  task :update_amis, :chef_server_ami, :delivery_ami, :build_node_ami, :workstation_ami do |t, args|
     chef_server = args[:chef_server_ami] || File.read('./packer/logs/ami-chef-server.log').split("\n").last.split(" ")[1]
-    delivery = args[:delivery_server_ami] || File.read('./packer/logs/ami-delivery.log').split("\n").last.split(" ")[1]
-    builder = args[:delivery_builder_ami] || File.read('./packer/logs/ami-build-node.log').split("\n").last.split(" ")[1]
+    delivery = args[:delivery_ami] || File.read('./packer/logs/ami-delivery.log').split("\n").last.split(" ")[1]
+    builder = args[:build_node_ami] || File.read('./packer/logs/ami-build-node.log').split("\n").last.split(" ")[1]
     workstation = args[:workstation_ami] || File.read('./packer/logs/ami-workstation.log').split("\n").last.split(" ")[1]
     fail "packer build logs not found, nor were image ids provided" unless chef_server && delivery && builder && workstation
     puts "Updating tfvars based on most recent packer logs"
     @chef_server_ami = chef_server
-    @delivery_server_ami = delivery
-    @delivery_builder_ami = builder
+    @delivery_ami = delivery
+    @build_node_ami = builder
     @workstation_ami = workstation
     rendered_tfvars = ERB.new(File.read('terraform/templates/terraform.tfvars.erb')).result
     File.open('terraform/terraform.tfvars', "w") {|file| file.puts rendered_tfvars }
@@ -115,7 +128,7 @@ def packer_build(template, builder)
   base = template.split('.json')[0]
   cmd = %W(packer build packer/#{template} | tee packer/logs/ami-#{base}.log)
   cmd.insert(2, "--only #{builder}")
-  cmd.insert(2, "--var org='#{wombat['organization']}'") if !(base =~ /delivery/)
+  cmd.insert(2, "--var org='#{wombat['org']}'") if !(base =~ /delivery/)
   cmd.insert(2, "--var domain='#{wombat['domain']}'")
   cmd.insert(2, "--var enterprise='#{wombat['enterprise']}'") if !(base =~ /chef-server/)
   cmd.insert(2, "--var chefdk='#{version('chefdk')}'") if !(base =~ /chef-server/)
@@ -133,6 +146,14 @@ def create_stack(stack, region, keypair)
   cmd.insert(3, "--parameters ParameterKey='KeyName',ParameterValue='#{keypair}'")
   cmd.insert(3, "--region #{region}")
   cmd.insert(3, "--stack-name #{stack}-#{timestamp}")
+  cmd.join(' ')
+end
+
+def create_keys(server, org, domain)
+  cmd = ['openssl req -x509 -nodes -sha256 -days 365 -newkey rsa:2048']
+  cmd.insert(1, "-keyout packer/keys/#{server}.key")
+  cmd.insert(2, "-out packer/keys/#{server}.crt")
+  cmd.insert(3, "-subj \"/C=AU/ST=New South Wales/L=Sydney/O=#{wombat['org']}/OU=wombats/CN=#{server}.#{wombat['domain']}\"")
   cmd.join(' ')
 end
 
