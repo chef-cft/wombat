@@ -1,10 +1,10 @@
 #!/bin/bash -eux
-grep -q '172.31.54.10 chef-server' /etc/hosts || \
 echo "
 172.31.54.10 chef-server.$DOMAIN chef-server
 172.31.54.11 delivery.$DOMAIN delivery
 " | sudo tee -a /etc/hosts
-for i in $(seq 1 $BUILD_NODES); do
+for i in $(seq 1 $BUILD_NODES);
+do
   ip=$((11 + $i))
   echo "172.31.54.$ip build-node-$i.$DOMAIN build-node-$i" | sudo tee -a /etc/hosts
 done

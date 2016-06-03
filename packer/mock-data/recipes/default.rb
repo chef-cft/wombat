@@ -44,7 +44,7 @@ conf_with_org = config.merge({
 })
 
 build_nodes = []
-num = ENV['BUILD_NODES']
+num = ENV['BUILD_NODES'].to_i
 
 1.upto(num) do |i|
   build_nodes << "build-node-#{i}"
