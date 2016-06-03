@@ -11,8 +11,8 @@
     "azure_resource_group": "{{env `AZURE_RESOURCE_GROUP`}}",
     "chefdk": "0.14.25",
     "delivery": "0.4.317",
-    "domain": "chef-automate.com",
-    "enterprise": "chefautomate",
+    "domain": "chordata.biz",
+    "org": "diprotodontia",
     "build-nodes": "1"
   },
 

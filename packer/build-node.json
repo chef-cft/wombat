@@ -10,8 +10,8 @@
     "azure_storage_account": "{{env `AZURE_STORAGE_ACCOUNT`}}",
     "azure_resource_group": "{{env `AZURE_RESOURCE_GROUP`}}",
     "chefdk": "0.14.25",
-    "domain": "chef-automate.com",
-    "org": "chefautomate",
+    "domain": "chordata.biz",
+    "org": "diprotodontia",
     "node-number": "1",
     "build-nodes": "1"
   },
