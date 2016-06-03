@@ -5,6 +5,7 @@ Host chef-server
   IdentityFile <%= @home %>\.ssh\id_rsa
   IdentitiesOnly yes
   KexAlgorithms +diffie-hellman-group1-sha1
+  StrictHostKeyChecking no
 
 Host delivery
   HostName delivery
@@ -13,6 +14,7 @@ Host delivery
   IdentityFile <%= @home %>\.ssh\id_rsa
   IdentitiesOnly yes
   KexAlgorithms +diffie-hellman-group1-sha1
+  StrictHostKeyChecking no
 
 Host build-node-1
   HostName build-node-1
@@ -21,7 +23,8 @@ Host build-node-1
   IdentityFile <%= @home %>\.ssh\id_rsa
   IdentitiesOnly yes
   KexAlgorithms +diffie-hellman-group1-sha1
-
+  StrictHostKeyChecking no
+  
 Host delivery-git
   HostName delivery
   Port 8989
@@ -29,3 +32,5 @@ Host delivery-git
   IdentityFile <%= @home %>\.ssh\id_rsa
   IdentitiesOnly yes
   KexAlgorithms +diffie-hellman-group1-sha1
+  StrictHostKeyChecking no
+  
