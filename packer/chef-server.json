@@ -66,8 +66,8 @@
     },
     {
       "type": "file",
-      "source": "{{template_dir}}/keys/chef_server.crt",
-      "destination": "/tmp/chef_server.crt"
+      "source": "{{template_dir}}/keys/chef-server.crt",
+      "destination": "/tmp/chef-server.crt"
     },
     {
       "type": "file",

@@ -4,8 +4,8 @@ sudo cp /tmp/private.pem /etc/delivery/delivery.pem
 sudo cp /tmp/delivery.license /var/opt/delivery/license/delivery.license
 sudo cp /tmp/public.pub /etc/delivery/builder_key.pub
 sudo mkdir -p /var/opt/delivery/nginx/ca/
-sudo cp /tmp/delivery_server.crt /var/opt/delivery/nginx/ca/delivery.$DOMAIN.crt
-sudo cp /tmp/delivery_server.key /var/opt/delivery/nginx/ca/delivery.$DOMAIN.key
+sudo cp /tmp/delivery.crt /var/opt/delivery/nginx/ca/delivery.$DOMAIN.crt
+sudo cp /tmp/delivery.key /var/opt/delivery/nginx/ca/delivery.$DOMAIN.key
 
 echo "delivery_fqdn \"delivery.$DOMAIN\"" | sudo tee -a /etc/delivery/delivery.rb
 echo "delivery['chef_username'] = \"delivery\"" | sudo tee -a /etc/delivery/delivery.rb
