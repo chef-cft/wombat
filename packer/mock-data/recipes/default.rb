@@ -8,7 +8,7 @@ require 'cheffish'
 Chef::Config.ssl_verify_mode :verify_none
 
 config = {
-  :chef_server_url => "https://chef-server",
+  :chef_server_url => 'https://chef-server',
   :options => {
     :client_name => 'pivotal',
     :signing_key_filename => '/etc/opscode/pivotal.pem'
@@ -22,7 +22,7 @@ chef_user 'delivery' do
   display_name 'delivery'
   email 'chefeval@chef.io'
   password 'delivery'
-  source_key_path "/tmp/private.pem"
+  source_key_path '/tmp/private.pem'
 end
 
 chef_user 'workstation' do
@@ -31,7 +31,7 @@ chef_user 'workstation' do
   display_name 'workstation'
   email 'workstation@chef.io'
   password 'workstation'
-  source_key_path "/tmp/private.pem"
+  source_key_path '/tmp/private.pem'
 end
 
 chef_organization "#{ENV['ORG']}" do
@@ -40,21 +40,30 @@ chef_organization "#{ENV['ORG']}" do
 end
 
 conf_with_org = config.merge({
-   :chef_server_url => "#{config[:chef_server_url]}/organizations/#{ENV['ORG']}"
+  :chef_server_url => "#{config[:chef_server_url]}/organizations/#{ENV['ORG']}"
 })
-  
-chef_node "build-node-1" do
-  tag 'delivery-build-node'
-  chef_server conf_with_org
+
+build_nodes = []
+num = ENV['BUILD_NODES']
+
+1.upto(num) do |i|
+  build_nodes << "build-node-#{i}"
 end
 
-chef_client "build-node-1" do
-  source_key_path '/tmp/private.pem'
-  chef_server conf_with_org
+build_nodes.each do |node_name|
+  chef_node node_name do
+    tag 'delivery-build-node'
+    chef_server conf_with_org
+  end
+
+  chef_client node_name do
+    source_key_path '/tmp/private.pem'
+    chef_server conf_with_org
+  end
 end
 
 chef_acl "" do
-  rights :all, user: %w(delivery workstation), clients: %w(build-node-1)
+  rights :all, user: %w(delivery workstation), clients: build_nodes
   recursive true
   chef_server conf_with_org
 end

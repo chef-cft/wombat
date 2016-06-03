@@ -51,11 +51,16 @@ namespace :aws do
     @chef_server_ami = wombat['aws']['amis'][ENV['AWS_REGION']]['chef-server']
     @delivery_server_ami = wombat['aws']['amis'][ENV['AWS_REGION']]['delivery']
     @delivery_builder_ami =  wombat['aws']['amis'][ENV['AWS_REGION']]['build-node']
+    @build_nodes = wombat['build-nodes'].to_i
+    @delivery_builder_ami = {}
+    1.upto(@build_nodes) do |i|
+      @delivery_builder_ami[i] = wombat['aws']['amis'][ENV['AWS_REGION']]["build-node"][i.to_s]
+    end
     @workstation_ami = wombat['aws']['amis'][ENV['AWS_REGION']]['workstation']
     @availability_zone = wombat['aws']['availability_zone']
     @demo = wombat['demo']
     @version = wombat['version']
-    rendered_cfn = ERB.new(File.read('cloudformation/cfn.json.erb')).result
+    rendered_cfn = ERB.new(File.read('cloudformation/cfn.json.erb'),nil,'-').result
     File.open("cloudformation/#{@demo}.json", "w") {|file| file.puts rendered_cfn }
     puts "Created cloudformation/#{@demo}.json"
   end
@@ -116,6 +121,7 @@ def packer_build(template, builder)
   cmd.insert(2, "--var chefdk='#{version('chefdk')}'") if !(base =~ /chef-server/)
   cmd.insert(2, "--var delivery='#{version('delivery')}'") if (base =~ /delivery/)
   cmd.insert(2, "--var chef-server='#{version('chef-server')}'") if (base =~ /chef-server/)
+  cmd.insert(2, "--var build-nodes='#{wombat['build-nodes']}'") if (base =~ /build-nodes/)
   cmd.join(' ')
 end
 

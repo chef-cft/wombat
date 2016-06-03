@@ -49,11 +49,13 @@
       "Default": "<%= @delivery_server_ami %>",
       "Description": "AMI ID for the Delivery Server"
     },
-    "BuildNodeAMI": {
+<% 1.upto(@build_nodes) do |i| -%>
+    "BuildNode<%= i.to_s %>AMI": {
       "Type": "String",
-      "Default": "<%= @delivery_builder_ami %>",
+      "Default": "<%= @delivery_builder_ami[i] %>",
       "Description": "AMI ID for Build Node 1"
     },
+<% end -%>
     "WindowsWorkstationAMI": {
       "Type": "String",
       "Default": "<%= @workstation_ami %>",
@@ -357,7 +359,8 @@
         ]
       }
     },
-    "BuildNode1": {
+<% 1.upto(@build_nodes) do |i| -%>
+    "BuildNode<%= i.to_s %>": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
         "InstanceType": "m3.large",
@@ -370,7 +373,7 @@
               }
             ],
             "AssociatePublicIpAddress": "true",
-            "PrivateIpAddress": "172.31.54.12",
+            "PrivateIpAddress": "172.31.54.<%= 11 + i %>",
             "DeviceIndex": "0",
             "DeleteOnTermination": "true",
             "SubnetId": {
@@ -382,18 +385,19 @@
           "Ref": "KeyName"
         },
         "ImageId": {
-              "Ref": "BuildNodeAMI"
+              "Ref": "BuildNode<%= i.to_s %>AMI"
         },
         "Tags": [
           {
             "Key": "Name",
             "Value": {
-              "Fn::Join" : [ " ", [ { "Ref": "DemoName" }, "Build Node 1" ] ]
+              "Fn::Join" : [ " ", [ { "Ref": "DemoName" }, "Build Node <%= i.to_s %>" ] ]
             }
           }
         ]
       }
     },
+<% end -%>
     "ChefServer": {
       "Type": "AWS::EC2::Instance",
       "Properties": {

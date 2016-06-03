@@ -12,7 +12,8 @@
     "chefdk": "0.14.25",
     "delivery": "0.4.317",
     "domain": "chef-automate.com",
-    "enterprise": "chefautomate"
+    "enterprise": "chefautomate",
+    "build-nodes": "1"
   },
 
   "builders": [
@@ -79,7 +80,8 @@
         "CHEFDK_VER={{user `chefdk`}}",
         "DELIVERY_VER={{user `delivery`}}",
         "DOMAIN={{user `domain`}}",
-        "ENTERPRISE={{user `enterprise`}}"
+        "ENTERPRISE={{user `enterprise`}}",
+        "BUILD_NODES={{user `build-nodes`}}"
       ],
       "scripts": [
         "{{template_dir}}/scripts/apt.sh",

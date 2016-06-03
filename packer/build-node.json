@@ -11,7 +11,9 @@
     "azure_resource_group": "{{env `AZURE_RESOURCE_GROUP`}}",
     "chefdk": "0.14.25",
     "domain": "chef-automate.com",
-    "org": "chefautomate"
+    "org": "chefautomate",
+    "node-number": "1",
+    "build-nodes": "1"
   },
 
   "builders": [
@@ -26,7 +28,7 @@
       "ssh_private_ip": false,
       "ssh_username": "ubuntu",
       "ssh_pty" : true,
-      "ami_name": "automate-build-node-{{timestamp}}"
+      "ami_name": "automate-build-node-{{user `node-number`}}-{{timestamp}}"
     },
     {
       "type": "azure-arm",
@@ -77,7 +79,9 @@
       "environment_vars": [
         "CHEFDK_VER={{user `chefdk`}}",
         "DOMAIN={{user `domain`}}",
-        "ORG={{user `org`}}"
+        "ORG={{user `org`}}",
+        "NODE_NUMBER={{user `node-number`}}",
+        "BUILD_NODES={{user `build-nodes`}}"
       ],
       "scripts": [
         "{{template_dir}}/scripts/authorized_keys.sh",

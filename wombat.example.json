@@ -17,6 +17,7 @@
   "enterprise": "mammalia",
   "organization": "diprotodontia",
   "version": "0.0.9",
+  "build-nodes": "1",
   "pkg-versions": {
     "chef-server": "12.6.0",
     "chefdk": "0.14.25",
