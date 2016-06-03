@@ -46,13 +46,13 @@
     },
     "DeliveryServerAMI": {
       "Type": "String",
-      "Default": "<%= @delivery_server_ami %>",
+      "Default": "<%= @delivery_ami %>",
       "Description": "AMI ID for the Delivery Server"
     },
 <% 1.upto(@build_nodes) do |i| -%>
     "BuildNode<%= i.to_s %>AMI": {
       "Type": "String",
-      "Default": "<%= @delivery_builder_ami[i] %>",
+      "Default": "<%= build_node_ami[i] %>",
       "Description": "AMI ID for Build Node <%= i %>"
     },
 <% end -%>
