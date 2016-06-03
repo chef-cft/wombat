@@ -72,7 +72,7 @@
     {
       "type": "file",
       "source": "{{template_dir}}/keys/chef_server.key",
-      "destination": "/tmp/chef_server.key"
+      "destination": "/tmp/chef-server.key"
     },
     {
       "environment_vars": [
