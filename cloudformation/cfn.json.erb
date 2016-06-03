@@ -53,7 +53,7 @@
     "BuildNode<%= i.to_s %>AMI": {
       "Type": "String",
       "Default": "<%= @delivery_builder_ami[i] %>",
-      "Description": "AMI ID for Build Node 1"
+      "Description": "AMI ID for Build Node <%= i %>"
     },
 <% end -%>
     "WindowsWorkstationAMI": {
