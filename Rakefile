@@ -7,9 +7,9 @@ namespace :keys do
   desc 'create keys'
   task :create do
     %w(chef-server delivery compliance).each do |hostname|
-      x509_cert(hostname)
+      gen_x509_cert(hostname)
     end
-    ssh_key
+    gen_ssh_key
   end
 end
 
@@ -152,14 +152,6 @@ def create_stack(stack, region, keypair)
   cmd.join(' ')
 end
 
-def create_keys(server, org, domain)
-  cmd = ['openssl req -x509 -nodes -sha256 -days 365 -newkey rsa:2048']
-  cmd.insert(1, "-keyout packer/keys/#{server}.key")
-  cmd.insert(2, "-out packer/keys/#{server}.crt")
-  cmd.insert(3, "-subj \"/C=AU/ST=New South Wales/L=Sydney/O=#{wombat['org']}/OU=wombats/CN=#{server}.#{wombat['domain']}\"")
-  cmd.join(' ')
-end
-
 def wombat
   file = File.read('wombat.json')
   hash = JSON.parse(file)
@@ -169,7 +161,7 @@ def version(thing)
   wombat['pkg-versions'][thing]
 end
 
-def x509_cert(hostname)
+def gen_x509_cert(hostname)
   rsa_key = OpenSSL::PKey::RSA.new(2048)
   public_key = rsa_key.public_key
 
@@ -201,7 +193,7 @@ def x509_cert(hostname)
   puts "Certificate created for #{hostname}.#{wombat['domain']}"
 end
 
-def ssh_key
+def gen_ssh_key
   rsa_key = OpenSSL::PKey::RSA.new 2048
 
   type = rsa_key.ssh_type
