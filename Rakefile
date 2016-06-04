@@ -13,17 +13,17 @@ namespace :keys do
   end
 end
 
-namespace :vendor do
-  desc 'Vendor build-node cookbooks'
-  task :build_node do
-    sh 'rm -rf packer/vendored-cookbooks/build-node'
-    sh 'berks vendor -b packer/cookbooks/build-node/Berksfile packer/vendored-cookbooks/build-node'
-  end
-
-  desc 'Vendor workstation cookbooks'
-  task :workstation do
-    sh 'rm -rf packer/vendored-cookbooks/workstation'
-    sh 'berks vendor -b packer/cookbooks/workstation/Berksfile packer/vendored-cookbooks/workstation'
+namespace :cookbook do
+  desc 'Vendor cookbooks for a template'
+  task :vendor, :template do |t, args|
+    has_cookbook = %w(workstation build-node)
+    base = args[:template].split('.json')[0]
+    if has_cookbook.any? { |t| args[:template].include? t }
+      sh "rm -rf packer/vendored-cookbooks/#{base}"
+      sh "berks vendor -b packer/cookbooks/#{base}/Berksfile packer/vendored-cookbooks/#{base}"
+    else
+      puts 'No cookbooks - not vendoring'
+    end
   end
 end
 
@@ -33,8 +33,8 @@ task vendor: ['vendor:build_node', 'vendor:workstation']
 namespace :aws do
   desc 'Pack an AMI'
   task :pack_ami, :template do |t, args|
-    Rake::Task['vendor:build_node'].invoke()
-    Rake::Task['vendor:workstation'].invoke()
+    Rake::Task['cookbook:vendor'].invoke(args[:template])
+    Rake::Task['cookbook:vendor'].reenable
     sh packer_build(args[:template], 'amazon-ebs')
   end
 
