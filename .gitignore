@@ -6,3 +6,4 @@ vendored-cookbooks
 *.log
 cloudformation/*.json
 wombat.json
+packer/keys/*
