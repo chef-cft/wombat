@@ -5,6 +5,9 @@
     "aws_region": "{{env `AWS_REGION`}}",
     "winrm_username": "Administrator",
     "winrm_password": "RL9@T40BTmXh",
+    "domain": "chordata.biz",
+    "enterprise": "mammalia",
+    "org": "diprotodontia",
     "build-nodes": "1"
   },
 
@@ -34,34 +37,31 @@
     },
     {
       "type": "file",
-      "source": "{{template_dir}}/keys/chef_server.crt",
-      "destination": "C:\\Windows\\Temp\\chef-server_chef-automate_com.crt"
+      "source": "{{template_dir}}/keys/chef-server.crt",
+      "destination": "C:\\Windows\\Temp\\chef-server.crt"
     },
     {
       "type": "file",
-      "source": "{{template_dir}}/keys/delivery_server.crt",
-      "destination": "C:\\Windows\\Temp\\delivery_chef-automate_com.crt"
+      "source": "{{template_dir}}/keys/delivery.crt",
+      "destination": "C:\\Windows\\Temp\\delivery.crt"
     },
     {
-      "type": "powershell",
-      "inline": [
-        "mkdir $env:UserProfile\\.chef",
-        "mkdir $env:UserProfile\\.chef\\trusted_certs",
-        "mkdir $env:UserProfile\\.ssh",
-        "cp C:\\Windows\\Temp\\private.pem $env:UserProfile\\.chef\\private.pem",
-        "cp C:\\Windows\\Temp\\chef-server_chef-automate_com.crt $env:UserProfile\\.chef\\trusted_certs\\chef-server_chef-automate_com.crt",
-        "cp C:\\Windows\\Temp\\delivery_chef-automate_com.crt $env:UserProfile\\.chef\\trusted_certs\\delivery_chef-automate_com.crt",
-        "cp C:\\Windows\\Temp\\private.pem $env:UserProfile\\.ssh\\id_rsa",
-        "Import-Certificate -FilePath $env:UserProfile\\.chef\\trusted_certs\\chef-server_chef-automate_com.crt -CertStoreLocation Cert:\\LocalMachine\\Root",
-        "Import-Certificate -FilePath $env:UserProfile\\.chef\\trusted_certs\\delivery_chef-automate_com.crt -CertStoreLocation Cert:\\LocalMachine\\Root"
-      ]
+      "type": "file",
+      "source": "{{template_dir}}/keys/compliance.crt",
+      "destination": "C:\\Windows\\Temp\\compliance.crt"
     },
     {
       "type": "chef-solo",
       "guest_os_type": "windows",
       "cookbook_paths": [ "{{template_dir}}/vendored-cookbooks/workstation" ],
-      "run_list": [ "workstation" ]
+      "run_list": [ "workstation" ],
+      "json": {
+        "demo": {
+          "domain": "{{user `domain`}}",
+          "enterprise": "{{user `enterprise`}}",
+          "org": "{{user `org`}}"
+        }
+      }
     }
   ]
-
 }
