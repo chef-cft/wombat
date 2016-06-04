@@ -187,10 +187,15 @@ def gen_x509_cert(hostname)
                                         "keyid:always,issuer:always")
 
   cert.sign(rsa_key, OpenSSL::Digest::SHA256.new)
+  key_dir = 'packer/keys'
 
-  File.open("packer/keys/#{hostname}.crt", "w") {|file| file.puts cert.to_pem }
-  File.open("packer/keys/#{hostname}.key", "w") {|file| file.puts rsa_key.to_pem }
-  puts "Certificate created for #{hostname}.#{wombat['domain']}"
+  if File.exist?("#{key_dir}/#{hostname}.crt") && File.exist?("#{key_dir}/#{hostname}.key")
+    puts "An x509 certificate already exists for #{hostname}, please remove and re-run"
+  else
+    File.open("#{key_dir}/#{hostname}.crt", "w") {|file| file.puts cert.to_pem }
+    File.open("#{key_dir}/#{hostname}.key", "w") {|file| file.puts rsa_key.to_pem }
+    puts "Certificate created for #{hostname}.#{wombat['domain']}"
+  end
 end
 
 def gen_ssh_key
@@ -200,7 +205,13 @@ def gen_ssh_key
   data = [ rsa_key.to_blob ].pack('m0')
 
   openssh_format = "#{type} #{data}"
-  File.open('packer/keys/public.pub', "w") {|file| file.puts openssh_format }
-  File.open('packer/keys/private.pem', "w") {|file| file.puts rsa_key.to_pem }
-  puts 'SSH Keypair created'
+  key_dir = 'packer/keys'
+
+  if File.exist?("#{key_dir}/public.pub") && File.exist?("#{key_dir}/private.pem")
+    puts "An SSH keypair already exists, please remove and re-run"
+  else
+    File.open("#{key_dir}/public.pub", "w") {|file| file.puts openssh_format }
+    File.open("#{key_dir}/private.pem", "w") {|file| file.puts rsa_key.to_pem }
+    puts 'SSH Keypair created'
+  end
 end
