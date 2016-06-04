@@ -1,12 +1,15 @@
 require 'erb'
 require 'json'
+require 'openssl'
+require 'net/ssh'
 
 namespace :keys do
   desc 'create keys'
   task :create do
-    %w(chef-server delivery compliance).each do |server|
-      sh create_keys(server, wombat['org'], wombat['domain'])
+    %w(chef-server delivery compliance).each do |hostname|
+      x509_cert(hostname)
     end
+    ssh_key
   end
 end
 
@@ -65,9 +68,9 @@ namespace :aws do
     @chef_server_ami = wombat['aws']['amis'][ENV['AWS_REGION']]['chef-server']
     @delivery_ami = wombat['aws']['amis'][ENV['AWS_REGION']]['delivery']
     @build_nodes = wombat['build-nodes'].to_i
-    @delivery_builder_ami = {}
+    @build_node_ami = {}
     1.upto(@build_nodes) do |i|
-      @delivery_builder_ami[i] = wombat['aws']['amis'][ENV['AWS_REGION']]["build-node"][i.to_s]
+      @build_node_ami[i] = wombat['aws']['amis'][ENV['AWS_REGION']]["build-node"][i.to_s]
     end
     @workstation_ami = wombat['aws']['amis'][ENV['AWS_REGION']]['workstation']
     @availability_zone = wombat['aws']['availability_zone']
@@ -164,4 +167,48 @@ end
 
 def version(thing)
   wombat['pkg-versions'][thing]
+end
+
+def x509_cert(hostname)
+  rsa_key = OpenSSL::PKey::RSA.new(2048)
+  public_key = rsa_key.public_key
+
+  subject = "/C=AU/ST=New South Wales/L=Sydney/O=#{wombat['org']}/OU=wombats/CN=#{hostname}.#{wombat['domain']}"
+
+  cert = OpenSSL::X509::Certificate.new
+  cert.subject = cert.issuer = OpenSSL::X509::Name.parse(subject)
+  cert.not_before = Time.now
+  cert.not_after = Time.now + 365 * 24 * 60 * 60
+  cert.public_key = public_key
+  cert.serial = 0x0
+  cert.version = 2
+
+  ef = OpenSSL::X509::ExtensionFactory.new
+  ef.subject_certificate = cert
+  ef.issuer_certificate = cert
+  cert.extensions = [
+    ef.create_extension("basicConstraints","CA:TRUE", true),
+    ef.create_extension("subjectKeyIdentifier", "hash"),
+    # ef.create_extension("keyUsage", "cRLSign,keyCertSign", true),
+  ]
+  cert.add_extension ef.create_extension("authorityKeyIdentifier",
+                                        "keyid:always,issuer:always")
+
+  cert.sign(rsa_key, OpenSSL::Digest::SHA256.new)
+
+  File.open("packer/keys/#{hostname}.crt", "w") {|file| file.puts cert.to_pem }
+  File.open("packer/keys/#{hostname}.key", "w") {|file| file.puts rsa_key.to_pem }
+  puts "Certificate created for #{hostname}.#{wombat['domain']}"
+end
+
+def ssh_key
+  rsa_key = OpenSSL::PKey::RSA.new 2048
+
+  type = rsa_key.ssh_type
+  data = [ rsa_key.to_blob ].pack('m0')
+
+  openssh_format = "#{type} #{data}"
+  File.open('packer/keys/public.pub', "w") {|file| file.puts openssh_format }
+  File.open('packer/keys/private.pem', "w") {|file| file.puts rsa_key.to_pem }
+  puts 'SSH Keypair created'
 end
