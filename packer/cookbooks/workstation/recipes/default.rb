@@ -9,6 +9,26 @@ home = Dir.home
   directory directory
 end
 
+%w(chef-server delivery compliance).each do |f|
+  file "#{home}/.chef/trusted_certs/#{f}_#{node['demo']['domain'].tr('.','_')}.crt" do
+    content IO.read("C:/Windows/Temp/#{f}.crt")
+    action :create
+  end
+  
+  powershell_script 'Install certs to Root CA' do
+    code <<-EOH
+      Import-Certificate -FilePath C:/Windows/Temp/#{f}.crt -CertStoreLocation Cert:/LocalMachine/Root
+    EOH
+  end
+end
+
+%W(#{home}/.chef/private.pem #{home}/.ssh/id_rsa).each do |path|
+  file path do
+    content IO.read("C:/Windows/Temp/private.pem")
+    action :create
+  end
+end
+
 template "#{home}/.chef/knife.rb" do
   source 'knife.rb.erb'
   variables(
@@ -42,6 +62,12 @@ powershell_script 'Install ChefDK' do
   code <<-EOH
     . { iwr -useb https://omnitruck.chef.io/install.ps1 } | iex; install -channel current -project chefdk
   EOH
+end
+
+chef_ingredient 'delivery-cli' do
+  version :latest
+  action :install
+  platform_version_compatibility_mode true
 end
 
 template "#{home}/bookmarks.html" do
