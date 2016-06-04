@@ -71,7 +71,7 @@
     },
     {
       "type": "file",
-      "source": "{{template_dir}}/keys/chef_server.key",
+      "source": "{{template_dir}}/keys/chef-server.key",
       "destination": "/tmp/chef-server.key"
     },
     {

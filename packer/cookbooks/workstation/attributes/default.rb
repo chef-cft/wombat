@@ -1,7 +1,7 @@
 # default attributes
 
-default['demo']['org'] = 'chefautomate'
-default['demo']['domain'] = "chef-automate.com"
+default['demo']['org'] = 'diprotodontia'
+default['demo']['domain'] = 'chordata.biz'
 default['demo']['chef_server_url'] = "https://chef-server.#{node['demo']['domain']}/organizations/#{node['demo']['org']}"
 default['demo']['delivery_url'] = "https://delivery.#{node['demo']['domain']}/e/#{node['demo']['org']}"
 
