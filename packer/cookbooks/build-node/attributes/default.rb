@@ -1,6 +1,7 @@
-default['demo']['org'] = 'diprotodontia'
 default['demo']['domain'] = 'chordata.biz'
 default['demo']['enterprise'] = 'mammalia'
+default['demo']['org'] = 'diprotodontia'
+default['demo']['admin-user'] = 'ubuntu'
 
 default['demo']['hosts'] = {
   'chef-server' => '172.31.54.10',

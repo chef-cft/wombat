@@ -5,17 +5,19 @@ driver:
 provisioner:
   name: chef_zero
 
-# Uncomment the following verifier to leverage Inspec instead of Busser (the
-# default verifier)
-# verifier:
-#   name: inspec
+verifier:
+  name: inspec
 
 platforms:
   - name: ubuntu-14.04
-  - name: centos-7.1
 
 suites:
   - name: default
     run_list:
+      - recipe[apt::default]
+      - recipe[mock-data::default]
       - recipe[build-node::default]
     attributes:
+      demo:
+        admin-user: 'vagrant'
+        node-number: '1'

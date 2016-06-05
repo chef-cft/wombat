@@ -6,12 +6,9 @@
 
 chef_server_url = "https://chef-server.#{node['demo']['domain']}/organizations/#{node['demo']['org']}"
 
-file '/home/ubuntu/.ssh/authorized_keys' do
-  content IO.read('/tmp/public.pub')
-  owner 'ubuntu'
-  group 'ubuntu'
-  mode '0755'
-  action :create
+append_if_no_line "Add certificate to authorized_keys" do
+  path "/home/#{node['demo']['admin-user']}/.ssh/authorized_keys"
+  line lazy { IO.read('/tmp/public.pub') }
 end
 
 directory '/etc/chef'
@@ -19,13 +16,13 @@ directory '/etc/chef/trusted_certs'
  
 %w(chef-server delivery compliance).each do |f|
   file "/etc/chef/trusted_certs/#{f}_#{node['demo']['domain'].tr('.','_')}.crt" do
-    content IO.read("/tmp/#{f}.crt")
+    content lazy { IO.read("/tmp/#{f}.crt") }
     action :create
   end
 end
   
 file '/etc/chef/client.pem' do
-  content IO.read('/tmp/private.pem')
+  content lazy { IO.read('/tmp/private.pem') }
   action :create
 end
 
