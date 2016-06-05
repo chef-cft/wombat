@@ -57,44 +57,20 @@
     },
     {
       "type": "file",
-      "source": "{{template_dir}}/keys/private.pem",
-      "destination": "/tmp/private.pem"
-    },
-    {
-      "type": "file",
-      "source": "{{template_dir}}/keys/public.pub",
-      "destination": "/tmp/public.pub"
-    },
-    {
-      "type": "file",
-      "source": "{{template_dir}}/keys/chef-server.crt",
-      "destination": "/tmp/chef-server.crt"
-    },
-    {
-      "type": "file",
-      "source": "{{template_dir}}/keys/delivery.crt",
-      "destination": "/tmp/delivery.crt"
-    },
-    {
-      "environment_vars": [
-        "CHEFDK_VER={{user `chefdk`}}",
-        "DOMAIN={{user `domain`}}",
-        "ORG={{user `org`}}",
-        "NODE_NUMBER={{user `node-number`}}",
-        "BUILD_NODES={{user `build-nodes`}}"
-      ],
-      "scripts": [
-        "{{template_dir}}/scripts/authorized_keys.sh",
-        "{{template_dir}}/scripts/build-node.sh",
-        "{{template_dir}}/scripts/etc-hosts.sh"
-      ],
-      "type": "shell"
+      "source": "{{template_dir}}/keys/",
+      "destination": "/tmp"
     },
     {
       "type": "chef-solo",
       "cookbook_paths": [ "{{template_dir}}/vendored-cookbooks/build-node" ],
       "run_list": [ "apt", "build-node" ],
       "json": {
+        "demo": {
+          "domain": "{{user `domain`}}",
+          "enterprise": "{{user `enterprise`}}",
+          "org": "{{user `org`}}",
+          "node-number": "{{user `node-number`}}"
+        },
         "delivery_build": {
           "trusted_certs": {
             "chef-server": "/tmp/chef-server.crt",
