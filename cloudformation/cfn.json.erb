@@ -381,8 +381,10 @@
             }
           }
         ],
-        "KeyName": {
-          "Ref": "KeyName"
+        "KeyName": { "Ref": "KeyName" },
+        "UserData": { "Fn::Base64" : { "Fn::Join" : ["", [
+             "#!/bin/bash -xe\n",
+             "hostnamectl set-hostname build-node-<%= i.to_s %>\n"]]}
         },
         "ImageId": {
               "Ref": "BuildNode<%= i.to_s %>AMI"
@@ -425,8 +427,11 @@
             }
           }
         ],
-        "KeyName": {
-          "Ref": "KeyName"
+        "KeyName": { "Ref": "KeyName" },
+        "UserData": { "Fn::Base64" : { "Fn::Join" : ["", [
+             "#!/bin/bash -xe\n",
+             "hostnamectl set-hostname chef-server\n",
+             "chef-server-ctl reconfigure\n"]]}
         },
         "ImageId": {
               "Ref": "ChefServerAMI"
@@ -468,8 +473,11 @@
             }
           }
         ],
-        "KeyName": {
-          "Ref": "KeyName"
+        "KeyName": { "Ref": "KeyName" },
+        "UserData": { "Fn::Base64" : { "Fn::Join" : ["", [
+             "#!/bin/bash -xe\n",
+             "hostnamectl set-hostname delivery\n",
+             "delivery-ctl reconfigure\n"]]}
         },
         "ImageId": {
               "Ref": "DeliveryServerAMI"
