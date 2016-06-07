@@ -16,7 +16,7 @@ end
 namespace :cookbook do
   desc 'Vendor cookbooks for a template'
   task :vendor, :template do |t, args|
-    has_cookbook = %w(workstation build-node)
+    has_cookbook = %w(workstation build-node delivery)
     base = args[:template].split('.json')[0]
     if has_cookbook.any? { |t| args[:template].include? t }
       sh "rm -rf packer/vendored-cookbooks/#{base}"
