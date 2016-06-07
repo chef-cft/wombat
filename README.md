@@ -26,7 +26,45 @@ Follow the instructions at https://docs.chef.io/install_dk.html to install and c
 
 Downloads are here: https://www.packer.io/downloads.html . Place in your path for direct execution.
 
-##### 4) Build AMIs with Packer
+##### 4) Create a wombat.json
+
+Create a wombat.json - there is an example `wombat.example.json` for reference and easy copying
+```
+{
+  "aws": {
+    "availability_zone": "ap-southeast-2c",
+    "keypair": "keypair-ap-southeast-2",
+    "region": "ap-southeast-2",
+    "amis": {
+      "us-west-1": {
+        "chef-server": "ami-83d129e3",
+        "delivery": "ami-29d42c49",
+        "build-node": {
+            "1": "ami-27d12947"
+        },
+        "workstation": "ami-f7d32b97"
+      }
+    }
+  },
+  "demo": "wombat",
+  "domain": "chordata.biz",
+  "enterprise": "mammalia",
+  "org": "diprotodontia",
+  "version": "0.0.12",
+  "build-nodes": "1",
+  "pkg-versions": {
+    "chef-server": "12.6.0",
+    "chefdk": "0.14.25",
+    "delivery": "0.4.317"
+  },
+  "last_updated": "20160605163503"
+}
+```
+Fill in the fields as approrpriate for your infrastructure and credentials.
+
+*Note*: The `amis` hash and the `last_updated` keys are updated by the rake tasks and do not need to be populated.
+
+##### 5) Build AMIs with Packer
 
 ```
 # build all AMIs
@@ -35,13 +73,9 @@ $ rake aws:pack_amis
 # build one image
 $ rake aws:pack_ami[chef-server]
 
-# build one image directly for AWS
-$ cd packer
-$ packer build --only amazon-ebs chef-server.json
-
 ```
 
-##### 5) Update wombat.json
+##### 6) Update wombat.json
 
 ```
 # Update wombat.json with latest AMIs from packer logs
@@ -49,14 +83,14 @@ $ rake aws:update_amis
 
 ```
 
-##### 6) Create CloudFormation template
+##### 7) Create CloudFormation template
 
 ```
 # Create CloudFormation template from wombat.json
 $ rake aws:create_cfn_template
 ```
 
-##### 7) Deploy CloudFormation template
+##### 8) Deploy CloudFormation template
 
 ###### via AWS CloudFormation Web UI
 
