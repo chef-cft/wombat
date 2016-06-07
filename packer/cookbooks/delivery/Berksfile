@@ -1,0 +1,5 @@
+source 'https://supermarket.chef.io'
+
+metadata
+
+cookbook 'mock-data', path: 'test/fixtures/cookbooks/mock-data'

@@ -1,0 +1,26 @@
+---
+driver:
+  name: vagrant
+  customize:
+    memory: 2048
+    cpus: 2
+
+provisioner:
+  name: chef_zero
+
+verifier:
+  name: inspec
+
+platforms:
+  - name: ubuntu-14.04
+
+suites:
+  - name: default
+    run_list:
+      - recipe[apt::default]
+      - recipe[mock-data::default]
+      - recipe[delivery::default]
+    attributes:
+      demo:
+        admin-user: 'vagrant'
+
