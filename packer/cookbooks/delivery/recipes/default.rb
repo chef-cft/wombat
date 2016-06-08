@@ -101,7 +101,7 @@ end
 node['demo']['users'].each do |user, info|
   if user != 'admin'
     execute 'delivery-ctl create-user' do
-      command "delivery-ctl create-user #{user} --password #{info['password']}"
+      command "delivery-ctl create-user #{node['demo']['enterprise']} #{user} --password #{info['password']}"
       action :run
     end
   else

@@ -27,9 +27,6 @@ namespace :cookbook do
   end
 end
 
-desc 'Vendor all cookbooks'
-task vendor: ['vendor:build_node', 'vendor:workstation']
-
 namespace :aws do
   desc 'Pack an AMI'
   task :pack_ami, :template do |t, args|
@@ -50,10 +47,11 @@ namespace :aws do
   task :update_amis, :chef_server_ami, :delivery_ami, :build_node_ami, :workstation_ami do |t, args|
     copy = {}
     copy = wombat
-    copy['aws']['amis'][ENV['AWS_REGION']]['chef-server'] = args[:chef_server_ami] || File.read('./packer/logs/ami-chef-server.log').split("\n").last.split(" ")[1]
-    copy['aws']['amis'][ENV['AWS_REGION']]['delivery'] = args[:delivery_ami] || File.read('./packer/logs/ami-delivery.log').split("\n").last.split(" ")[1]
-    copy['aws']['amis'][ENV['AWS_REGION']]['build-node']['1'] = args[:build_node_ami] || File.read('./packer/logs/ami-build-node.log').split("\n").last.split(" ")[1]
-    copy['aws']['amis'][ENV['AWS_REGION']]['workstation'] = args[:workstation_ami] || File.read('./packer/logs/ami-workstation.log').split("\n").last.split(" ")[1]
+    region = copy['aws']['region']
+    copy['amis'][region]['chef-server'] = args[:chef_server_ami] || File.read('./packer/logs/ami-chef-server.log').split("\n").last.split(" ")[1]
+    copy['amis'][region]['delivery'] = args[:delivery_ami] || File.read('./packer/logs/ami-delivery.log').split("\n").last.split(" ")[1]
+    copy['amis'][region]['build-node']['1'] = args[:build_node_ami] || File.read('./packer/logs/ami-build-node.log').split("\n").last.split(" ")[1]
+    copy['amis'][region]['workstation'] = args[:workstation_ami] || File.read('./packer/logs/ami-workstation.log').split("\n").last.split(" ")[1]
     copy['last_updated'] = Time.now.gmtime.strftime("%Y%m%d%H%M%S")
     # fail "packer build logs not found, nor were image ids provided" unless chef_server && delivery && builder && workstation
     puts "Updating wombat.json based on most recent packer logs"
@@ -65,32 +63,29 @@ namespace :aws do
   desc 'Generate Cloud Formation Template'
   task :create_cfn_template do
     puts "Generate CloudFormation template"
-    @chef_server_ami = wombat['aws']['amis'][ENV['AWS_REGION']]['chef-server']
-    @delivery_ami = wombat['aws']['amis'][ENV['AWS_REGION']]['delivery']
+    region = wombat['aws']['region']
+    @chef_server_ami = wombat['amis'][region]['chef-server']
+    @delivery_ami = wombat['amis'][region]['delivery']
     @build_nodes = wombat['build-nodes'].to_i
     @build_node_ami = {}
     1.upto(@build_nodes) do |i|
-      @build_node_ami[i] = wombat['aws']['amis'][ENV['AWS_REGION']]["build-node"][i.to_s]
+      @build_node_ami[i] = wombat['amis'][region]["build-node"][i.to_s]
     end
-    @workstation_ami = wombat['aws']['amis'][ENV['AWS_REGION']]['workstation']
-    @availability_zone = wombat['aws']['availability_zone']
-    @demo = wombat['demo']
-    @version = wombat['version']
+    @workstation_ami = wombat['amis'][region]['workstation']
+    @az = wombat['aws']['az']
+    @demo = wombat['name']
     rendered_cfn = ERB.new(File.read('cloudformation/cfn.json.erb'),nil,'-').result
     File.open("cloudformation/#{@demo}.json", "w") {|file| file.puts rendered_cfn }
     puts "Created cloudformation/#{@demo}.json"
   end
 
   desc 'Create a Stack from a CloudFormation template'
-  task :create_cfn_stack, :stack, :region, :keypair do |t, args|
-    stack = args[:stack] || wombat['demo']
-    region = args[:region] || wombat['aws']['region']
-    keypair = args[:keypair] || wombat['aws']['keypair']
-    sh create_stack(stack, region, keypair)
+  task :create_cfn_stack do
+    sh create_stack(wombat['name'], wombat['aws']['region'], wombat['aws']['keypair'])
   end
 
   desc 'Build a CloudFormation stack'
-  task build_cfn_stack: ['vendor', 'aws:pack_amis', 'aws:update_amis', 'aws:create_cfn_template']
+  task build_cfn_stack: ['aws:pack_amis', 'aws:update_amis', 'aws:create_cfn_template']
 end
 
 namespace :tf do
@@ -134,10 +129,10 @@ def packer_build(template, builder)
   cmd.insert(2, "--var org='#{wombat['org']}'") if !(base =~ /delivery/)
   cmd.insert(2, "--var domain='#{wombat['domain']}'")
   cmd.insert(2, "--var enterprise='#{wombat['enterprise']}'") if !(base =~ /chef-server/)
-  cmd.insert(2, "--var chefdk='#{version('chefdk')}'") if !(base =~ /chef-server/)
-  cmd.insert(2, "--var delivery='#{version('delivery')}'") if (base =~ /delivery/)
-  cmd.insert(2, "--var chef-server='#{version('chef-server')}'") if (base =~ /chef-server/)
-  cmd.insert(2, "--var build-nodes='#{wombat['build-nodes']}'") if (base =~ /build-nodes/)
+  cmd.insert(2, "--var chefdk='#{wombat['products']['chefdk']}'") if !(base =~ /chef-server/)
+  cmd.insert(2, "--var delivery='#{wombat['products']['delivery']}'") if (base =~ /delivery/)
+  cmd.insert(2, "--var chef-server='#{wombat['products']['chef-server']}'") if (base =~ /chef-server/)
+  cmd.insert(2, "--var build-nodes='#{wombat['build-nodes']}'")
   cmd.join(' ')
 end
 
