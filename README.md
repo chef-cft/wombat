@@ -10,7 +10,7 @@ A combination of packer templates and terraform plan to configure a demo environ
 Usage
 ------------
 
-##### 1) Download your Delivery license key
+##### Download your Delivery license key
 Delivery requires a valid license to activate successfully. **If you do
 not have a license key, you can request one from your CHEF account
 representative.**
@@ -18,15 +18,15 @@ representative.**
 You will need to have the `delivery.license` file present inside `packer/files/`
 directory.
 
-##### 2) Install and Configure ChefDK
+##### Install and Configure ChefDK
 
 Follow the instructions at https://docs.chef.io/install_dk.html to install and configure chefdk as your default version of ruby.
 
-##### 3) Install Packer
+##### Install Packer
 
 Downloads are here: https://www.packer.io/downloads.html . Place in your path for direct execution.
 
-##### 4) Create a wombat.json
+##### Create a wombat.json
 
 Create a wombat.json - there is an example `wombat.example.json` for reference and easy copying
 ```
@@ -64,7 +64,15 @@ Fill in the fields as approrpriate for your infrastructure and credentials.
 
 *Note*: The `amis` hash and the `last_updated` keys are updated by the rake tasks and do not need to be populated.
 
-##### 5) Build AMIs with Packer
+##### Generate certificates and SSH Keypair
+
+```
+# generate keys
+$ rake keys:create
+
+```
+
+##### Build AMIs with Packer
 
 ```
 # build all AMIs
@@ -75,7 +83,7 @@ $ rake aws:pack_ami[chef-server]
 
 ```
 
-##### 6) Update wombat.json
+##### Update wombat.json
 
 ```
 # Update wombat.json with latest AMIs from packer logs
@@ -83,14 +91,14 @@ $ rake aws:update_amis
 
 ```
 
-##### 7) Create CloudFormation template
+##### Create CloudFormation template
 
 ```
 # Create CloudFormation template from wombat.json
 $ rake aws:create_cfn_template
 ```
 
-##### 8) Deploy CloudFormation template
+##### Deploy CloudFormation template
 
 ###### via AWS CloudFormation Web UI
 
