@@ -61,28 +61,28 @@
     },
     {
       "type": "file",
-      "source": "{{template_dir}}/keys/chef-server.crt",
+      "source": "{{template_dir}}/keys/compliance.crt",
       "destination": "/tmp/chef-server.crt"
     },
     {
       "type": "file",
-      "source": "{{template_dir}}/keys/chef_server.key",
-      "destination": "/tmp/chef_server.key"
+      "source": "{{template_dir}}/keys/compliance.key",
+      "destination": "/tmp/chef-server.key"
     },
     {
-      "environment_vars": [
-        "COMPLIANCE_VER={{user `compliance`}}",
-        "DOMAIN={{user `domain`}}",
-        "ORG={{user `org`}}",
-        "BUILD_NODES={{user `build-nodes`}}"
-      ],
-      "scripts": [
-        "{{template_dir}}/scripts/apt.sh",
-        "{{template_dir}}/scripts/authorized_keys.sh",
-        "{{template_dir}}/scripts/compliance.sh",
-        "{{template_dir}}/scripts/etc-hosts.sh"
-      ],
-      "type": "shell"
+      "type": "chef-solo",
+      "cookbook_paths": [ "{{pwd}}/vendored-cookbooks/compliance" ],
+      "run_list": [ "apt", "compliance" ],
+      "json": {
+        "demo": {
+          "domain": "{{user `domain`}}",
+          "enterprise": "{{user `enterprise`}}",
+          "org": "{{user `org`}}",
+          "versions": {
+            "compliance": "{{user `compliance`}}"
+          }
+        }
+      }
     }
   ]
 }

@@ -62,7 +62,7 @@
     },
     {
       "type": "chef-solo",
-      "cookbook_paths": [ "{{template_dir}}/vendored-cookbooks/build-node" ],
+      "cookbook_paths": [ "{{pwd}}/vendored-cookbooks/build-node" ],
       "run_list": [ "apt", "build-node" ],
       "json": {
         "demo": {
