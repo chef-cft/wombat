@@ -5,6 +5,6 @@ terraform.tfvars
 vendored-cookbooks
 *.log
 cloudformation/*.json
-wombat.json
+wombat.yml
 packer/keys/*
-Gemfile.lock
+*.lock

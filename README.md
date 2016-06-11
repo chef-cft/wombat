@@ -3,6 +3,7 @@ A combination of packer templates and terraform plan to configure a demo environ
 
 * Chef Server 12
 * Chef Delivery
+* Chef Compliance
 * Chef Build Node for Delivery
 * Windows Workstation
 
@@ -28,41 +29,25 @@ Downloads are here: https://www.packer.io/downloads.html . Place in your path fo
 
 ##### Create a wombat.json
 
-Create a wombat.json - there is an example `wombat.example.json` for reference and easy copying
+Create a wombat.yml - there is an example `wombat.example.yml` for reference and easy copying
 ```
-{
-  "aws": {
-    "availability_zone": "ap-southeast-2c",
-    "keypair": "keypair-ap-southeast-2",
-    "region": "ap-southeast-2",
-    "amis": {
-      "us-west-1": {
-        "chef-server": "ami-83d129e3",
-        "delivery": "ami-29d42c49",
-        "build-node": {
-            "1": "ami-27d12947"
-        },
-        "workstation": "ami-f7d32b97"
-      }
-    }
-  },
-  "demo": "wombat",
-  "domain": "chordata.biz",
-  "enterprise": "mammalia",
-  "org": "diprotodontia",
-  "version": "0.0.12",
-  "build-nodes": "1",
-  "pkg-versions": {
-    "chef-server": "12.6.0",
-    "chefdk": "0.14.25",
-    "delivery": "0.4.317"
-  },
-  "last_updated": "20160605163503"
-}
+---
+name: wombat
+domain: chordata.biz
+enterprise: mammalia
+org: diprotodontia
+build-nodes: '1'
+version: 0.0.12
+products:
+  chef-server: 12.6.0
+  chefdk: 0.14.25
+  compliance: 1.3.1
+  delivery: 0.4.317
+aws:
+  region: ap-southeast-2
+  az: ap-southeast-2c
+  keypair: keypair-ap-southeast-2
 ```
-Fill in the fields as approrpriate for your infrastructure and credentials.
-
-*Note*: The `amis` hash and the `last_updated` keys are updated by the rake tasks and do not need to be populated.
 
 ##### Generate certificates and SSH Keypair
 
@@ -76,18 +61,18 @@ $ rake keys:create
 
 ```
 # build all AMIs
-$ rake aws:pack_amis
+$ rake packer:build_amis
 
-# build one image
-$ rake aws:pack_ami[chef-server]
-
-```
-
-##### Update wombat.json
+# build just the chef-server
+$ rake packer:build_ami[chef-server]
 
 ```
-# Update wombat.json with latest AMIs from packer logs
-$ rake aws:update_amis
+
+##### Create/update wombat.lock
+
+```
+# Update wombat.lock with latest AMIs from packer logs
+$ rake packer:update_amis
 
 ```
 
@@ -95,7 +80,7 @@ $ rake aws:update_amis
 
 ```
 # Create CloudFormation template from wombat.json
-$ rake aws:create_cfn_template
+$ rake cfn:create_template
 ```
 
 ##### Deploy CloudFormation template
@@ -110,7 +95,7 @@ Upload the created template from the `cloudformation` directory.
 
 ```
 # Deploy CloudFormation template
-$ rake aws:create_cfn_stack
+$ rake aws:deploy_stack
 ```
 
 ##### 8) Login to Windows Workstation
