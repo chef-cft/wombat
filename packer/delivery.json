@@ -62,7 +62,7 @@
     },
     {
       "type": "chef-solo",
-      "cookbook_paths": [ "{{template_dir}}/vendored-cookbooks/delivery" ],
+      "cookbook_paths": [ "{{pwd}}/vendored-cookbooks/delivery" ],
       "run_list": [ "apt", "delivery" ],
       "json": {
         "demo": {

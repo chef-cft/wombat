@@ -53,7 +53,7 @@
     {
       "type": "chef-solo",
       "guest_os_type": "windows",
-      "cookbook_paths": [ "{{template_dir}}/vendored-cookbooks/workstation" ],
+      "cookbook_paths": [ "{{pwd}}/vendored-cookbooks/workstation" ],
       "run_list": [ "workstation" ],
       "json": {
         "demo": {
