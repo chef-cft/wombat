@@ -7,3 +7,4 @@ vendored-cookbooks
 cloudformation/*.json
 wombat.json
 packer/keys/*
+Gemfile.lock
