@@ -18,7 +18,7 @@ end
 namespace :cookbook do
   desc 'Vendor cookbooks for a template'
   task :vendor, :template do |_t, args|
-    has_cookbook = %w(workstation build-node delivery compliance infranodes)
+    has_cookbook = %w(workstation build-node delivery compliance infranodes chef-server)
     base = args[:template].split('.json')[0]
     if has_cookbook.any? { |t| args[:template].include? t }
       sh "rm -rf vendored-cookbooks/#{base}"

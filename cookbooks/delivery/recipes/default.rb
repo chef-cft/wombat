@@ -43,7 +43,7 @@ chef_ingredient 'chefdk' do
 end
 
 chef_ingredient 'delivery' do
-  channel :current
+  channel :stable
   action :install
   version node['demo']['versions']['delivery']
 end
@@ -95,6 +95,8 @@ end
 execute 'delivery-ctl create-enterprise' do
   command "delivery-ctl create-enterprise #{node['demo']['enterprise']} --password #{node['demo']['users']['admin']['password']} --ssh-pub-key-file=/etc/delivery/builder_key.pub"
   action :run
+  retries 5
+  retry_delay 2
   not_if "delivery-ctl list-enterprises | grep #{node['demo']['enterprise']}"
 end
 
@@ -103,6 +105,8 @@ node['demo']['users'].each do |user, info|
     execute 'delivery-ctl create-user' do
       command "delivery-ctl create-user #{node['demo']['enterprise']} #{user} --password #{info['password']}"
       action :run
+      retries 5
+      retry_delay 2
     end
   else
     Chef::Log.info('Admin user already created with create-enterprise')

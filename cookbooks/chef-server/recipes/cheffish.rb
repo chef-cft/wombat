@@ -45,16 +45,28 @@ conf_with_org = config.merge({
   :chef_server_url => "#{config[:chef_server_url]}/organizations/#{node['demo']['org']}"
 })
 
-build_nodes = []
-num = node['demo']['build-nodes']
+all_nodes = {}
+build_node_num = node['demo']['build-nodes'].to_i
 
-1.upto(num) do |i|
-  build_nodes << "build-node-#{i}"
+if File.exists?('/tmp/infranodes-info.json')
+  infranodes = JSON(File.read('/tmp/infranodes-info.json'))
+else
+  infranodes = {}
 end
 
-build_nodes.each do |node_name|
+1.upto(build_node_num) do |i|
+  build_node_name = "build-node-#{i}"
+  all_nodes[build_node_name] = []
+end
+
+infranodes.each do |infra_node_name, rl|
+  all_nodes[infra_node_name] = rl
+end
+
+all_nodes.each do |node_name, rl|
   chef_node node_name do
-    tag 'delivery-build-node'
+    tag 'delivery-build-node' if node_name.match(/^build-node/)
+    run_list rl unless rl.empty?
     chef_server conf_with_org
   end
 
@@ -65,7 +77,7 @@ build_nodes.each do |node_name|
 end
 
 chef_acl "" do
-  rights :all, user: %w(delivery workstation), clients: build_nodes
+  rights :all, users: %w(delivery workstation), clients: all_nodes.keys
   recursive true
   chef_server conf_with_org
 end
