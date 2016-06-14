@@ -7,8 +7,6 @@ driver:
 
 provisioner:
   name: chef_zero
-  client_rb:
-    ssl_verify_mode: :verify_none
 
 verifier:
   name: inspec
@@ -19,9 +17,9 @@ platforms:
 suites:
   - name: default
     run_list:
-      - recipe[apt::default]
-      - recipe[mock-data::default]
-      - recipe[chefy-server::default]
+      - recipe[apt]
+      - recipe[mock-data]
+      - recipe[chefy-server]
     attributes:
       demo:
         admin-user: 'vagrant'
