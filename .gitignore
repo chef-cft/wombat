@@ -8,3 +8,4 @@ cloudformation/*.json
 wombat.yml
 packer/keys/*
 *.lock
+infranodes-info.json

@@ -109,13 +109,7 @@ node['demo']['users'].each do |user, info|
   end
 end
 
-node['demo']['hosts'].each do |hostname, ipaddress|
-  hostsfile_entry ipaddress do
-    hostname  hostname
-    aliases   ["#{hostname}.#{node['demo']['domain']}"]
-    action    :create
-  end
-end
+include_recipe 'wombat::etc-hosts'
 
 delete_lines "Remove loopback entry we added earlier" do
   path "/etc/hosts"

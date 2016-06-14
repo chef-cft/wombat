@@ -4,6 +4,11 @@ domain: chordata.biz
 enterprise: mammalia
 org: diprotodontia
 build-nodes: '1'
+infranodes:
+  acceptance:
+    - recipe[bacon::chewy]
+  delivered:
+    - recipe[bacon::crispy]
 version: 0.0.12
 products:
   chef-server: 12.6.0

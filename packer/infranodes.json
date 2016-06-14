@@ -9,11 +9,11 @@
     "azure_subscription_id": "{{env `AZURE_SUBSCRIPTION_ID`}}",
     "azure_storage_account": "{{env `AZURE_STORAGE_ACCOUNT`}}",
     "azure_resource_group": "{{env `AZURE_RESOURCE_GROUP`}}",
-    "chefdk": "0.14.25",
+    "chef": "12.11.18",
     "domain": "chordata.biz",
     "org": "diprotodontia",
-    "node-number": "1",
-    "build-nodes": "1"
+    "build-nodes": "1",
+    "node-name": "acceptance"
   },
 
   "builders": [
@@ -28,7 +28,7 @@
       "ssh_private_ip": false,
       "ssh_username": "ubuntu",
       "ssh_pty" : true,
-      "ami_name": "automate-build-node-{{user `node-number`}}-{{timestamp}}"
+      "ami_name": "automate-infranode-{{user `node-name`}}-{{timestamp}}"
     },
     {
       "type": "azure-arm",
@@ -39,7 +39,7 @@
       "subscription_id": "{{user `azure_subscription_id`}}",
       "tenant_id": "{{user `azure_tenant_id`}}",
       "capture_container_name": "images",
-      "capture_name_prefix": "build-node",
+      "capture_name_prefix": "infranode-{{user `node-name`}}",
       "image_publisher": "Canonical",
       "image_offer": "UbuntuServer",
       "image_sku": "14.04.3-LTS",
@@ -62,20 +62,17 @@
     },
     {
       "type": "chef-solo",
-      "cookbook_paths": [ "{{pwd}}/vendored-cookbooks/build-node" ],
-      "run_list": [ "apt", "build-node" ],
+      "cookbook_paths": [ "{{pwd}}/vendored-cookbooks/infranodes" ],
+      "run_list": [ "infranodes" ],
       "json": {
         "demo": {
           "domain": "{{user `domain`}}",
           "enterprise": "{{user `enterprise`}}",
           "org": "{{user `org`}}",
-          "node-number": "{{user `node-number`}}",
-          "build-nodes": "{{user `build-nodes`}}"
-        },
-        "delivery_build": {
-          "trusted_certs": {
-            "chef-server": "/tmp/chef-server.crt",
-            "delivery": "/tmp/delivery.crt"
+          "build-nodes": "{{user `build-nodes`}}",
+          "node-name": "{{user `node-name`}}",
+          "versions": {
+              "chef": "{{user `chef`}}"
           }
         }
       }
