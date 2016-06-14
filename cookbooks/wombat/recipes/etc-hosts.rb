@@ -6,7 +6,12 @@
 
 all_hosts = node['demo']['hosts'].to_h
 last_ip = all_hosts[all_hosts.keys.last].split('.')[-1].to_i
-infranodes = JSON(File.read('/tmp/infranodes-info.json')) || {}
+
+if File.exists?('/tmp/infranodes-info.json')
+  infranodes = JSON(File.read('/tmp/infranodes-info.json'))
+else
+  infranodes = {}
+end
 
 1.upto(node['demo']['build_nodes'].to_i) do |i|
   build_node_name = "build-node-#{i}"
