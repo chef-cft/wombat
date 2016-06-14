@@ -68,7 +68,7 @@ chef_ingredient 'manage' do
   action :reconfigure
 end
 
-include_recipe 'chefy-server::cheffish'
+include_recipe 'chef-server::cheffish'
 
 include_recipe 'wombat::etc-hosts'
 

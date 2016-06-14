@@ -19,7 +19,7 @@ suites:
     run_list:
       - recipe[apt]
       - recipe[mock-data]
-      - recipe[chefy-server]
+      - recipe[chef-server]
     attributes:
       demo:
         admin-user: 'vagrant'
