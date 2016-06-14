@@ -60,8 +60,11 @@ $ rake keys:create
 ##### Build AMIs with Packer
 
 ```
-# build all AMIs
+# build all AMIs (sequentially)
 $ rake packer:build_amis
+
+# build all AMIS (parallel)
+$ rake packer:build_amis_parallel
 
 # build just the chef-server
 $ rake packer:build_ami[chef-server]

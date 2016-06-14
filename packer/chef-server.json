@@ -51,44 +51,29 @@
   "provisioners" : [
     {
       "type": "file",
-      "source": "{{template_dir}}/keys/private.pem",
-      "destination": "/tmp/private.pem"
+      "source": "{{template_dir}}/files/",
+      "destination": "/tmp"
     },
     {
       "type": "file",
-      "source": "{{template_dir}}/keys/public.pub",
-      "destination": "/tmp/public.pub"
+      "source": "{{template_dir}}/keys/",
+      "destination": "/tmp"
     },
     {
-      "type": "file",
-      "source": "{{template_dir}}/mock-data/recipes/default.rb",
-      "destination": "/tmp/create-user-org.rb"
-    },
-    {
-      "type": "file",
-      "source": "{{template_dir}}/keys/chef-server.crt",
-      "destination": "/tmp/chef-server.crt"
-    },
-    {
-      "type": "file",
-      "source": "{{template_dir}}/keys/chef-server.key",
-      "destination": "/tmp/chef-server.key"
-    },
-    {
-      "environment_vars": [
-        "CHEF_SERVER_VER={{user `chef-server`}}",
-        "DOMAIN={{user `domain`}}",
-        "ORG={{user `org`}}",
-        "BUILD_NODES={{user `build-nodes`}}"
-      ],
-      "scripts": [
-        "{{template_dir}}/scripts/apt.sh",
-        "{{template_dir}}/scripts/authorized_keys.sh",
-        "{{template_dir}}/scripts/chef-server-install.sh",
-        "{{template_dir}}/scripts/chef-server-configure.sh",
-        "{{template_dir}}/scripts/etc-hosts.sh"
-      ],
-      "type": "shell"
+      "type": "chef-solo",
+      "cookbook_paths": [ "{{pwd}}/vendored-cookbooks/chef-server" ],
+      "run_list": [ "apt", "chef-server" ],
+      "json": {
+        "demo": {
+          "domain": "{{user `domain`}}",
+          "enterprise": "{{user `enterprise`}}",
+          "org": "{{user `org`}}",
+          "build-nodes": "{{user `builds-nodes`}}",
+          "versions": {
+            "compliance": "{{user `compliance`}}"
+          }
+        }
+      }
     }
   ]
 }
