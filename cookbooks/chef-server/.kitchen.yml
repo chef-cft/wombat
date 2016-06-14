@@ -2,11 +2,13 @@
 driver:
   name: vagrant
   customize:
-    memory: 1024
-    cpus: 2
+    memory: 4096
+    cpus: 4
 
 provisioner:
   name: chef_zero
+  client_rb:
+    ssl_verify_mode: :verify_none
 
 verifier:
   name: inspec
@@ -17,8 +19,9 @@ platforms:
 suites:
   - name: default
     run_list:
-      - recipe[mock-data]
-      - recipe[compliance]
+      - recipe[apt::default]
+      - recipe[mock-data::default]
+      - recipe[chefy-server::default]
     attributes:
       demo:
         admin-user: 'vagrant'

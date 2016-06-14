@@ -7,6 +7,7 @@ default['demo']['admin-user'] = 'ubuntu'
 default['demo']['admin-user'] = 'ubuntu'
 default['demo']['versions'].tap do |pkg|
   pkg['chefdk'] = '0.14.25'
+  pkg['chef-server'] = '12.6.0'
   pkg['delivery'] = '0.4.317'
   pkg['compliance'] = '1.3.1'
   pkg['chef'] = '12.11.18'
@@ -16,7 +17,8 @@ end
 default['demo']['hosts'] = {
   'chef-server' => '172.31.54.10',
   'delivery' => '172.31.54.11',
-  'build-node-1' => '172.31.54.12'
+  'build-node-1' => '172.31.54.12',
+  'compliance' => '172.31.54.13'
 }
 
 default['demo']['users'] = {

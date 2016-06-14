@@ -1,4 +1,4 @@
-# build-node tests
+# delivery tests
 
 describe command('hostname') do
   its('stdout') { should eq "delivery\n" }
