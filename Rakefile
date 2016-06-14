@@ -18,7 +18,7 @@ end
 namespace :cookbook do
   desc 'Vendor cookbooks for a template'
   task :vendor, :template do |_t, args|
-    has_cookbook = %w(workstation build-node delivery compliance)
+    has_cookbook = %w(workstation build-node delivery compliance infranodes)
     base = args[:template].split('.json')[0]
     if has_cookbook.any? { |t| args[:template].include? t }
       sh "rm -rf vendored-cookbooks/#{base}"
@@ -138,16 +138,17 @@ namespace :tf do
 end
 
 def packer_build(template, builder)
+  create_infranodes_json
   base = template == 'build-node' ? 'build-node-1' : template
   cmd = %W(packer build packer/#{template}.json | tee packer/logs/ami-#{base}.log)
   cmd.insert(2, "--only #{builder}")
-  cmd.insert(2, "--var org='#{wombat['org']}'") unless base =~ /delivery/
-  cmd.insert(2, "--var domain='#{wombat['domain']}'")
-  cmd.insert(2, "--var enterprise='#{wombat['enterprise']}'") unless base =~ /chef-server/
-  cmd.insert(2, "--var chefdk='#{wombat['products']['chefdk']}'") unless base =~ /chef-server/
-  cmd.insert(2, "--var delivery='#{wombat['products']['delivery']}'") if base =~ /delivery/
-  cmd.insert(2, "--var chef-server='#{wombat['products']['chef-server']}'") if base =~ /chef-server/
-  cmd.insert(2, "--var build-nodes='#{wombat['build-nodes']}'")
+  cmd.insert(2, "--var org=#{wombat['org']}") unless base =~ /delivery/
+  cmd.insert(2, "--var domain=#{wombat['domain']}")
+  cmd.insert(2, "--var enterprise=#{wombat['enterprise']}") unless base =~ /chef-server/
+  cmd.insert(2, "--var chefdk=#{wombat['products']['chefdk']}") unless base =~ /chef-server/
+  cmd.insert(2, "--var delivery=#{wombat['products']['delivery']}") if base =~ /delivery/
+  cmd.insert(2, "--var chef-server=#{wombat['products']['chef-server']}") if base =~ /chef-server/
+  cmd.insert(2, "--var build-nodes=#{wombat['build-nodes']}")
   cmd.join(' ')
 end
 
@@ -163,6 +164,11 @@ def create_stack(stack, region, keypair)
 end
 
 def wombat
+  if !File.exists?('wombat.yml')
+    File.open('wombat.yml', 'w') do |f|
+      f.puts File.read('wombat.example.yml')
+    end
+  end
   YAML.load(File.read('wombat.yml'))
 end
 
@@ -237,5 +243,18 @@ end
 def parallel_pack(templates)
   Parallel.map(templates, in_processes: templates.count) do |template|
     sh packer_build(template, 'amazon-ebs')
+  end
+end
+
+def create_infranodes_json
+  infranodes = wombat['infranodes'] || {}
+  if File.exists?('packer/file/infranodes-info.json')
+    current_state = JSON(File.read('files/infranodes-info.json'))
+  else
+    current_state = nil
+  end
+  return if current_state == infranodes #yay idempotence 
+  File.open('packer/files/infranodes-info.json', 'w') do |f|
+    f.puts JSON.pretty_generate(infranodes)
   end
 end

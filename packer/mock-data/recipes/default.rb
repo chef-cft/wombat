@@ -63,7 +63,7 @@ build_nodes.each do |node_name|
 end
 
 chef_acl "" do
-  rights :all, user: %w(delivery workstation), clients: build_nodes
+  rights :all, users: %w(delivery workstation), clients: build_nodes
   recursive true
   chef_server conf_with_org
 end
