@@ -68,9 +68,9 @@
           "domain": "{{user `domain`}}",
           "enterprise": "{{user `enterprise`}}",
           "org": "{{user `org`}}",
-          "build-nodes": "{{user `builds-nodes`}}",
+          "build-nodes": "{{user `build-nodes`}}",
           "versions": {
-            "compliance": "{{user `compliance`}}"
+            "chef-server": "{{user `chef-server`}}"
           }
         }
       }
