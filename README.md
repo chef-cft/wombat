@@ -28,7 +28,7 @@ Follow the instructions at https://docs.chef.io/install_dk.html to install and c
 
 Downloads are here: https://www.packer.io/downloads.html . Place in your path for direct execution.
 
-##### Create a wombat.json
+##### Create a wombat.yml
 
 Create a wombat.yml - there is an example `wombat.example.yml` for reference and easy copying
 ```
@@ -76,7 +76,7 @@ $ rake packer:build_ami[chef-server]
 
 ```
 # Update wombat.lock with latest AMIs from packer logs
-$ rake packer:update_amis
+$ rake update_lock
 
 ```
 
