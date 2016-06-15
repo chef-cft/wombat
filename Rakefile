@@ -40,7 +40,7 @@ namespace :packer do
   desc 'Build all AMIs'
   task :build_amis do
     templates.each do |template|
-      Rake::Task['packer:build_ami'].invoke("#{template}.json")
+      Rake::Task['packer:build_ami'].invoke("#{template}")
       Rake::Task['packer:build_ami'].reenable
     end
   end
@@ -253,7 +253,7 @@ def create_infranodes_json
   else
     current_state = nil
   end
-  return if current_state == infranodes #yay idempotence 
+  return if current_state == infranodes #yay idempotence
   File.open('packer/files/infranodes-info.json', 'w') do |f|
     f.puts JSON.pretty_generate(infranodes)
   end
