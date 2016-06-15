@@ -4,7 +4,8 @@ A combination of packer templates and terraform plan to configure a demo environ
 * Chef Server 12
 * Chef Delivery
 * Chef Compliance
-* Chef Build Node for Delivery
+* _N_ Chef Build Node(s) for Delivery
+* _N_ Infrastructure Nodes
 * Windows Workstation
 
 
