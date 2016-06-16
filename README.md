@@ -124,7 +124,7 @@ access_key = ""
 secret_key = ""
 key_file = ""
 key_name = ""
-customer = "automate-eval"
+customer = "wombat"
 
 # Customize AMIs for building the demo
 ami-chef-server = ""

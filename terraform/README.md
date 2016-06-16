@@ -1,5 +1,5 @@
 # Terraform 
- - `automate-eval.tf` is a Terraform configuration for the automate-eval
+ - `wombat.tf` is a Terraform configuration for the wombat
 
 
 ## Using Terraform

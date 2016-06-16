@@ -40,7 +40,7 @@ provider "aws" {
     region = "${var.region}"
 }
 
-resource "aws_vpc" "automate-eval" {
+resource "aws_vpc" "wombat" {
     cidr_block           = "172.31.0.0/16"
     enable_dns_hostnames = true
     enable_dns_support   = true
@@ -49,12 +49,12 @@ resource "aws_vpc" "automate-eval" {
     tags {
       "Customer" = "${var.customer}"
       "TTL" = "${var.ttl}"
-      "Name" = "automate-eval VPC"
+      "Name" = "wombat VPC"
     }
 }
 
 resource "aws_subnet" "delivery" {
-    vpc_id                  = "${aws_vpc.automate-eval.id}"
+    vpc_id                  = "${aws_vpc.wombat.id}"
     cidr_block              = "172.31.54.0/24"
     availability_zone       = "${var.az}"
     map_public_ip_on_launch = false
@@ -62,12 +62,12 @@ resource "aws_subnet" "delivery" {
     tags {
         "Customer" = "${var.customer}"
         "TTL" = "${var.ttl}"
-        "Name" = "${var.customer} automate-eval Delivery Subnet"
+        "Name" = "${var.customer} wombat Delivery Subnet"
     }
 }
 
 resource "aws_subnet" "prod" {
-    vpc_id                  = "${aws_vpc.automate-eval.id}"
+    vpc_id                  = "${aws_vpc.wombat.id}"
     cidr_block              = "172.31.62.0/24"
     availability_zone       = "${var.az}"
     map_public_ip_on_launch = false
@@ -75,12 +75,12 @@ resource "aws_subnet" "prod" {
     tags {
       "Customer" = "${var.customer}"
       "TTL" = "${var.ttl}"
-      "Name" = "automate-eval prod subnet"
+      "Name" = "wombat prod subnet"
     }
 }
 
 resource "aws_subnet" "workstations" {
-    vpc_id                  = "${aws_vpc.automate-eval.id}"
+    vpc_id                  = "${aws_vpc.wombat.id}"
     cidr_block              = "172.31.10.0/24"
     availability_zone       = "${var.az}"
     map_public_ip_on_launch = false
@@ -88,22 +88,22 @@ resource "aws_subnet" "workstations" {
     tags {
       "Customer" = "${var.customer}"
       "TTL" = "${var.ttl}"
-      "Name" = "automate-eval workstations subnet"
+      "Name" = "wombat workstations subnet"
     }
 }
 
 resource "aws_internet_gateway" "inet-gw" {
-    vpc_id = "${aws_vpc.automate-eval.id}"
+    vpc_id = "${aws_vpc.wombat.id}"
 
     tags {
       "Customer" = "${var.customer}"
-      "Name" = "automate-eval IG"
+      "Name" = "wombat IG"
       "TTL" = "${var.ttl}"
     }
 }
 
 resource "aws_route_table" "route-table" {
-    vpc_id     = "${aws_vpc.automate-eval.id}"
+    vpc_id     = "${aws_vpc.wombat.id}"
 
     route {
         cidr_block = "0.0.0.0/0"
@@ -112,7 +112,7 @@ resource "aws_route_table" "route-table" {
 
     tags {
       "Customer" = "${var.customer}"
-      "Name" = "automate-eval RouteTable"
+      "Name" = "wombat RouteTable"
       "TTL" = "${var.ttl}"
     }
 }
@@ -132,8 +132,8 @@ resource "aws_route_table_association" "workstations-rta" {
     subnet_id = "${aws_subnet.workstations.id}"
 }
 
-resource "aws_network_acl" "automate-eval-network-acl" {
-    vpc_id     = "${aws_vpc.automate-eval.id}"
+resource "aws_network_acl" "wombat-network-acl" {
+    vpc_id     = "${aws_vpc.wombat.id}"
     subnet_ids = ["${aws_subnet.delivery.id}", "${aws_subnet.prod.id}", "${aws_subnet.workstations.id}"]
 
     ingress {
@@ -157,7 +157,7 @@ resource "aws_network_acl" "automate-eval-network-acl" {
     tags {
       "Customer" = "${var.customer}"
       "TTL" = "${var.ttl}"
-      "Name" = "automate-eval NetworkAcl"
+      "Name" = "wombat NetworkAcl"
     }
 }
 
@@ -167,13 +167,13 @@ resource "aws_instance" "chef-server" {
     instance_type               = "c3.xlarge"
     key_name                    = "${var.key_name}"
     subnet_id                   = "${aws_subnet.delivery.id}"
-    vpc_security_group_ids      = ["${aws_security_group.automate-eval.id}"]
+    vpc_security_group_ids      = ["${aws_security_group.wombat.id}"]
     associate_public_ip_address = false
     private_ip                  = "172.31.54.10"
 
     tags {
         "Customer" = "${var.customer}"
-        "Name" = "automate-eval chef server"
+        "Name" = "wombat chef server"
         "TTL" = "${var.ttl}"
     }
 
@@ -199,13 +199,13 @@ resource "aws_instance" "delivery" {
     instance_type               = "c3.xlarge"
     key_name                    = "${var.key_name}"
     subnet_id                   = "${aws_subnet.delivery.id}"
-    vpc_security_group_ids      = ["${aws_security_group.automate-eval.id}"]
+    vpc_security_group_ids      = ["${aws_security_group.wombat.id}"]
     associate_public_ip_address = false
     private_ip                  = "172.31.54.11"
 
     tags {
       "Customer" = "${var.customer}"
-      "Name" = "automate-eval delivery server"
+      "Name" = "wombat delivery server"
       "TTL" = "${var.ttl}"
     }
 
@@ -229,13 +229,13 @@ resource "aws_instance" "build-node-1" {
     instance_type               = "c3.large"
     key_name                    = "${var.key_name}"
     subnet_id                   = "${aws_subnet.delivery.id}"
-    vpc_security_group_ids      = ["${aws_security_group.automate-eval.id}"]
+    vpc_security_group_ids      = ["${aws_security_group.wombat.id}"]
     associate_public_ip_address = false
     private_ip                  = "172.31.54.12"
 
     tags {
       "Customer" = "${var.customer}"
-      "Name" = "automate-eval delivery build node 1"
+      "Name" = "wombat delivery build node 1"
       "TTL" = "${var.ttl}"
     }
 
@@ -258,20 +258,20 @@ resource "aws_instance" "workstation" {
     instance_type               = "m3.large"
     key_name                    = "${var.key_name}"
     subnet_id                   = "${aws_subnet.delivery.id}"
-    vpc_security_group_ids      = ["${aws_security_group.automate-eval.id}"]
+    vpc_security_group_ids      = ["${aws_security_group.wombat.id}"]
     associate_public_ip_address = true
     private_ip                  = "172.31.54.101"
 
     tags {
         "Customer" = "${var.customer}"
-        "Name" = "automate-eval windows workstation"
+        "Name" = "wombat windows workstation"
         "TTL" = "${var.ttl}"
     }
 }
 
-resource "aws_security_group" "automate-eval" {
+resource "aws_security_group" "wombat" {
     description = "Enable required ports for Chef Server"
-    vpc_id      = "${aws_vpc.automate-eval.id}"
+    vpc_id      = "${aws_vpc.wombat.id}"
 
     ingress {
         from_port       = 0
@@ -318,7 +318,7 @@ resource "aws_security_group" "automate-eval" {
 
     tags {
       "Customer" = "${var.customer}"
-      "Name" = "automate-eval security group"
+      "Name" = "wombat security group"
       "TTL" = "${var.ttl}"
     }
 }
