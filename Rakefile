@@ -246,6 +246,8 @@ end
 
 def parallel_pack(templates)
   Parallel.map(templates, in_processes: templates.count) do |template|
+    Rake::Task['cookbook:vendor'].invoke(template)
+    Rake::Task['cookbook:vendor'].reenable
     sh packer_build(template, 'amazon-ebs')
   end
 end
