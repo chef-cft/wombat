@@ -19,3 +19,6 @@ aws:
   region: ap-southeast-2
   az: ap-southeast-2c
   keypair: keypair-ap-southeast-2
+  source_ami:
+    ubuntu: ami-8c4cb0ec
+    windows: ami-87c037e7

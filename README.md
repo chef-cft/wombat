@@ -43,7 +43,7 @@ products:
   chef-server: 12.6.0
   chefdk: 0.14.25
   compliance: 1.3.1
-  delivery: 0.4.317
+  delivery: 0.4.437
 aws:
   region: ap-southeast-2
   az: ap-southeast-2c

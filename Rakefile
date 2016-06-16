@@ -143,6 +143,11 @@ end
 def packer_build(template, builder)
   create_infranodes_json
   base = template == 'build-node' ? 'build-node-1' : template
+  if template == 'workstation'
+    source_ami = wombat['aws']['source_ami']['windows']
+  else
+    source_ami = wombat['aws']['source_ami']['ubuntu']
+  end
   cmd = %W(packer build packer/#{template}.json | tee packer/logs/ami-#{base}.log)
   cmd.insert(2, "--only #{builder}")
   cmd.insert(2, "--var org=#{wombat['org']}") unless base =~ /delivery/
@@ -153,6 +158,7 @@ def packer_build(template, builder)
   cmd.insert(2, "--var compliance=#{wombat['products']['compliance']}") if base =~ /compliance/
   cmd.insert(2, "--var chef-server=#{wombat['products']['chef-server']}") if base =~ /chef-server/
   cmd.insert(2, "--var build-nodes=#{wombat['build-nodes']}")
+  cmd.insert(2, "--var source_ami=#{source_ami}")
   cmd.join(' ')
 end
 

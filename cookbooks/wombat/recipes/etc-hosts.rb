@@ -29,9 +29,8 @@ end
 
 all_hosts.each do |hostname, ipaddress|
   hostsfile_entry ipaddress do
-    hostname  hostname
-    aliases   ["#{hostname}.#{node['demo']['domain']}"]
+    hostname  "#{hostname}.#{node['demo']['domain']}"
+    aliases   [hostname]
     action    :create
   end
 end
-
