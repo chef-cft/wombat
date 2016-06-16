@@ -81,6 +81,7 @@ namespace :cfn do
     region = lock['aws']['region']
     @chef_server_ami = lock['amis'][region]['chef-server']
     @delivery_ami = lock['amis'][region]['delivery']
+    @compliance_ami = lock['amis'][region]['compliance']
     @build_nodes = lock['build-nodes'].to_i
     @build_node_ami = {}
     1.upto(@build_nodes) do |i|
@@ -108,12 +109,14 @@ namespace :tf do
   task :update_amis, :chef_server_ami, :delivery_ami, :build_node_ami, :workstation_ami do |_t, args|
     chef_server = args[:chef_server_ami] || File.read('./packer/logs/ami-chef-server.log').split("\n").last.split(' ')[1]
     delivery = args[:delivery_ami] || File.read('./packer/logs/ami-delivery.log').split("\n").last.split(' ')[1]
+    compliance = args[:compliance_ami] || File.read('./packer/logs/ami-compliance.log').split("\n").last.split(' ')[1]
     builder = args[:build_node_ami] || File.read('./packer/logs/ami-build-node.log').split("\n").last.split(' ')[1]
     workstation = args[:workstation_ami] || File.read('./packer/logs/ami-workstation.log').split("\n").last.split(' ')[1]
     raise 'packer build logs not found, nor were image ids provided' unless chef_server && delivery && builder && workstation
     puts 'Updating tfvars based on most recent packer logs'
     @chef_server_ami = chef_server
     @delivery_ami = delivery
+    @compliance_ami = compliance
     @build_node_ami = builder
     @workstation_ami = workstation
     rendered_tfvars = ERB.new(File.read('terraform/templates/terraform.tfvars.erb')).result
@@ -147,6 +150,7 @@ def packer_build(template, builder)
   cmd.insert(2, "--var enterprise=#{wombat['enterprise']}") unless base =~ /chef-server/
   cmd.insert(2, "--var chefdk=#{wombat['products']['chefdk']}") unless base =~ /chef-server/
   cmd.insert(2, "--var delivery=#{wombat['products']['delivery']}") if base =~ /delivery/
+  cmd.insert(2, "--var compliance=#{wombat['products']['compliance']}") if base =~ /compliance/
   cmd.insert(2, "--var chef-server=#{wombat['products']['chef-server']}") if base =~ /chef-server/
   cmd.insert(2, "--var build-nodes=#{wombat['build-nodes']}")
   cmd.join(' ')

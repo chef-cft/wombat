@@ -32,23 +32,8 @@
   "provisioners" : [
     {
       "type": "file",
-      "source": "{{template_dir}}/keys/private.pem",
-      "destination": "C:\\Windows\\Temp\\private.pem"
-    },
-    {
-      "type": "file",
-      "source": "{{template_dir}}/keys/chef-server.crt",
-      "destination": "C:\\Windows\\Temp\\chef-server.crt"
-    },
-    {
-      "type": "file",
-      "source": "{{template_dir}}/keys/delivery.crt",
-      "destination": "C:\\Windows\\Temp\\delivery.crt"
-    },
-    {
-      "type": "file",
-      "source": "{{template_dir}}/keys/compliance.crt",
-      "destination": "C:\\Windows\\Temp\\compliance.crt"
+      "source": "{{template_dir}}/keys/",
+      "destination": "C:\\Windows\\Temp"
     },
     {
       "type": "chef-solo",

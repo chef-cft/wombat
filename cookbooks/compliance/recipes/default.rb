@@ -27,6 +27,8 @@ directory '/var/opt/chef-compliance/ssl/ca'
   end
 end
 
+include_recipe 'wombat::etc-hosts'
+
 compliance_server "compliance" do
   package_version node['demo']['versions']['compliance']
   package_channel :stable
@@ -36,14 +38,12 @@ compliance_server "compliance" do
   action :install
 end
 
-include_recipe 'wombat::etc-hosts'
-
 delete_lines "Remove loopback entry we added earlier" do
   path "/etc/hosts"
   pattern "^127\.0\.0\.1.*localhost.*compliance\.#{node['demo']['domain']}.*compliance"
 end
 
 compliance_user 'workstation' do
-  username 'admin'
-  password node['demo']['users']['admin']['password']
+  username 'workstation'
+  password node['demo']['users']['workstation']['password']
 end
