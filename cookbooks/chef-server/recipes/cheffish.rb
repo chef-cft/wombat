@@ -18,26 +18,19 @@ config = {
 }
 
 #taken from cheffish
-chef_user 'delivery' do
-  chef_server config
-  admin true
-  display_name 'delivery'
-  email 'chefeval@chef.io'
-  password 'delivery'
-  source_key_path '/tmp/private.pem'
-end
-
-chef_user 'workstation' do
-  chef_server config
-  admin true
-  display_name 'workstation'
-  email 'workstation@chef.io'
-  password 'workstation'
-  source_key_path '/tmp/private.pem'
+node['demo']['users'].each do |user, info|
+  chef_user user do
+    chef_server config
+    admin true
+    display_name user
+    email "#{user}@chef.io"
+    password info['password']
+    source_key_path info['pem']
+  end
 end
 
 chef_organization "#{node['demo']['org']}" do
-  members ['delivery', 'workstation']
+  members node['demo']['users'].keys
   chef_server config
 end
 
@@ -77,7 +70,7 @@ all_nodes.each do |node_name, rl|
 end
 
 chef_acl "" do
-  rights :all, users: %w(delivery workstation), clients: all_nodes.keys
+  rights :all, users: node['demo']['users'].keys, clients: all_nodes.keys
   recursive true
   chef_server conf_with_org
 end

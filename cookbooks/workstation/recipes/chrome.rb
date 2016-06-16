@@ -8,6 +8,7 @@ template "#{home}/bookmarks.html" do
   action :create
   variables(
     delivery_url: "#{delivery_url}/#/dashboard",
+    insights_url: "#{delivery_url}/insights",
     chef_server_url: "#{chef_server_url}/nodes",
     compliance_url: "#{compliance_url}/"
   )
