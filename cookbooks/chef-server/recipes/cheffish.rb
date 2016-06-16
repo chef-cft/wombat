@@ -23,7 +23,7 @@ node['demo']['users'].each do |user, info|
     chef_server config
     admin true
     display_name user
-    email "#{user}@chef.io"
+    email info['email']
     password info['password']
     source_key_path info['pem']
   end
