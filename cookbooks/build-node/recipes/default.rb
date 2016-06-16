@@ -13,14 +13,14 @@ end
 
 directory '/etc/chef'
 directory '/etc/chef/trusted_certs'
- 
+
 %w(chef-server delivery compliance).each do |f|
   file "/etc/chef/trusted_certs/#{f}_#{node['demo']['domain'].tr('.','_')}.crt" do
     content lazy { IO.read("/tmp/#{f}.crt") }
     action :create
   end
 end
-  
+
 file '/etc/chef/client.pem' do
   content lazy { IO.read('/tmp/private.pem') }
   action :create
@@ -35,12 +35,5 @@ template '/etc/chef/client.rb' do
   )
 end
 
-node['demo']['hosts'].each do |hostname, ipaddress|
-  hostsfile_entry ipaddress do
-    hostname  hostname
-    aliases   ["#{hostname}.#{node['demo']['domain']}"]
-    action    :create
-  end
-end
-
+include_recipe 'wombat::etc-hosts'
 include_recipe 'delivery_build::default'
