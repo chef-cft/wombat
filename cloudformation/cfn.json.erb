@@ -61,8 +61,8 @@
       "Description": "AMI ID for Build Node <%= i %>"
     },
 <% end -%>
-<% @infra.each do |node, ami| -%>
-    "#{node}AMI": {
+<% @infra.each do |name, ami| -%>
+    "<%= name %>AMI": {
       "Type": "String",
       "Default": "<%= ami %>",
       "Description": "AMI ID for #{name}"
