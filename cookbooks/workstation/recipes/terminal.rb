@@ -1,11 +1,13 @@
-cookbook_file 'C:\Program Files\ConEmu\ConEmu.xml' do
-  source 'conemu.xml'
-  sensitive true
-  action :create
-end
+home = Dir.home
 
 cookbook_file 'C:\tools\cmder\config\ConEmu.xml' do
   source 'cmder.xml'
   sensitive true
   action :create
+end
+
+windows_shortcut "#{home}/Desktop/cmder.lnk" do
+  target "C:\\tools\\cmder\\cmder.exe"
+  description "Launch Notepad"
+  iconlocation "C:\\tools\\cmder\\cmder.exe, 0"
 end
