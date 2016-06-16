@@ -1,10 +1,14 @@
 driver:
   name: vagrant
+  provider: virtualbox
 
 provisioner:
   name: chef_zero
-  chef_omnibus_install_options: -P chefdk
-  chef_omnibus_root: c:/opscode/chefdk
+  # chef_omnibus_install_options: -P chefdk
+  # chef_omnibus_root: c:/opscode/chefdk
+
+verifier:
+  name: inspec
 
 platforms:
   - name: windows-2012r2
@@ -14,7 +18,5 @@ platforms:
 suites:
   - name: default
     run_list:
+      - recipe[mock-data]
       - recipe[workstation]
-
-verifier:
-  name: inspec
