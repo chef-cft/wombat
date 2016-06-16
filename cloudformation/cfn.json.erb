@@ -52,7 +52,7 @@
     "ComplianceServerAMI": {
       "Type": "String",
       "Default": "<%= @compliance_ami %>",
-      "Description": "AMI ID for the Delivery Server"
+      "Description": "AMI ID for the Compliance Server"
     },
 <% 1.upto(@build_nodes) do |i| -%>
     "BuildNode<%= i.to_s %>AMI": {

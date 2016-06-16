@@ -12,7 +12,6 @@ default['demo']['versions'].tap do |pkg|
   pkg['chef'] = '12.11.18'
 end
 
-
 default['demo']['hosts'] = {
   'chef-server' => '172.31.54.10',
   'delivery' => '172.31.54.11',

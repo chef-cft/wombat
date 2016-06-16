@@ -44,7 +44,8 @@
         "demo": {
           "domain": "{{user `domain`}}",
           "enterprise": "{{user `enterprise`}}",
-          "org": "{{user `org`}}"
+          "org": "{{user `org`}}",
+          "build-nodes": "{{user `build-nodes`}}"
         }
       }
     }

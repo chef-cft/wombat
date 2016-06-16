@@ -16,15 +16,15 @@ Host delivery
   KexAlgorithms +diffie-hellman-group1-sha1
   StrictHostKeyChecking no
 
-Host build-node-1
-  HostName build-node-1
+Host build-node-*
+  HostName build-node-*
   Port 22
   User ubuntu
   IdentityFile <%= @home %>\.ssh\id_rsa
   IdentitiesOnly yes
   KexAlgorithms +diffie-hellman-group1-sha1
   StrictHostKeyChecking no
-  
+
 Host delivery-git
   HostName delivery
   Port 8989
@@ -33,4 +33,3 @@ Host delivery-git
   IdentitiesOnly yes
   KexAlgorithms +diffie-hellman-group1-sha1
   StrictHostKeyChecking no
-  

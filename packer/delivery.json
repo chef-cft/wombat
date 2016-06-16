@@ -10,7 +10,7 @@
     "azure_storage_account": "{{env `AZURE_STORAGE_ACCOUNT`}}",
     "azure_resource_group": "{{env `AZURE_RESOURCE_GROUP`}}",
     "chefdk": "0.14.25",
-    "delivery": "0.4.317",
+    "delivery": "0.4.437",
     "domain": "chordata.biz",
     "org": "diprotodontia",
     "build-nodes": "1"
@@ -69,6 +69,7 @@
           "domain": "{{user `domain`}}",
           "enterprise": "{{user `enterprise`}}",
           "org": "{{user `org`}}",
+          "build-nodes": "{{user `build-nodes`}}",
           "versions": {
             "chefdk": "{{user `chefdk`}}",
             "delivery": "{{user `delivery`}}"
