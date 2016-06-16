@@ -51,23 +51,13 @@
   "provisioners" : [
     {
       "type": "file",
-      "source": "{{template_dir}}/keys/private.pem",
-      "destination": "/tmp/private.pem"
+      "source": "{{template_dir}}/files/",
+      "destination": "/tmp"
     },
     {
       "type": "file",
-      "source": "{{template_dir}}/keys/public.pub",
-      "destination": "/tmp/public.pub"
-    },
-    {
-      "type": "file",
-      "source": "{{template_dir}}/keys/compliance.crt",
-      "destination": "/tmp/chef-server.crt"
-    },
-    {
-      "type": "file",
-      "source": "{{template_dir}}/keys/compliance.key",
-      "destination": "/tmp/chef-server.key"
+      "source": "{{template_dir}}/keys/",
+      "destination": "/tmp"
     },
     {
       "type": "chef-solo",
