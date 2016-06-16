@@ -4,7 +4,6 @@ default['demo']['org'] = 'diprotodontia'
 default['demo']['build-nodes'] = 1
 default['demo']['infranodes'] = {}
 default['demo']['admin-user'] = 'ubuntu'
-default['demo']['admin-user'] = 'ubuntu'
 default['demo']['versions'].tap do |pkg|
   pkg['chefdk'] = '0.14.25'
   pkg['chef-server'] = '12.6.0'
@@ -17,8 +16,7 @@ end
 default['demo']['hosts'] = {
   'chef-server' => '172.31.54.10',
   'delivery' => '172.31.54.11',
-  'build-node-1' => '172.31.54.12',
-  'compliance' => '172.31.54.13'
+  'compliance' => '172.31.54.12'
 }
 
 default['demo']['users'] = {
@@ -36,6 +34,15 @@ default['demo']['users'] = {
     "last"      => "user",
     "email"     => "delivery@mammalia.biz",
     "password"  => "delivery!",
+    "roles"     => ["admin"],
+    "ssh_key"   => "/tmp/public.pub",
+    "pem"       => "/tmp/private.pem"
+  },
+  "workstation" => {
+    "first"     => "work",
+    "last"      => "station",
+    "email"     => "workstation@mammalia.biz",
+    "password"  => "workstation!",
     "roles"     => ["admin"],
     "ssh_key"   => "/tmp/public.pub",
     "pem"       => "/tmp/private.pem"
