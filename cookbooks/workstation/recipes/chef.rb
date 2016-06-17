@@ -1,4 +1,5 @@
 home = Dir.home
+chef_server_url = "https://chef-server.#{node['demo']['domain']}/organizations/#{node['demo']['org']}"
 
 # chef-ingredient was timing out / being weird
 powershell_script 'Install ChefDK' do
@@ -17,6 +18,7 @@ template "#{home}/.chef/knife.rb" do
   source 'knife.rb.erb'
   variables(
     home: home,
-    chef_server_url: node['demo']['chef_server_url'],
+    chef_server_url: chef_server_url,
+    data_collector_url: "https://delivery.#{node['demo']['domain']}"
   )
 end
