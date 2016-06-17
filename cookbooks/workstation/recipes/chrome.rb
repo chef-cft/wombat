@@ -8,7 +8,7 @@ template "#{home}/bookmarks.html" do
   action :create
   variables(
     delivery_url: "#{delivery_url}/#/dashboard",
-    insights_url: "#{delivery_url}/insights",
+    insights_url: "https://delivery.#{node['demo']['domain']}/insights",
     chef_server_url: "#{chef_server_url}/nodes",
     compliance_url: "#{compliance_url}/"
   )
@@ -29,7 +29,7 @@ registry_key 'Set Chrome as default HTTP protocol association' do
   action :create
   key 'HKEY_CURRENT_USER\Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice'
   values [
-    {:name => 'Hash', :type => :string, :data => 'ge1xcShI5CI='},
+    {:name => 'Hash', :type => :string, :data => 'TW2AqyYVQlM='},
     {:name => 'ProgId', :type => :string, :data => 'ChromeHTML'}
   ]
 end
@@ -38,7 +38,7 @@ registry_key 'Set Chrome as default HTTPS protocol association' do
   action :create
   key 'HKEY_CURRENT_USER\Software\Microsoft\Windows\Shell\Associations\UrlAssociations\https\UserChoice'
   values [
-    {:name => 'Hash', :type => :string, :data => 'fjUingCFRtU='},
+    {:name => 'Hash', :type => :string, :data => '4N1og3kLvcE='},
     {:name => 'ProgId', :type => :string, :data => 'ChromeHTML'}
   ]
 end
