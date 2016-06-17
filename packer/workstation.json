@@ -37,6 +37,11 @@
       "destination": "C:\\Windows\\Temp"
     },
     {
+      "type": "file",
+      "source": "{{template_dir}}/files",
+      "destination": "C:\\Windows\\Temp"
+    },
+    {
       "type": "chef-solo",
       "guest_os_type": "windows",
       "cookbook_paths": [ "{{pwd}}/vendored-cookbooks/workstation" ],

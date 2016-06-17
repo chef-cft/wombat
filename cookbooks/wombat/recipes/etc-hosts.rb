@@ -7,9 +7,16 @@
 all_hosts = node['demo']['hosts'].to_h
 build_ip = 100
 infra_ip = 200
+if node['platform'] == 'windows'
+  tmp_dir = "C:\\Windows\\Temp"
+else
+  tmp_dir = "/tmp/"
+end
 
-if File.exists?('/tmp/infranodes-info.json')
-  infranodes = JSON(File.read('/tmp/infranodes-info.json'))
+infranodes_file = File.join(tmp_dir, "infranodes-info.json")
+
+if File.exists?(infranodes_file)
+  infranodes = JSON(File.read(infranodes_file))
 else
   infranodes = {}
 end
