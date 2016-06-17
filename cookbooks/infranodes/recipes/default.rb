@@ -9,7 +9,7 @@ append_if_no_line "Add certificate to authorized_keys" do
   line lazy { IO.read('/tmp/public.pub') }
 end
 
-chef_ing2redient 'chef' do
+chef_ingredient 'chef' do
   channel :stable
   action :install
   version node['demo']['versions']['chef']
