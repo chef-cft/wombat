@@ -38,7 +38,7 @@
     },
     {
       "type": "file",
-      "source": "{{template_dir}}/files",
+      "source": "{{template_dir}}/files/",
       "destination": "C:\\Windows\\Temp"
     },
     {
