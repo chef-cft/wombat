@@ -61,6 +61,13 @@
       "Description": "AMI ID for Build Node <%= i %>"
     },
 <% end -%>
+<% @infra.each do |name, ami| -%>
+    "<%= name %>AMI": {
+      "Type": "String",
+      "Default": "<%= ami %>",
+      "Description": "AMI ID for <%= name %>"
+    },
+<% end -%>
     "WindowsWorkstationAMI": {
       "Type": "String",
       "Default": "<%= @workstation_ami %>",
@@ -399,6 +406,47 @@
             "Key": "Name",
             "Value": {
               "Fn::Join" : [ " ", [ { "Ref": "DemoName" }, "Build Node <%= i.to_s %>" ] ]
+            }
+          }
+        ]
+      }
+    },
+<% end -%>
+<% @infra.sort.each do |name, _ami| -%>
+    "<%= name %>": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "InstanceType": "m3.large",
+        "AvailabilityZone": { "Ref": "AvailabilityZone" },
+        "NetworkInterfaces": [
+          {
+            "GroupSet": [
+              {
+                "Ref": "DemoSecurityGroup"
+              }
+            ],
+            "AssociatePublicIpAddress": "true",
+            "PrivateIpAddress": "172.31.54.<%= 201 + @infra.keys.find_index(name) %>",
+            "DeviceIndex": "0",
+            "DeleteOnTermination": "true",
+            "SubnetId": {
+              "Ref": "SubnetDelivery"
+            }
+          }
+        ],
+        "KeyName": { "Ref": "KeyName" },
+        "UserData": { "Fn::Base64" : { "Fn::Join" : ["", [
+             "#!/bin/bash -xe\n",
+             "hostnamectl set-hostname <%= name %>\n"]]}
+        },
+        "ImageId": {
+              "Ref": "<%= name %>AMI"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Join" : [ " ", [ { "Ref": "DemoName" }, "<%= name %>" ] ]
             }
           }
         ]
