@@ -37,11 +37,29 @@ namespace :packer do
     sh packer_build(args[:template], 'amazon-ebs')
   end
 
+  desc 'Build all infranodes listed in wombat.yml'
+  task :build_infra do
+    infranodes.each do |name, _rl|
+      sh packer_build('infranodes', 'amazon-ebs', {'node-name' => name})
+    end
+  end
+
+  desc 'Build all build-nodes'
+  task :build_build_nodes do
+    build_nodes.each do |name, num|
+      sh packer_build('build-node', 'amazon-ebs', {'node-number' => num})
+    end
+  end
+
   desc 'Build all AMIs'
   task :build_amis do
     templates.each do |template|
       Rake::Task['packer:build_ami'].invoke("#{template}")
       Rake::Task['packer:build_ami'].reenable
+    end
+    %w(build_nodes infra).each do |t|
+      Rake::Task["packer:build_#{t}"].invoke
+      Rake::Task["packer:build_#{t}"].reenable
     end
   end
 

@@ -4,7 +4,12 @@
 #
 # Copyright (c) 2016 The Authors, All Rights Reserved.
 
-chef_ingredient 'chef' do
+append_if_no_line "Add certificate to authorized_keys" do
+  path "/home/#{node['demo']['admin-user']}/.ssh/authorized_keys"
+  line lazy { IO.read('/tmp/public.pub') }
+end
+
+chef_ing2redient 'chef' do
   channel :stable
   action :install
   version node['demo']['versions']['chef']
