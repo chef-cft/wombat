@@ -23,7 +23,7 @@ Vagrant.configure(2) do |config|
     echo "
     172.31.54.10 chef-server.chordata.biz
     172.31.54.11 delivery.chordata.biz
-    172.31.54.12 build-node.chordata.biz
+    172.31.54.101 build-node-1.chordata.biz
     " | sudo tee -a /etc/hosts
   HOSTS_FILE
 
@@ -75,11 +75,12 @@ Vagrant.configure(2) do |config|
     end
 
     d.vm.provision "shell", inline: <<-CONFIG_DS
-      sudo apt-get install chefdk #delivery
-      wget https://chef.bintray.com/current-apt/ubuntu/14.04/delivery_0.4.317-1_amd64.deb -O /tmp/delivery_0.4.317-1_amd64.deb
-      sudo dpkg -i /tmp/delivery_0.4.317-1_amd64.deb
-      [ -d /var/opt/delivery/license ] || sudo mkdir /var/opt/delivery/license/
-      sudo cp /vagrant/delivery.license /var/opt/delivery/license/delivery.license
+      echo "deb https://packages.chef.io/current-apt trusty  main" > chef-current.list
+      sudo mv chef-current.list /etc/apt/sources.list.d/
+      sudo apt-get update
+      sudo apt-get install chefdk=0.15.15-1 delivery=0.4.456-1
+      [ -d /var/opt/delivery/license ] || sudo mkdir -p /var/opt/delivery/license/
+      sudo cp /vagrant/delivery.license /var/opt/delivery/license/delivery.license || echo "delivery.license file missing" # apparently exiting doesn't work, so just warn
       [ -d /etc/delivery ] || sudo mkdir /etc/delivery && sudo chmod 0644 /etc/delivery
       sudo cp /vagrant/delivery-user.pem /etc/delivery/delivery.pem
     CONFIG_DS

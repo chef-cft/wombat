@@ -1,4 +1,8 @@
 delivery.license
+chefautomate-validator.pem
+delivery-admin.creds
+delivery-user.pem
+delivery.creds
 .vagrant
 terraform.tfstate*
 terraform.tfvars
