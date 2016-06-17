@@ -298,7 +298,7 @@ def parallel_pack(templates)
     end
   end
   puts proc_hash
-  Parallel.map(proc_hash.keys, in_threads: proc_hash.count) do |name|
+  Parallel.map(proc_hash.keys, in_processes: proc_hash.count) do |name|
     Rake::Task['cookbook:vendor'].invoke(proc_hash[name]['template'])
     Rake::Task['cookbook:vendor'].reenable
     sh packer_build(proc_hash[name]['template'], 'amazon-ebs', proc_hash[name]['options'])
