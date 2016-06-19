@@ -29,7 +29,7 @@
       "ssh_private_ip": false,
       "ssh_username": "ubuntu",
       "ssh_pty" : true,
-      "ami_name": "automate-delivery-{{timestamp}}"
+      "ami_name": "delivery-{{timestamp}}"
     },
     {
       "type": "azure-arm",
