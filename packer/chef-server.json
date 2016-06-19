@@ -28,7 +28,7 @@
       "ssh_private_ip": false,
       "ssh_username": "ubuntu",
       "ssh_pty" : true,
-      "ami_name": "automate-chef-server-{{timestamp}}"
+      "ami_name": "chef-server-{{timestamp}}"
     },
     {
       "type": "azure-arm",

@@ -1,5 +1,21 @@
 home = Dir.home
 
+%W(
+  #{home}/.chef
+  #{home}/.chef/trusted_certs
+  #{home}/.ssh
+).each do |directory|
+  directory directory
+end
+
+template "#{home}/.ssh/config" do
+  source 'ssh_config.erb'
+  variables(
+    home: home,
+    org: node['demo']['org']
+  )
+end
+
 %w(chef-server delivery compliance).each do |f|
   file "#{home}/.chef/trusted_certs/#{f}_#{node['demo']['domain'].tr('.','_')}.crt" do
     content  lazy { IO.read("C:/Windows/Temp/#{f}.crt") }

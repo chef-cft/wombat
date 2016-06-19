@@ -28,7 +28,7 @@
       "ssh_private_ip": false,
       "ssh_username": "ubuntu",
       "ssh_pty" : true,
-      "ami_name": "automate-compliance-{{timestamp}}"
+      "ami_name": "compliance-{{timestamp}}"
     },
     {
       "type": "azure-arm",

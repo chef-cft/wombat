@@ -3,8 +3,9 @@
 default['demo']['pkgs'] = %w(
   cmder
   googlechrome
-  visualstudiocode
+  atom
   git
+  hub
   gitextensions
   git-credential-manager-for-windows
 )

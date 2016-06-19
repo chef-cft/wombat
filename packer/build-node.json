@@ -29,7 +29,7 @@
       "ssh_private_ip": false,
       "ssh_username": "ubuntu",
       "ssh_pty" : true,
-      "ami_name": "automate-build-node-{{user `node-number`}}-{{timestamp}}"
+      "ami_name": "build-node-{{user `node-number`}}-{{timestamp}}"
     },
     {
       "type": "azure-arm",

@@ -26,7 +26,7 @@
       "winrm_username": "{{user `winrm_username`}}",
       "winrm_password": "{{user `winrm_password`}}",
       "user_data_file": "{{template_dir}}/scripts/bootstrap-aws.txt",
-      "ami_name": "automate-workstation-{{timestamp}}"
+      "ami_name": "workstation-{{timestamp}}"
     }
   ],
 

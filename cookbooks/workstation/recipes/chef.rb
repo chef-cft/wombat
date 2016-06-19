@@ -1,11 +1,9 @@
 home = Dir.home
 chef_server_url = "https://chef-server.#{node['demo']['domain']}/organizations/#{node['demo']['org']}"
 
-# chef-ingredient was timing out / being weird
-powershell_script 'Install ChefDK' do
-  code <<-EOH
-    . { iwr -useb https://omnitruck.chef.io/install.ps1 } | iex; install -channel current -project chefdk
-  EOH
+chef_ingredient 'chefdk' do
+  version node['demo']['versions']['chefdk']
+  action :install
 end
 
 chef_ingredient 'delivery-cli' do

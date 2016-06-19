@@ -5,6 +5,7 @@ license 'Apache 2.0'
 description 'Configures a Windows workstation'
 long_description 'Configures a Windows workstation'
 version '0.1.0'
+supports 'windows'
 
 depends 'chocolatey'
 depends 'windows'
