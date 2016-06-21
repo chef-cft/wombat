@@ -1,23 +1,4 @@
-Host chef-server
-  HostName chef-server
-  Port 22
-  User ubuntu
-  IdentityFile <%= @home %>\.ssh\id_rsa
-  IdentitiesOnly yes
-  KexAlgorithms +diffie-hellman-group1-sha1
-  StrictHostKeyChecking no
-
-Host delivery
-  HostName delivery
-  Port 22
-  User ubuntu
-  IdentityFile <%= @home %>\.ssh\id_rsa
-  IdentitiesOnly yes
-  KexAlgorithms +diffie-hellman-group1-sha1
-  StrictHostKeyChecking no
-
-Host build-node-*
-  HostName build-node-*
+Host *
   Port 22
   User ubuntu
   IdentityFile <%= @home %>\.ssh\id_rsa
