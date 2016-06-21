@@ -74,3 +74,9 @@ chef_acl "" do
   recursive true
   chef_server conf_with_org
 end
+
+chef_group "admins" do
+  users node['demo']['users'].keys
+  clients all_nodes.keys
+  chef_server conf_with_org
+end
