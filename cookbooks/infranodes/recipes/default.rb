@@ -18,7 +18,7 @@ end
 include_recipe 'push-jobs'
 
 chef_server_url = "https://chef-server.#{node['demo']['domain']}/organizations/#{node['demo']['org']}"
-delivery_server_url = "https://delivery.#{node['demo']['domain']}"
+delivery_server_url = "https://delivery.#{node['demo']['domain']}/e/#{node['demo']['enterprise']}"
 
 template '/etc/chef/client.rb' do
   source 'client.rb.erb'
