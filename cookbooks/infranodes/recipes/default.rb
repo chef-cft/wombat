@@ -24,7 +24,7 @@ template '/etc/chef/client.rb' do
   source 'client.rb.erb'
   variables({
       :chef_server_url => chef_server_url,
-      :name => node['demo']['node_name'],
+      :name => node['demo']['node-name'],
       :delivery_server_url => delivery_server_url
   })
 end

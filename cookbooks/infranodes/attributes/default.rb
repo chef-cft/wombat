@@ -1,3 +1,3 @@
 override['push_jobs']['allow_unencrypted'] = true
 
-default['demo']['node_name'] = "acceptance-node"
+default['demo']['node-name'] = "acceptance-node"
