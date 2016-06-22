@@ -284,7 +284,7 @@ end
 
 def parse_ami(instance)
   log_dir = 'packer/logs'
-  File.read("#{log_dir}/ami-#{instance}.log").split("\n").last.split(' ')[1]
+  File.read("#{log_dir}/ami-#{instance}.log").split("\n").grep(/#{wombat['aws']['region']}:/) {|x| x.split[1]}.last
 end
 
 def parallel_pack(templates)
