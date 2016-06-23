@@ -5,7 +5,7 @@ default['demo']['build-nodes'] = 1
 default['demo']['infranodes'] = {}
 default['demo']['admin-user'] = 'ubuntu'
 default['demo']['versions'].tap do |pkg|
-  pkg['chefdk'] = '0.14.25'
+  pkg['chefdk'] = '0.15.15'
   pkg['chef-server'] = '12.6.0'
   pkg['delivery'] = '0.4.317'
   pkg['compliance'] = '1.3.1'
