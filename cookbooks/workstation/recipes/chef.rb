@@ -1,6 +1,6 @@
 home = Dir.home
 chef_server_url = "https://chef-server.#{node['demo']['domain']}/organizations/#{node['demo']['org']}"
-conf_d_dir = File.join(home, 'config.d')
+conf_d_dir = File.join(home, '.chef', 'config.d')
 
 chef_ingredient 'chefdk' do
   version node['demo']['versions']['chefdk']
