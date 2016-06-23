@@ -71,7 +71,10 @@
           "enterprise": "{{user `enterprise`}}",
           "org": "{{user `org`}}",
           "node-number": "{{user `node-number`}}",
-          "build-nodes": "{{user `build-nodes`}}"
+          "build-nodes": "{{user `build-nodes`}}",
+          "versions": {
+            "chefdk": "{{user `chefdk`}}"
+          }
         },
         "delivery_build": {
           "trusted_certs": {
