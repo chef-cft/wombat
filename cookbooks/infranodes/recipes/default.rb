@@ -15,7 +15,7 @@ chef_ingredient 'chef' do
   version node['demo']['versions']['chef']
 end
 
-include_recipe 'push-jobs'
+directory '/etc/chef'
 
 chef_server_url = "https://chef-server.#{node['demo']['domain']}/organizations/#{node['demo']['org']}"
 delivery_server_url = "https://delivery.#{node['demo']['domain']}"
@@ -42,5 +42,7 @@ directory '/etc/chef/trusted_certs'
   end
 end
 ###
-
+node.set['push_jobs']['chef']['chef_server_url'] = chef_server_url
+node.set['push_jobs']['chef']['node_name'] = node['demo']['node-name']
 include_recipe 'wombat::etc-hosts'
+include_recipe 'push-jobs'

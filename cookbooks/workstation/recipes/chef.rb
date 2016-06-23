@@ -7,18 +7,13 @@ chef_ingredient 'chefdk' do
   action :install
 end
 
-chef_ingredient 'delivery-cli' do
-  version :latest
-  action :install
-  platform_version_compatibility_mode true
-end
-
 template "#{home}/.chef/knife.rb" do
   source 'knife.rb.erb'
   variables(
     home: home,
     chef_server_url: chef_server_url,
-    data_collector_url: "https://delivery.#{node['demo']['domain']}"
+    data_collector_url: "https://delivery.#{node['demo']['domain']}",
+    conf_d_dir: conf_d_dir
   )
 end
 

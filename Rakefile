@@ -39,6 +39,8 @@ namespace :packer do
 
   desc 'Build all infranodes listed in wombat.yml'
   task :build_infra do
+    Rake::Task['cookbook:vendor'].invoke('infranodes')
+    Rake::Task['cookbook:vendor'].reenable
     infranodes.each do |name, _rl|
       sh packer_build('infranodes', 'amazon-ebs', {'node-name' => name})
     end
@@ -46,6 +48,8 @@ namespace :packer do
 
   desc 'Build all build-nodes'
   task :build_build_nodes do
+    Rake::Task['cookbook:vendor'].invoke('build-node')
+    Rake::Task['cookbook:vendor'].reenable
     build_nodes.each do |name, num|
       sh packer_build('build-node', 'amazon-ebs', {'node-number' => num})
     end
