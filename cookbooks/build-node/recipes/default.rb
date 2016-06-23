@@ -35,5 +35,7 @@ template '/etc/chef/client.rb' do
   )
 end
 
+node.set['push_jobs']['chef']['chef_server_url'] = chef_server_url
+node.set['push_jobs']['chef']['node_name'] = "build-node-#{node['demo']['node-number']}"
 include_recipe 'wombat::etc-hosts'
 include_recipe 'delivery_build::default'
