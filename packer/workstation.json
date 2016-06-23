@@ -9,7 +9,8 @@
     "domain": "chordata.biz",
     "enterprise": "mammalia",
     "org": "diprotodontia",
-    "build-nodes": "1"
+    "build-nodes": "1",
+    "chefdk": "0.15.15"
   },
 
   "builders": [
@@ -51,7 +52,10 @@
           "domain": "{{user `domain`}}",
           "enterprise": "{{user `enterprise`}}",
           "org": "{{user `org`}}",
-          "build-nodes": "{{user `build-nodes`}}"
+          "build-nodes": "{{user `build-nodes`}}",
+          "versions": {
+            "chefdk": "{{user `chefdk`}}"
+          }
         }
       }
     }
