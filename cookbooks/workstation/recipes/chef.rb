@@ -7,12 +7,6 @@ chef_ingredient 'chefdk' do
   action :install
 end
 
-chef_ingredient 'delivery-cli' do
-  version :latest
-  action :install
-  platform_version_compatibility_mode true
-end
-
 template "#{home}/.chef/knife.rb" do
   source 'knife.rb.erb'
   variables(
