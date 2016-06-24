@@ -261,7 +261,7 @@ def gen_x509_cert(hostname)
   else
     File.open("#{key_dir}/#{hostname}.crt", 'w') { |file| file.puts cert.to_pem }
     File.open("#{key_dir}/#{hostname}.key", 'w') { |file| file.puts rsa_key.to_pem }
-    puts "Certificate created for #{node['demo']['domain-prefix']}#{hostname}.#{wombat['domain']}"
+    puts "Certificate created for #{wombat['domain-prefix']}#{hostname}.#{wombat['domain']}"
   end
 end
 
