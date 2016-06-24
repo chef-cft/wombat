@@ -4,7 +4,7 @@
 #
 # Copyright (c) 2016 The Authors, All Rights Reserved.
 
-chef_server_url = "https://chef-server.#{node['demo']['domain']}/organizations/#{node['demo']['org']}"
+chef_server_url = "https://#{node['demo']['domain_prefix']}chef-server.#{node['demo']['domain']}/organizations/#{node['demo']['org']}"
 
 append_if_no_line "Add certificate to authorized_keys" do
   path "/home/#{node['demo']['admin-user']}/.ssh/authorized_keys"
@@ -15,7 +15,7 @@ directory '/etc/chef'
 directory '/etc/chef/trusted_certs'
 
 %w(chef-server delivery compliance).each do |f|
-  file "/etc/chef/trusted_certs/#{f}_#{node['demo']['domain'].tr('.','_')}.crt" do
+  file "/etc/chef/trusted_certs/#{node['demo']['domain_prefix']}#{f}_#{node['demo']['domain'].tr('.','_')}.crt" do
     content lazy { IO.read("/tmp/#{f}.crt") }
     action :create
   end

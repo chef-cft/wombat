@@ -1,4 +1,4 @@
-delivery_fqdn "delivery.<%= @domain %>"
+delivery_fqdn "<%= @domain_prefix %>delivery.<%= @domain %>"
 delivery['chef_username'] = "delivery"
 delivery['chef_private_key'] = "/etc/delivery/delivery.pem"
 delivery['chef_server'] = "<%= @chef_server_url %>"

@@ -4,12 +4,12 @@
 #
 # Copyright (c) 2016 The Authors, All Rights Reserved.
 
-chef_server_url = "https://chef-server.#{node['demo']['domain']}/organizations/#{node['demo']['org']}"
-delivery_url = "https://delivery.#{node['demo']['domain']}/e/#{node['demo']['enterprise']}"
+chef_server_url = "https://#{node['demo']['domain_prefix']}chef-server.#{node['demo']['domain']}/organizations/#{node['demo']['org']}"
+delivery_url = "https://#{node['demo']['domain_prefix']}delivery.#{node['demo']['domain']}/e/#{node['demo']['enterprise']}"
 
 append_if_no_line "Add loopback => hostname" do
   path "/etc/hosts"
-  line "127.0.0.1 delivery.#{node['demo']['domain']} delivery"
+  line "127.0.0.1 #{node['demo']['domain_prefix']}delivery.#{node['demo']['domain']} delivery"
 end
 
 execute 'set hostname' do
@@ -72,7 +72,7 @@ file '/etc/delivery/builder_key.pub' do
 end
 
 %w(crt key).each do |ext|
-  file "/var/opt/delivery/nginx/ca/delivery.#{node['demo']['domain']}.#{ext}" do
+  file "/var/opt/delivery/nginx/ca/#{node['demo']['domain_prefix']}delivery.#{node['demo']['domain']}.#{ext}" do
     content lazy { IO.read("/tmp/delivery.#{ext}") }
     action :create
   end
@@ -82,6 +82,7 @@ template '/etc/delivery/delivery.rb' do
   source 'delivery.erb'
   variables(
     chef_server_url: chef_server_url,
+    domain_prefix: node['demo']['domain_prefix'],
     domain: node['demo']['domain'],
     node_name: "build-node-#{node['demo']['node-number']}"
   )
@@ -117,5 +118,5 @@ include_recipe 'wombat::etc-hosts'
 
 delete_lines "Remove loopback entry we added earlier" do
   path "/etc/hosts"
-  pattern "^127\.0\.0\.1.*localhost.*delivery\.#{node['demo']['domain']}.*delivery"
+  pattern "^127\.0\.0\.1.*localhost.*#{node['demo']['domain_prefix']}delivery\.#{node['demo']['domain']}.*delivery"
 end

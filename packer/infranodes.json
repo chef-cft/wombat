@@ -12,6 +12,7 @@
     "source_ami": "ami-8c4cb0ec",
     "chef": "12.11.18",
     "domain": "chordata.biz",
+    "domain_prefix": "",
     "org": "diprotodontia",
     "build-nodes": "1",
     "node-name": "acceptance"
@@ -67,6 +68,7 @@
       "run_list": [ "infranodes" ],
       "json": {
         "demo": {
+          "domain_prefix": "{{user `domain_prefix`}}",
           "domain": "{{user `domain`}}",
           "enterprise": "{{user `enterprise`}}",
           "org": "{{user `org`}}",

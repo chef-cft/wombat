@@ -11,6 +11,7 @@
     "azure_resource_group": "{{env `AZURE_RESOURCE_GROUP`}}",
     "source_ami": "ami-8c4cb0ec",
     "chefdk": "0.14.25",
+    "domain_prefix": "",
     "domain": "chordata.biz",
     "org": "diprotodontia",
     "node-number": "1",
@@ -67,6 +68,7 @@
       "run_list": [ "apt", "build-node" ],
       "json": {
         "demo": {
+          "domain_prefix": "{{user `domain_prefix`}}",
           "domain": "{{user `domain`}}",
           "enterprise": "{{user `enterprise`}}",
           "org": "{{user `org`}}",

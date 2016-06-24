@@ -12,6 +12,7 @@
     "source_ami": "ami-8c4cb0ec",
     "chef-server": "12.6.0",
     "domain": "chordata.biz",
+    "domain_prefix": "",
     "org": "diprotodontia",
     "build-nodes": "1"
   },
@@ -66,6 +67,7 @@
       "run_list": [ "apt", "chef-server" ],
       "json": {
         "demo": {
+          "domain_prefix": "{{user `domain_prefix`}}",
           "domain": "{{user `domain`}}",
           "enterprise": "{{user `enterprise`}}",
           "org": "{{user `org`}}",
