@@ -1,8 +1,8 @@
 ---
 name: wombat
-# Uncomment domain-prefix if you wish to prepend your generated domain. 
+# Uncomment domain_prefix if you wish to prepend your generated domain. 
 # Ex: The below example would create foo-chef-server.chordata.biz.
-# domain-prefix: foo-
+# domain_prefix: foo-
 domain: chordata.biz
 enterprise: mammalia
 org: diprotodontia

@@ -1,14 +1,14 @@
 home = Dir.home
-chef_server_url = "https://#{node['demo']['domain-prefix']}chef-server.#{node['demo']['domain']}/organizations/#{node['demo']['org']}"
-delivery_url = "https://#{node['demo']['domain-prefix']}delivery.#{node['demo']['domain']}/e/#{node['demo']['enterprise']}"
-compliance_url = "https://#{node['demo']['domain-prefix']}compliance.#{node['demo']['domain']}"
+chef_server_url = "https://#{node['demo']['domain_prefix']}chef-server.#{node['demo']['domain']}/organizations/#{node['demo']['org']}"
+delivery_url = "https://#{node['demo']['domain_prefix']}delivery.#{node['demo']['domain']}/e/#{node['demo']['enterprise']}"
+compliance_url = "https://#{node['demo']['domain_prefix']}compliance.#{node['demo']['domain']}"
 
 template "#{home}/bookmarks.html" do
   source 'bookmarks.html.erb'
   action :create
   variables(
     delivery_url: "#{delivery_url}/#/dashboard",
-    insights_url: "https://#{node['demo']['domain-prefix']}delivery.#{node['demo']['domain']}/insights",
+    insights_url: "https://#{node['demo']['domain_prefix']}delivery.#{node['demo']['domain']}/insights",
     chef_server_url: "#{chef_server_url}/nodes",
     compliance_url: "#{compliance_url}/"
   )

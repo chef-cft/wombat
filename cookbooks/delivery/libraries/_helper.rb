@@ -30,7 +30,7 @@ module Delivery
     # Get delivery enterprise
     
     def delivery_fqdn
-      "#{node['demo']['domain-prefix']}delivery.#{node['demo']['domain']}"      
+      "#{node['demo']['domain_prefix']}delivery.#{node['demo']['domain']}"      
     end
     
     def delivery_enterprise

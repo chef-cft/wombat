@@ -7,7 +7,7 @@
     "winrm_username": "Administrator",
     "winrm_password": "RL9@T40BTmXh",
     "domain": "chordata.biz",
-    "domain-prefix": "",
+    "domain_prefix": "",
     "enterprise": "mammalia",
     "org": "diprotodontia",
     "build-nodes": "1",
@@ -50,7 +50,7 @@
       "run_list": [ "workstation" ],
       "json": {
         "demo": {
-          "domain-prefix": "{{user `domain-prefix`}}",
+          "domain_prefix": "{{user `domain_prefix`}}",
           "domain": "{{user `domain`}}",
           "enterprise": "{{user `enterprise`}}",
           "org": "{{user `org`}}",

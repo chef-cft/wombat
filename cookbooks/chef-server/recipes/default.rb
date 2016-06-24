@@ -6,7 +6,7 @@
 
 append_if_no_line "Add loopback => hostname" do
   path "/etc/hosts"
-  line "127.0.0.1 #{node['demo']['domain-prefix']}chef-server.#{node['demo']['domain']} chef-server"
+  line "127.0.0.1 #{node['demo']['domain_prefix']}chef-server.#{node['demo']['domain']} chef-server"
 end
 
 execute 'set hostname' do
@@ -27,7 +27,7 @@ directory '/etc/opscode' do
 end
 
 %w(crt key).each do |ext|
-  file "/var/opt/opscode/nginx/ca/#{node['demo']['domain-prefix']}chef-server.#{node['demo']['domain']}.#{ext}" do
+  file "/var/opt/opscode/nginx/ca/#{node['demo']['domain_prefix']}chef-server.#{node['demo']['domain']}.#{ext}" do
     content lazy { IO.read("/tmp/chef-server.#{ext}") }
     action :create
   end
@@ -74,5 +74,5 @@ include_recipe 'wombat::etc-hosts'
 
 delete_lines "Remove loopback entry we added earlier" do
   path "/etc/hosts"
-  pattern "^127\.0\.0\.1.*localhost.*#{node['demo']['domain-prefix']}chef-server\.#{node['demo']['domain']}.*chef-server"
+  pattern "^127\.0\.0\.1.*localhost.*#{node['demo']['domain_prefix']}chef-server\.#{node['demo']['domain']}.*chef-server"
 end

@@ -2,7 +2,7 @@
 
 append_if_no_line "Add loopback => hostname" do
   path "/etc/hosts"
-  line "127.0.0.1 #{node['demo']['domain-prefix']}compliance.#{node['demo']['domain']} compliance"
+  line "127.0.0.1 #{node['demo']['domain_prefix']}compliance.#{node['demo']['domain']} compliance"
 end
 
 execute 'set hostname' do
@@ -21,7 +21,7 @@ directory '/var/opt/chef-compliance/ssl/ca'
 
 
 %w(crt key).each do |ext|
-  file "/var/opt/chef-compliance/ssl/ca/#{node['demo']['domain-prefix']}compliance.#{node['demo']['domain']}.#{ext}" do
+  file "/var/opt/chef-compliance/ssl/ca/#{node['demo']['domain_prefix']}compliance.#{node['demo']['domain']}.#{ext}" do
     content lazy { IO.read("/tmp/compliance.#{ext}") }
     action :create
   end
@@ -40,7 +40,7 @@ end
 
 delete_lines "Remove loopback entry we added earlier" do
   path "/etc/hosts"
-  pattern "^127\.0\.0\.1.*localhost.*#{node['demo']['domain-prefix']}compliance\.#{node['demo']['domain']}.*compliance"
+  pattern "^127\.0\.0\.1.*localhost.*#{node['demo']['domain_prefix']}compliance\.#{node['demo']['domain']}.*compliance"
 end
 
 compliance_user 'workstation' do

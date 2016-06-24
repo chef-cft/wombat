@@ -13,7 +13,7 @@
     "chefdk": "0.14.25",
     "delivery": "0.4.437",
     "domain": "chordata.biz",
-    "domain-prefix": "",
+    "domain_prefix": "",
     "org": "diprotodontia",
     "build-nodes": "1"
   },
@@ -68,7 +68,7 @@
       "run_list": [ "apt", "delivery" ],
       "json": {
         "demo": {
-          "domain-prefix": "{{user `domain-prefix`}}",
+          "domain_prefix": "{{user `domain_prefix`}}",
           "domain": "{{user `domain`}}",
           "enterprise": "{{user `enterprise`}}",
           "org": "{{user `org`}}",
