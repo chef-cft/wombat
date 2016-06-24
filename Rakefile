@@ -191,6 +191,7 @@ def packer_build(template, builder, options={})
   cmd.insert(2, "--only #{builder}")
   cmd.insert(2, "--var org=#{wombat['org']}") unless template =~ /delivery/
   cmd.insert(2, "--var domain=#{wombat['domain']}")
+  cmd.insert(2, "--var domain-prefix=#{wombat['domain-prefix']}")
   cmd.insert(2, "--var enterprise=#{wombat['enterprise']}") unless template =~ /chef-server/
   cmd.insert(2, "--var chefdk=#{wombat['products']['chefdk']}") unless template =~ /chef-server/
   cmd.insert(2, "--var delivery=#{wombat['products']['delivery']}") if template =~ /delivery/
@@ -231,7 +232,7 @@ def gen_x509_cert(hostname)
   rsa_key = OpenSSL::PKey::RSA.new(2048)
   public_key = rsa_key.public_key
 
-  subject = "/C=AU/ST=New South Wales/L=Sydney/O=#{wombat['org']}/OU=wombats/CN=#{hostname}.#{wombat['domain']}"
+  subject = "/C=AU/ST=New South Wales/L=Sydney/O=#{wombat['org']}/OU=wombats/CN=#{node['demo']['domain-prefix']}#{hostname}.#{wombat['domain']}"
 
   cert = OpenSSL::X509::Certificate.new
   cert.subject = cert.issuer = OpenSSL::X509::Name.parse(subject)
@@ -260,7 +261,7 @@ def gen_x509_cert(hostname)
   else
     File.open("#{key_dir}/#{hostname}.crt", 'w') { |file| file.puts cert.to_pem }
     File.open("#{key_dir}/#{hostname}.key", 'w') { |file| file.puts rsa_key.to_pem }
-    puts "Certificate created for #{hostname}.#{wombat['domain']}"
+    puts "Certificate created for #{node['demo']['domain-prefix']}#{hostname}.#{wombat['domain']}"
   end
 end
 

@@ -17,8 +17,8 @@ end
 
 directory '/etc/chef'
 
-chef_server_url = "https://chef-server.#{node['demo']['domain']}/organizations/#{node['demo']['org']}"
-delivery_server_url = "https://delivery.#{node['demo']['domain']}"
+chef_server_url = "https://#{node['demo']['domain-prefix']}chef-server.#{node['demo']['domain']}/organizations/#{node['demo']['org']}"
+delivery_server_url = "https://#{node['demo']['domain-prefix']}delivery.#{node['demo']['domain']}"
 
 template '/etc/chef/client.rb' do
   source 'client.rb.erb'
@@ -37,7 +37,7 @@ end
 directory '/etc/chef/trusted_certs'
 
 %w(chef-server delivery compliance).each do |f|
-  file "/etc/chef/trusted_certs/#{f}_#{node['demo']['domain'].tr('.','_')}.crt" do
+  file "/etc/chef/trusted_certs/#{node['demo']['domain-prefix']}#{f}_#{node['demo']['domain'].tr('.','_')}.crt" do
     content IO.read("/tmp/#{f}.crt")
   end
 end

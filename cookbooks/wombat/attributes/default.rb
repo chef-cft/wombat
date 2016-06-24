@@ -1,3 +1,4 @@
+default['demo']['domain-prefix'] = ''
 default['demo']['domain'] = 'chordata.biz'
 default['demo']['enterprise'] = 'mammalia'
 default['demo']['org'] = 'diprotodontia'
