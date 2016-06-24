@@ -232,7 +232,7 @@ def gen_x509_cert(hostname)
   rsa_key = OpenSSL::PKey::RSA.new(2048)
   public_key = rsa_key.public_key
 
-  subject = "/C=AU/ST=New South Wales/L=Sydney/O=#{wombat['org']}/OU=wombats/CN=#{node['demo']['domain-prefix']}#{hostname}.#{wombat['domain']}"
+  subject = "/C=AU/ST=New South Wales/L=Sydney/O=#{wombat['org']}/OU=wombats/CN=#{wombat['domain-prefix']}#{hostname}.#{wombat['domain']}"
 
   cert = OpenSSL::X509::Certificate.new
   cert.subject = cert.issuer = OpenSSL::X509::Name.parse(subject)
