@@ -22,6 +22,7 @@ namespace :cookbook do
     base = args[:template].split('.json')[0]
     if has_cookbook.any? { |t| args[:template].include? t }
       sh "rm -rf vendored-cookbooks/#{base}"
+      sh "rm -rf cookbooks/#{base}/Berksfile.lock"
       sh "berks vendor -b cookbooks/#{base}/Berksfile vendored-cookbooks/#{base}"
     else
       puts 'No cookbooks - not vendoring'

@@ -30,8 +30,8 @@ end
 include_recipe 'wombat::etc-hosts'
 
 compliance_server "compliance" do
-  package_version node['demo']['versions']['compliance']
-  package_channel :stable
+  package_channel node['demo']['versions']['compliance'].split('-')[0].to_sym
+  package_version node['demo']['versions']['compliance'].split('-')[1]
   admin_user 'admin'
   admin_pass node['demo']['users']['admin']['password']
   config node['ccc']['config'].to_hash

@@ -34,9 +34,8 @@ end
 end
 
 chef_ingredient 'chef-server' do
-  channel :stable
-  action :install
-  version node['demo']['versions']['chef-server']
+  channel node['demo']['versions']['chef-server'].split('-')[0].to_sym
+  version node['demo']['versions']['chef-server'].split('-')[1]
 end
 
 chef_ingredient 'chef-server' do
@@ -45,8 +44,8 @@ end
 
 chef_ingredient 'push-jobs-server' do
   channel :stable
-  action :install
   version :latest
+  action  :install
 end
 
 chef_ingredient 'push-jobs-server' do
@@ -55,8 +54,8 @@ end
 
 chef_ingredient 'manage' do
   channel :stable
-  action :install
   version :latest
+  action  :install
 end
 
 chef_ingredient 'chef-server' do
