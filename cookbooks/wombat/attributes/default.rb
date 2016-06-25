@@ -6,11 +6,11 @@ default['demo']['build-nodes'] = 1
 default['demo']['infranodes'] = {}
 default['demo']['admin-user'] = 'ubuntu'
 default['demo']['versions'].tap do |pkg|
-  pkg['chefdk'] = '0.15.15'
-  pkg['chef-server'] = '12.6.0'
-  pkg['delivery'] = '0.4.317'
-  pkg['compliance'] = '1.3.1'
-  pkg['chef'] = '12.11.18'
+  pkg['chef'] = 'stable-12.11.18'
+  pkg['chefdk'] = 'stable-0.15.15'
+  pkg['chef-server'] = 'stable-12.6.0'
+  pkg['delivery'] = 'stable-0.4.317'
+  pkg['compliance'] = 'stable-1.3.1'
 end
 
 default['demo']['hosts'] = {

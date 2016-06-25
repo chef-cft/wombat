@@ -3,7 +3,8 @@ chef_server_url = "https://#{node['demo']['domain_prefix']}chef-server.#{node['d
 conf_d_dir = File.join(home, '.chef', 'config.d')
 
 chef_ingredient 'chefdk' do
-  version node['demo']['versions']['chefdk']
+  channel node['demo']['versions']['chefdk'].split('-')[0].to_sym
+  version node['demo']['versions']['chefdk'].split('-')[1]
   action :install
 end
 

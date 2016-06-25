@@ -10,9 +10,9 @@ append_if_no_line "Add certificate to authorized_keys" do
 end
 
 chef_ingredient 'chef' do
-  channel :stable
+  channel node['demo']['versions']['chef'].split('-')[0].to_sym
+  version node['demo']['versions']['chef'].split('-')[1]
   action :install
-  version node['demo']['versions']['chef']
 end
 
 directory '/etc/chef'

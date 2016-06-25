@@ -37,15 +37,15 @@ execute 'chmod' do
 end
 
 chef_ingredient 'chefdk' do
-  channel :stable
+  channel node['demo']['versions']['chefdk'].split('-')[0].to_sym
+  version node['demo']['versions']['chefdk'].split('-')[1]
   action :install
-  version node['demo']['versions']['chefdk']
 end
 
 chef_ingredient 'delivery' do
-  channel :stable
+  channel node['demo']['versions']['delivery'].split('-')[0].to_sym
+  version node['demo']['versions']['delivery'].split('-')[1]
   action :install
-  version node['demo']['versions']['delivery']
 end
 
 directory '/var/opt/delivery'
