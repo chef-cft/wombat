@@ -134,7 +134,7 @@ namespace :cfn do
   end
 
   desc 'Build AMIs, update lockfile, and create CFN template'
-  task do_all: ['packer:build_amis', 'packer:update_amis', 'cfn:create_template']
+  task do_all: ['packer:build_amis', 'update_lock', 'cfn:create_template']
 end
 
 namespace :tf do
