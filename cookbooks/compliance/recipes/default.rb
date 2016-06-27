@@ -38,6 +38,13 @@ compliance_server "compliance" do
   action :install
 end
 
+template "/etc/chef-compliance/chef-compliance.rb" do
+  source 'chef-compliance.rb.erb'
+  variables(
+    :name => "#{node['demo']['domain_prefix']}compliance.#{node['demo']['domain']}"
+  )
+end
+
 delete_lines "Remove loopback entry we added earlier" do
   path "/etc/hosts"
   pattern "^127\.0\.0\.1.*localhost.*#{node['demo']['domain_prefix']}compliance\.#{node['demo']['domain']}.*compliance"
