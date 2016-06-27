@@ -330,7 +330,7 @@ def parallel_pack(templates)
 end
 
 def infranodes
-  wombat['infranodes'] || {}
+  wombat['infranodes'].sort || {}
 end
 
 def build_nodes
