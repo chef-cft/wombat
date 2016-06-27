@@ -10,7 +10,7 @@
     "azure_storage_account": "{{env `AZURE_STORAGE_ACCOUNT`}}",
     "azure_resource_group": "{{env `AZURE_RESOURCE_GROUP`}}",
     "source_ami": "ami-8c4cb0ec",
-    "chef": "12.11.18",
+    "chef": "stable-12.11.18",
     "domain": "chordata.biz",
     "domain_prefix": "",
     "org": "diprotodontia",
