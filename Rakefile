@@ -190,14 +190,14 @@ def packer_build(template, builder, options={})
   end
   cmd = %W(packer build packer/#{template}.json | tee packer/logs/ami-#{log_name}.log)
   cmd.insert(2, "--only #{builder}")
-  cmd.insert(2, "--var org=#{wombat['org']}") unless template =~ /delivery/
+  cmd.insert(2, "--var org=#{wombat['org']}")
   cmd.insert(2, "--var domain=#{wombat['domain']}")
   cmd.insert(2, "--var domain_prefix=#{wombat['domain_prefix']}")
-  cmd.insert(2, "--var enterprise=#{wombat['enterprise']}") unless template =~ /chef-server/
-  cmd.insert(2, "--var chefdk=#{wombat['products']['chefdk']}") unless template =~ /chef-server/
-  cmd.insert(2, "--var delivery=#{wombat['products']['delivery']}") if template =~ /delivery/
-  cmd.insert(2, "--var compliance=#{wombat['products']['compliance']}") if template =~ /compliance/
-  cmd.insert(2, "--var chef-server=#{wombat['products']['chef-server']}") if template =~ /chef-server/
+  cmd.insert(2, "--var enterprise=#{wombat['enterprise']}")
+  cmd.insert(2, "--var chefdk=#{wombat['products']['chefdk']}")
+  cmd.insert(2, "--var delivery=#{wombat['products']['delivery']}")
+  cmd.insert(2, "--var compliance=#{wombat['products']['compliance']}")
+  cmd.insert(2, "--var chef-server=#{wombat['products']['chef-server']}")
   cmd.insert(2, "--var node-name=#{options['node-name']}") if template =~ /infranodes/
   cmd.insert(2, "--var node-number=#{options['node-number']}") if template =~ /build-node/
   cmd.insert(2, "--var build-nodes=#{wombat['build-nodes']}")
