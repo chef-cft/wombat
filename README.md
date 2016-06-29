@@ -99,7 +99,7 @@ Upload the created template from the `cloudformation` directory.
 
 ```
 # Deploy CloudFormation template
-$ rake aws:deploy_stack
+$ rake cfn:deploy_stack
 ```
 
 ##### 8) Login to Windows Workstation
