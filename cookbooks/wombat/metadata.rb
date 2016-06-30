@@ -7,3 +7,7 @@ long_description 'Installs/Configures wombat'
 version '0.1.0'
 
 depends 'hostsfile'
+depends 'apt'
+depends 'chef-ingredient'
+depends 'git'
+depends 'packman'
