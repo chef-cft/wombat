@@ -2,19 +2,18 @@
 require 'securerandom'
 
 include_recipe 'apt'
-include_recipe 'git'
-include_recipe 'packman'
-
-gem_package 'parallel' do
-  action :install
-end
 
 chef_ingredient 'chefdk' do
   channel node['demo']['versions']['chefdk'].split('-')[0].to_sym
   version node['demo']['versions']['chefdk'].split('-')[1]
 end
 
+gem_package 'parallel' do
+  action :install
+end
+
 workspace_dir = "/tmp/wombat-#{SecureRandom.hex(8)}"
+output_dir = "/tmp/wombat/output"
 aws_settings = node['wombat']['packer']['aws']
 azure_settings = node['wombat']['packer']['azure']
 
@@ -44,8 +43,17 @@ file File.join(workspace_dir, 'wombat.yml') do
   content config_hash.to_yaml
 end
 
+execute 'clean packer/logs dir' do
+  command 'rm -rf packer/logs/*'
+  cwd workspace_dir
+  live_stream true
+  not_if do
+    Dir.glob("#{workspace_dir}/packer/logs/*.log").empty?
+  end
+end
+
 execute 'build amis with rake' do
-  command 'rake packer:build_amis'
+  command 'rake packer:build_amis_parallel'
   cwd workspace_dir
   live_stream true
   environment(
@@ -59,4 +67,26 @@ execute 'build amis with rake' do
       'AZURE_RESOURCE_GROUP' => azure_settings['resource_group'],
       'AZURE_STORAGE_ACCOUNT' => azure_settings['storage_account']
   )
+end
+
+execute 'update lock file' do
+  command 'rake update_lock && cat wombat.lock'
+  cwd workspace_dir
+  live_stream true
+end
+
+execute 'create cfn template' do
+  command 'rake cfn:create_template'
+  cwd workspace_dir
+  live_stream true
+end
+
+directory output_dir
+
+file File.join(output_dir, 'wombat.lock') do
+  content IO.read(File.join(workspace_dir, 'wombat.lock'))
+end
+
+file File.join(output_dir, 'cfn_template.json') do
+  content IO.read(File.join(workspace_dir, 'cloudformation', 'wombat.json'))
 end

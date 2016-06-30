@@ -298,6 +298,7 @@ def parallel_pack(templates)
   templates.each do |template_name|
     if template_name == 'infranodes'
       infranodes.each do |name, _rl|
+        next if name.empty?
         proc_hash[name] = {
           'template' => 'infranodes',
           'options' => {
@@ -330,7 +331,7 @@ def parallel_pack(templates)
 end
 
 def infranodes
-  if wombat['infranodes']
+  unless wombat['infranodes'].empty?
     wombat['infranodes'].sort
   else
     {}

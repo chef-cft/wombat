@@ -4,4 +4,4 @@ metadata
 
 cookbook 'wombat', path: '../wombat'
 cookbook 'mock-data', path: 'test/fixtures/cookbooks/mock-data'
-cookbook 'packman', git: 'https://github.com/chef-partners/packman'
+
