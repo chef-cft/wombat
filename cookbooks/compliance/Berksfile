@@ -5,4 +5,3 @@ metadata
 cookbook 'ccc', git: 'https://github.com/cheeseplus/ccc.git', branch: "updates"
 cookbook 'wombat', path: '../wombat'
 cookbook 'mock-data', path: 'test/fixtures/cookbooks/mock-data'
-cookbook 'packman', git: 'https://github.com/chef-partners/packman'

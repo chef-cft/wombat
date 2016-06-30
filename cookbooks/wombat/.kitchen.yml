@@ -1,6 +1,9 @@
 ---
 driver:
   name: vagrant
+  customize:
+    cpus: 2
+    memory: 2048
   synced_folders:
     - ["../../", "/tmp/wombat"]
 
@@ -18,10 +21,15 @@ platforms:
 suites:
   - name: default
     run_list:
+      - recipe[git::default]
+      - recipe[packman::default]
       - recipe[wombat::default]
     attributes:
       demo:
         build-nodes: 1
+        versions:
+          delivery: current-0.4.553
+          chefdk: stable-0.15.15
       wombat:
         packer:
           aws:

@@ -3,4 +3,3 @@ source 'https://supermarket.chef.io'
 metadata
 
 cookbook 'wombat', path: '../wombat'
-cookbook 'packman', git: 'https://github.com/chef-partners/packman'
