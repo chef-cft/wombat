@@ -52,6 +52,21 @@ execute 'clean packer/logs dir' do
   end
 end
 
+execute 'clean certs and keys' do
+  command 'rm -rf packer/keys/*'
+  cwd workspace_dir
+  live_stream true
+  not_if do
+    Dir.glob("#{workspace_dir}/packer/keys/*").empty?
+  end
+end
+
+execute 'generate certs and keys' do
+  command 'rake keys:create'
+  cwd workspace_dir
+  live_stream true
+end
+
 execute 'build amis with rake' do
   command 'rake packer:build_amis_parallel'
   cwd workspace_dir
