@@ -6,3 +6,4 @@ cookbook 'delivery_build', git: "https://github.com/andrewelizondo/delivery_buil
 cookbook 'delivery-base', git: "https://github.com/chef-cookbooks/delivery-base"
 cookbook 'mock-data', path: 'test/fixtures/cookbooks/mock-data'
 cookbook 'wombat', path: '../wombat'
+cookbook 'packman', git: 'https://github.com/chef-partners/packman'
