@@ -97,11 +97,16 @@ execute 'create cfn template' do
 end
 
 directory output_dir
+directory File.join(output_dir, 'keys')
 
 file File.join(output_dir, 'wombat.lock') do
-  content IO.read(File.join(workspace_dir, 'wombat.lock'))
+  content lazy { IO.read(File.join(workspace_dir, 'wombat.lock')) }
 end
 
 file File.join(output_dir, 'cfn_template.json') do
-  content IO.read(File.join(workspace_dir, 'cloudformation', 'wombat.json'))
+  content lazy { IO.read(File.join(workspace_dir, 'cloudformation', 'wombat.json')) }
+end
+
+file File.join(output_dir, 'private.pem') do
+  content lazy { IO.read(File.join(workspace_dir, 'packer', 'keys', 'private.pem'))}
 end
