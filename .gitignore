@@ -13,3 +13,4 @@ wombat.yml
 packer/keys/*
 *.lock
 infranodes-info.json
+output
