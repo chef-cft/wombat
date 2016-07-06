@@ -103,17 +103,19 @@ end
 
 node['demo']['users'].each do |user, info|
   if user != 'admin'
-    execute 'delivery-ctl create-user' do
+    execute "delivery-ctl create-user #{user}" do
       command "delivery-ctl create-user #{node['demo']['enterprise']} #{user} --password #{info['password']}"
       action :run
       retries 5
       retry_delay 2
+      #not_if "delivery-ctl list-users | grep #{node['demo']['enterprise']}"
     end
   else
     Chef::Log.info('Admin user already created with create-enterprise')
   end
 end
 
+include_recipe 'delivery::update-users'
 include_recipe 'wombat::etc-hosts'
 
 delete_lines "Remove loopback entry we added earlier" do
