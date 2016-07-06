@@ -29,6 +29,11 @@ end
   end
 end
 
+file "#{home}/.ssh/id_rsa.pub" do
+  content lazy { IO.read("C:/Windows/Temp/public.pub") }
+  action :create
+end
+
 %W(#{home}/.chef/private.pem #{home}/.ssh/id_rsa).each do |path|
   file path do
     content lazy { IO.read("C:/Windows/Temp/private.pem") }
