@@ -23,22 +23,30 @@ module Delivery
     #
     def delivery_api
       @api ||= begin
-        Delivery::API.new(delivery_fqdn, 'admin',delivery_admin_password, delivery_enterprise)
+        Delivery::API.new(delivery_fqdn, 'admin', delivery_admin_password, delivery_enterprise)
       end
     end
-    
+
     # Get delivery enterprise
-    
+
     def delivery_fqdn
-      "#{node['demo']['domain_prefix']}delivery.#{node['demo']['domain']}"      
+      "#{node['demo']['domain_prefix']}delivery.#{node['demo']['domain']}"
     end
-    
+
+    def delivery_organization
+      node['demo']['org']
+    end
+
     def delivery_enterprise
       node['demo']['enterprise']
     end
-    
+
     def delivery_admin_password
       node['demo']['users']['admin']['password']
+    end
+
+    def return_key(key)
+      key =~ /\// ? File.read(key) : key
     end
   end
 end
