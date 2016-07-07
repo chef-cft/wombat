@@ -9,3 +9,5 @@ default['demo']['pkgs'] = %w(
   gitextensions
   git-credential-manager-for-windows
 )
+
+default['demo']['tutorial_url'] = 'https://learn.chef.io/tutorials/#chef-automate'

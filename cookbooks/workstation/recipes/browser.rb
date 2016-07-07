@@ -10,7 +10,8 @@ template "#{home}/bookmarks.html" do
     delivery_url: "#{delivery_url}/#/dashboard",
     insights_url: "https://#{node['demo']['domain_prefix']}delivery.#{node['demo']['domain']}/insights",
     chef_server_url: "#{chef_server_url}/nodes",
-    compliance_url: "#{compliance_url}/"
+    compliance_url: "#{compliance_url}/",
+    tutorial_url: node['demo']['tutorial_url']
   )
 end
 
