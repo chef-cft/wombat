@@ -4,7 +4,7 @@ maintainer_email 'cheeseplus@chef.io'
 license 'Apache 2.0'
 description 'Configures a Windows workstation'
 long_description 'Configures a Windows workstation'
-version '0.1.0'
+version '0.1.1'
 supports 'windows'
 
 depends 'chocolatey'

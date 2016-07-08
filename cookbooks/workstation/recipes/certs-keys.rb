@@ -12,7 +12,7 @@ template "#{home}/.ssh/config" do
   source 'ssh_config.erb'
   variables(
     home: home,
-    org: node['demo']['org']
+    ent: node['demo']['enterprise']
   )
 end
 
