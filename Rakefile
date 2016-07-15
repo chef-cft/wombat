@@ -331,10 +331,10 @@ def parallel_pack(templates)
 end
 
 def infranodes
-  unless wombat['infranodes'].empty?
+  unless wombat['infranodes'].nil?
     wombat['infranodes'].sort
   else
-    {}
+    puts 'No infranodes listed in wombat.yml'
   end
 end
 
