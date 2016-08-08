@@ -42,8 +42,12 @@ namespace :packer do
   task :build_infra do
     Rake::Task['cookbook:vendor'].invoke('infranodes')
     Rake::Task['cookbook:vendor'].reenable
-    infranodes.each do |name, _rl|
-      sh packer_build('infranodes', 'amazon-ebs', {'node-name' => name})
+    unless infranodes.nil?
+      infranodes.each do |name, _rl|
+        sh packer_build('infranodes', 'amazon-ebs', {'node-name' => name})
+      end
+    else
+      puts 'No infranodes to build!'
     end
   end
 
@@ -331,10 +335,10 @@ def parallel_pack(templates)
 end
 
 def infranodes
-  unless wombat['infranodes'].empty?
+  unless wombat['infranodes'].nil?
     wombat['infranodes'].sort
   else
-    {}
+    puts 'No infranodes listed in wombat.yml'
   end
 end
 
