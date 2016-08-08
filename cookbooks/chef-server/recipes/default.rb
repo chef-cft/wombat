@@ -40,6 +40,7 @@ end
 
 chef_ingredient 'chef-server' do
   action :reconfigure
+  config "api_fqdn 'chef-server.#{node['demo']['domain']}'"
 end
 
 chef_ingredient 'push-jobs-server' do
