@@ -34,16 +34,16 @@ Create a wombat.yml - there is an example `wombat.example.yml` for reference and
 ```
 ---
 name: wombat
-domain: chordata.biz
-enterprise: mammalia
-org: diprotodontia
+domain: animals.biz
+enterprise: mammals
+org: marsupials
 build-nodes: '1'
 version: 0.0.12
 products:
-  chef-server: 12.6.0
-  chefdk: 0.14.25
+  chef-server: 12.7.0
+  chefdk: 0.16.28
   compliance: 1.3.1
-  delivery: 0.4.437
+  delivery: 0.5.1
 aws:
   region: ap-southeast-2
   az: ap-southeast-2c
@@ -77,7 +77,7 @@ $ rake packer:build_ami[chef-server]
 ```
 # Update wombat.lock with latest AMIs from packer logs
 $ rake update_lock
-
+Updating lockfile based on most recent packer logs
 ```
 
 ##### Create CloudFormation template
@@ -85,6 +85,8 @@ $ rake update_lock
 ```
 # Create CloudFormation template from wombat.json
 $ rake cfn:create_template
+Generating CloudFormation template from lockfile
+Generated cloudformation/wombat.json
 ```
 
 ##### Deploy CloudFormation template
@@ -99,10 +101,17 @@ Upload the created template from the `cloudformation` directory.
 
 ```
 # Deploy CloudFormation template
-$ rake cfn:deploy_stack
+$ rake cfn:create_stack
+Creating CFN stack: wombat-TIMESTAMP
 ```
 
 ##### 8) Login to Windows Workstation
+
+```
+# Get Windows Workstation(s) IP(s)
+$ rake cfn:list_ips[wombat-TIMESTAMP]
+WindowsWorkstation (i-xxxxxxxx) => XX.XXX.XX.XXX
+```
 
 From the AWS CloudFormation UI, select the Outputs tab for the desired stack.
 Use an RDP compatible client to login to the workstation with the embedded credentials.

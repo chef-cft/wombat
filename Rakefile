@@ -4,6 +4,7 @@ require 'openssl'
 require 'net/ssh'
 require 'yaml'
 require 'parallel'
+require 'aws-sdk'
 
 namespace :keys do
   desc 'create keys'
@@ -18,7 +19,7 @@ end
 namespace :cookbook do
   desc 'Vendor cookbooks for a template'
   task :vendor, :template do |_t, args|
-    has_cookbook = %w(workstation build-node delivery compliance infranodes chef-server)
+    has_cookbook = %w(build-node compliance chef-server delivery infranodes workstation)
     base = args[:template].split('.json')[0]
     if has_cookbook.any? { |t| args[:template].include? t }
       sh "rm -rf vendored-cookbooks/#{base}"
@@ -128,9 +129,19 @@ namespace :cfn do
     puts "Generated cloudformation/#{@demo}.json"
   end
 
-  desc 'Deploy a CloudFormation Stack from template'
-  task :deploy_stack do
-    sh create_stack(lock['name'], lock['aws']['region'], lock['aws']['keypair'])
+  desc 'Deploy a CloudFormation stack from template'
+  task :create_stack do
+    create_stack(lock['name'])
+  end
+
+  desc 'Destroy a CloudFormation stack'
+  task :destroy_stack, [:stack_name] do |task, args|
+    destroy_stack(args[:stack_name])
+  end
+
+  desc 'List workstation IPs of a CloudFormation stack'
+  task :list_ips, [:stack_name] do |task, args|
+    get_workstation_ips(args[:stack_name])
   end
 
   desc 'Build AMIs, update lockfile, and create CFN template'
@@ -188,6 +199,14 @@ def packer_build(template, builder, options={})
   else
     source_ami = wombat['aws']['source_ami']['ubuntu']
   end
+
+  if ENV['AWS_REGION']
+    puts "Region set by environment: #{ENV['AWS_REGION']}"
+  else
+    puts "$AWS_REGION not set, setting to #{wombat['aws']['region']}"
+    ENV['AWS_REGION'] = wombat['aws']['region']
+  end
+
   cmd = %W(packer build packer/#{template}.json | tee packer/logs/ami-#{log_name}.log)
   cmd.insert(2, "--only #{builder}")
   cmd.insert(2, "--var org=#{wombat['org']}")
@@ -205,15 +224,32 @@ def packer_build(template, builder, options={})
   cmd.join(' ')
 end
 
-def create_stack(stack, region, keypair)
-  template_file = "file://#{File.dirname(__FILE__)}/cloudformation/#{stack}.json"
+def create_stack(stack_name)
+  template_file = File.read("#{File.dirname(__FILE__)}/cloudformation/#{stack_name}.json")
   timestamp = Time.now.gmtime.strftime('%Y%m%d%H%M%S')
-  cmd = %w(aws cloudformation create-stack)
-  cmd.insert(3, "--template-body \"#{template_file}\"")
-  cmd.insert(3, "--parameters ParameterKey='KeyName',ParameterValue='#{keypair}'")
-  cmd.insert(3, "--region #{region}")
-  cmd.insert(3, "--stack-name #{stack}-#{timestamp}")
-  cmd.join(' ')
+  cfn = Aws::CloudFormation::Client.new(region: lock['aws']['region'])
+
+  puts "Creating CFN stack: #{stack_name}-#{timestamp}\n"
+  resp = cfn.create_stack({
+    stack_name: "#{stack_name}-#{timestamp}",
+    template_body: template_file,
+    capabilities: ["CAPABILITY_IAM"],
+    parameters: [
+      {
+        parameter_key: "KeyName",
+        parameter_value: lock['aws']['keypair'],
+      }
+    ]
+  })
+end
+
+def destroy_stack(stack_name)
+  cfn = Aws::CloudFormation::Client.new(region: lock['aws']['region'])
+
+  resp = cfn.delete_stack({
+    stack_name: stack_name,
+  })
+  puts "Destroying CFN stack: #{stack_name}"
 end
 
 def wombat
@@ -285,7 +321,7 @@ def gen_ssh_key
 end
 
 def templates
-  %w(build-node infranodes compliance chef-server delivery workstation)
+  %w(build-node compliance chef-server delivery infranodes workstation)
 end
 
 def parse_ami(instance)
@@ -355,5 +391,31 @@ def create_infranodes_json
   return if current_state == infranodes # yay idempotence
   File.open('packer/files/infranodes-info.json', 'w') do |f|
     f.puts JSON.pretty_generate(infranodes)
+  end
+end
+
+def get_stack_instances(stack_name)
+  cfn = Aws::CloudFormation::Client.new
+  resp = cfn.describe_stack_resources({
+    stack_name: stack_name,
+    })
+
+  instances = {}
+  resp.stack_resources.map do |resource|
+    if resource.resource_type == 'AWS::EC2::Instance'
+      instances[resource.logical_resource_id] = resource.physical_resource_id
+    end
+  end
+  instances
+end
+
+def get_workstation_ips(stack_name)
+  ec2 = Aws::EC2::Resource.new
+  instances = get_stack_instances(stack_name)
+  instances.each do |name, id|
+    instance = ec2.instance(id)
+    if /Workstation/.match(name)
+      puts "#{name} (#{id}) => #{instance.public_ip_address}"
+    end
   end
 end
