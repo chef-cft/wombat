@@ -1,8 +1,8 @@
-Host delivery-git
-  HostName delivery
+Host <%= @server %>
+  HostName <%= @server %>
   Port 8989
-  User delivery@<%= @ent %>
-  IdentityFile <%= @home %>\.ssh\id_rsa
+  User <%= @user -%>@<%= @ent %>
+  IdentityFile <%= @home -%>/.ssh/id_rsa
   IdentitiesOnly yes
   KexAlgorithms +diffie-hellman-group1-sha1
   StrictHostKeyChecking no
@@ -10,7 +10,7 @@ Host delivery-git
 Host *
   Port 22
   User ubuntu
-  IdentityFile <%= @home %>\.ssh\id_rsa
+  IdentityFile <%= @home -%>/.ssh/id_rsa
   IdentitiesOnly yes
   KexAlgorithms +diffie-hellman-group1-sha1
   StrictHostKeyChecking no
