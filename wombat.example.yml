@@ -1,11 +1,11 @@
 ---
 name: wombat
 # Uncomment domain_prefix if you wish to prepend your generated domain.
-# Ex: The below example would create foo-chef-server.chordata.biz.
+# Ex: The below example would create foo-chef-server.animals.biz.
 # domain_prefix: foo-
-domain: chordata.biz
-enterprise: mammalia
-org: diprotodontia
+domain: animals.biz
+enterprise: mammals
+org: marsupials
 build-nodes: '1'
 infranodes:
   # Add a list of infrastructure nodes here with their associated run list to have these nodes precreated on the Chef Server
@@ -15,12 +15,12 @@ infranodes:
   #   - recipe[bacon::chewy]
   # delivered:
   #   - recipe[bacon::crispy]
-version: 0.0.12
+version: 0.1.0
 products:
-  chef-server: stable-12.6.0
-  chefdk: stable-0.15.15
+  chef-server: stable-12.8.0
+  chefdk: stable-0.16.28
   compliance: stable-1.3.1
-  delivery: stable-0.4.437
+  delivery: stable-0.5.1
 aws:
   region: ap-southeast-2
   az: ap-southeast-2c
