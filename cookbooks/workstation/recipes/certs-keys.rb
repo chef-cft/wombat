@@ -12,7 +12,9 @@ template "#{home}/.ssh/config" do
   source 'ssh_config.erb'
   variables(
     home: home,
-    ent: node['demo']['enterprise']
+    server: "#{node['demo']['domain_prefix']}delivery.#{node['demo']['domain']}",
+    ent: node['demo']['enterprise'],
+    user: node['demo']['users']['delivery']['first']
   )
 end
 
