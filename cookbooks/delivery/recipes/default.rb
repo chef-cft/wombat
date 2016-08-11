@@ -122,7 +122,3 @@ delete_lines "Remove loopback entry we added earlier" do
   path "/etc/hosts"
   pattern "^127\.0\.0\.1.*localhost.*#{node['demo']['domain_prefix']}delivery\.#{node['demo']['domain']}.*delivery"
 end
-
-file '/var/opt/delivery/license/delivery.license' do
-  action :delete
-end
