@@ -18,7 +18,7 @@ platforms:
     driver:
       image_id: ami-1719f677
     transport:
-      ssh_key: /Users/cheeseplus/.ssh/<%= ENV["EC2_SSH_KEY_PATH"] %>
+      ssh_key: <%= ENV["EC2_SSH_KEY_PATH"] %>
 
 suites:
   - name: default
