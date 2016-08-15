@@ -4,7 +4,7 @@ write-output "Running User Data Script"
 write-host "(host) Running User Data Script"
 
 # set administrator password
-cmd.exe /c net user Administrator RL9@T40BTmXh
+cmd.exe /c net user Administrator <%= @workstation_passwd %>
 
 # RDP
 cmd.exe /c netsh advfirewall firewall add rule name="Open Port 3389" dir=in action=allow protocol=TCP localport=3389

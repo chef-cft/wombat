@@ -3,15 +3,23 @@
     "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
     "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
     "aws_region": "{{env `AWS_REGION`}}",
+    "azure_client_id": "{{env `AZURE_CLIENT_ID`}}",
+    "azure_tenant_id": "{{env `AZURE_TENANT_ID`}}",
+    "azure_client_secret": "{{env `AZURE_CLIENT_SECRET`}}",
+    "azure_subscription_id": "{{env `AZURE_SUBSCRIPTION_ID`}}",
+    "azure_storage_account": "{{env `AZURE_STORAGE_ACCOUNT`}}",
+    "azure_resource_group": "{{env `AZURE_RESOURCE_GROUP`}}",
     "source_ami": "ami-87c037e7",
-    "winrm_username": "Administrator",
-    "winrm_password": "RL9@T40BTmXh",
-    "domain": "animals.biz",
+    "chefdk": "0.16.28",
     "domain_prefix": "",
+    "domain": "animals.biz",
     "enterprise": "mammals",
     "org": "marsupials",
     "build-nodes": "1",
-    "chefdk": "0.16.28"
+    "workstations": "1",
+    "workstation-number": "1",
+    "winrm_username": "Administrator",
+    "winrm_password": "RL9@T40BTmXh"
   },
 
   "builders": [
@@ -28,7 +36,7 @@
       "winrm_username": "{{user `winrm_username`}}",
       "winrm_password": "{{user `winrm_password`}}",
       "user_data_file": "{{template_dir}}/scripts/bootstrap-aws.txt",
-      "ami_name": "workstation-{{timestamp}}"
+      "ami_name": "workstation-{{user `workstation-number`}}-{{timestamp}}"
     }
   ],
 
@@ -54,6 +62,7 @@
           "domain": "{{user `domain`}}",
           "enterprise": "{{user `enterprise`}}",
           "org": "{{user `org`}}",
+          "workstation-number": "{{user `workstation-number`}}",
           "build-nodes": "{{user `build-nodes`}}",
           "versions": {
             "chefdk": "{{user `chefdk`}}"

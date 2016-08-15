@@ -61,6 +61,16 @@ namespace :packer do
     end
   end
 
+  desc 'Build all workstations'
+  task :build_workstations do
+    Rake::Task['cookbook:vendor'].invoke('workstation')
+    Rake::Task['cookbook:vendor'].reenable
+    bootstrap_aws
+    workstations.each do |name, num|
+      sh packer_build('workstation', 'amazon-ebs', {'workstation-number' => num})
+    end
+  end
+
   desc 'Build all AMIs'
   task :build_amis do
     templates.each do |template|
@@ -91,6 +101,11 @@ task :update_lock do
       copy['amis'][region].store('build-node', {})
       1.upto(wombat['build-nodes'].to_i) do |i|
         copy['amis'][region]['build-node'].store(i.to_s, parse_ami("build-node-#{i}"))
+      end
+    elsif instance == 'workstation'
+      copy['amis'][region].store('workstation', {})
+      1.upto(wombat['build-nodes'].to_i) do |i|
+        copy['amis'][region]['workstation'].store(i.to_s, parse_ami("workstation-#{i}"))
       end
     elsif instance == 'infranodes'
       copy['amis'][region].store('infranodes', {})
@@ -124,7 +139,11 @@ namespace :cfn do
     infranodes.each do |name, _rl|
       @infra[name] = lock['amis'][region]['infranodes'][name]
     end
-    @workstation_ami = lock['amis'][region]['workstation']
+    @workstations = lock['workstations'].to_i
+    @workstation_ami = {}
+    1.upto(@workstations) do |i|
+      @workstation_ami[i] = lock['amis'][region]['workstation'][i.to_s]
+    end
     @availability_zone = lock['aws']['az']
     @demo = lock['name']
     @version = lock['version']
@@ -192,6 +211,8 @@ def packer_build(template, builder, options={})
   create_infranodes_json
   if template == 'build-node'
      log_name = "build-node-#{options['node-number']}"
+  elsif template == 'workstation'
+     log_name = "workstation-#{options['workstation-number']}"
   elsif template == 'infranodes'
      log_name = "infranodes-#{options['node-name']}"
   else
@@ -224,6 +245,8 @@ def packer_build(template, builder, options={})
   cmd.insert(2, "--var node-name=#{options['node-name']}") if template =~ /infranodes/
   cmd.insert(2, "--var node-number=#{options['node-number']}") if template =~ /build-node/
   cmd.insert(2, "--var build-nodes=#{wombat['build-nodes']}")
+  cmd.insert(2, "--var workstation-number=#{options['workstation-number']}") if template =~ /workstation/
+  cmd.insert(2, "--var workstations=#{wombat['workstations']}") if template =~ /workstation/
   cmd.insert(2, "--var source_ami=#{source_ami}")
   cmd.join(' ')
 end
@@ -355,6 +378,15 @@ def parallel_pack(templates)
           }
         }
       end
+    elsif template_name == 'workstation'
+      build_nodes.each do |name, num|
+        proc_hash[name] = {
+          'template' => 'workstation',
+          'options' => {
+            'workstation-number' => num
+          }
+        }
+      end
     else
       proc_hash[template_name] = {
         'template' => template_name,
@@ -384,6 +416,14 @@ def build_nodes
     build_nodes["build-node-#{i}"] = i
   end
   build_nodes
+end
+
+def workstations
+  workstations = {}
+  1.upto(wombat['workstations'].to_i) do |i|
+    workstations["workstation-#{i}"] = i
+  end
+  workstations
 end
 
 def create_infranodes_json
@@ -422,4 +462,12 @@ def get_workstation_ips(stack_name)
       puts "#{name} (#{id}) => #{instance.public_ip_address}"
     end
   end
+end
+
+def bootstrap_aws
+  puts 'Generating bootstrap script from template'
+  @workstation_passwd = wombat['workstation-passwd']
+  rendered = ERB.new(File.read('packer/scripts/bootstrap-aws.erb'), nil, '-').result
+  File.open("packer/scripts/bootstrap-aws.txt", 'w') { |file| file.puts rendered }
+  puts "packer/scripts/bootstrap-aws.txt"
 end

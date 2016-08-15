@@ -38,6 +38,8 @@ domain: animals.biz
 enterprise: mammals
 org: marsupials
 build-nodes: '1'
+workstation-passwd: 'RL9@T40BTmXh'
+workstations: '1'
 version: 0.0.12
 products:
   chef-server: 12.7.0
@@ -49,6 +51,8 @@ aws:
   az: ap-southeast-2c
   keypair: keypair-ap-southeast-2
 ```
+
+*NOTE:* workstation-passwd must meet the minimum Microsoft [Complexity Requirements](https://technet.microsoft.com/en-us/library/hh994562(v=ws.11).aspx)
 
 ##### Generate certificates and SSH Keypair
 

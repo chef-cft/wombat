@@ -13,6 +13,7 @@
     "chefdk": "0.16.28",
     "domain_prefix": "",
     "domain": "animals.biz",
+    "enterprise": "mammals",
     "org": "marsupials",
     "node-number": "1",
     "build-nodes": "1"
