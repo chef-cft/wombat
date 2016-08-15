@@ -6,12 +6,12 @@
     "source_ami": "ami-87c037e7",
     "winrm_username": "Administrator",
     "winrm_password": "RL9@T40BTmXh",
-    "domain": "chordata.biz",
+    "domain": "animals.biz",
     "domain_prefix": "",
-    "enterprise": "mammalia",
-    "org": "diprotodontia",
+    "enterprise": "mammals",
+    "org": "marsupials",
     "build-nodes": "1",
-    "chefdk": "0.15.15"
+    "chefdk": "0.16.28"
   },
 
   "builders": [

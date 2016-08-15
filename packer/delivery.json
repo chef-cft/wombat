@@ -10,11 +10,14 @@
     "azure_storage_account": "{{env `AZURE_STORAGE_ACCOUNT`}}",
     "azure_resource_group": "{{env `AZURE_RESOURCE_GROUP`}}",
     "source_ami": "ami-8c4cb0ec",
-    "chefdk": "0.14.25",
-    "delivery": "0.4.437",
-    "domain": "chordata.biz",
+    "install_sh_url": "curl -L https://omnitruck.chef.io/install.sh",
+    "chef": "12.12.15",
+    "chef_channel": "stable",
+    "chefdk": "0.16.28",
+    "delivery": "0.5.1",
+    "domain": "animals.biz",
     "domain_prefix": "",
-    "org": "diprotodontia",
+    "org": "marsupials",
     "build-nodes": "1"
   },
 
@@ -64,6 +67,7 @@
     },
     {
       "type": "chef-solo",
+      "install_command": "{{user `install_sh_url`}} | sudo bash -s -- -c {{user `chef_channel`}} -v {{user `chef`}}",
       "cookbook_paths": [ "{{pwd}}/vendored-cookbooks/delivery" ],
       "run_list": [ "apt", "delivery" ],
       "json": {
