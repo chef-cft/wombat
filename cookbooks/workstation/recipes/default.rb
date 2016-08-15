@@ -1,7 +1,9 @@
 include_recipe 'chocolatey'
 
 node['demo']['pkgs'].each do |pkg|
-  chocolatey pkg
+  chocolatey pkg do
+    options ({ '-allow-empty-checksums' => '' })
+  end
 end
 
 include_recipe 'workstation::certs-keys'
