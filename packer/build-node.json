@@ -10,10 +10,10 @@
     "azure_storage_account": "{{env `AZURE_STORAGE_ACCOUNT`}}",
     "azure_resource_group": "{{env `AZURE_RESOURCE_GROUP`}}",
     "source_ami": "ami-8c4cb0ec",
-    "chefdk": "0.14.25",
+    "chefdk": "0.16.28",
     "domain_prefix": "",
-    "domain": "chordata.biz",
-    "org": "diprotodontia",
+    "domain": "animals.biz",
+    "org": "marsupials",
     "node-number": "1",
     "build-nodes": "1"
   },

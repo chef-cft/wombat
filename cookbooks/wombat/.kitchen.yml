@@ -29,7 +29,7 @@ suites:
         build-nodes: 1
         versions:
           delivery: current-0.4.553
-          chefdk: stable-0.15.15
+          chefdk: stable-0.16.28
       wombat:
         packer:
           aws:

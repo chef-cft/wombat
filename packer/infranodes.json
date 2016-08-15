@@ -10,10 +10,10 @@
     "azure_storage_account": "{{env `AZURE_STORAGE_ACCOUNT`}}",
     "azure_resource_group": "{{env `AZURE_RESOURCE_GROUP`}}",
     "source_ami": "ami-8c4cb0ec",
-    "chef": "stable-12.11.18",
-    "domain": "chordata.biz",
+    "chef": "stable-12.12.15",
+    "domain": "animals.biz",
     "domain_prefix": "",
-    "org": "diprotodontia",
+    "org": "marsupials",
     "build-nodes": "1",
     "node-name": "acceptance"
   },

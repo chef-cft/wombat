@@ -34,23 +34,23 @@ describe file('/etc/delivery/builder_key.pub') do
 end
 
 %w(crt key).each do |ext|
-  describe file("/var/opt/delivery/nginx/ca/delivery.chordata.biz.#{ext}") do
+  describe file("/var/opt/delivery/nginx/ca/delivery.animals.biz.#{ext}") do
     its('content') { should eq file("/tmp/delivery.#{ext}").content }
   end
 end
 
 describe file('/etc/delivery/delivery.rb') do
-  its('content') { should match /delivery_fqdn\s.*"delivery.chordata.biz"/ }
+  its('content') { should match /delivery_fqdn\s.*"delivery.animals.biz"/ }
   its('content') { should match /delivery\['chef_username'\]\s.*=\s.*"delivery"/ }
   its('content') { should match /delivery\['chef_private_key'\]\s.*=\s.*"\/etc\/delivery\/delivery\.pem"/ }
-  its('content') { should match /delivery\['chef_server'\]\s.*"https:\/\/chef-server.chordata.biz\/organizations\/diprotodontia"/ }
+  its('content') { should match /delivery\['chef_server'\]\s.*"https:\/\/chef-server.animals.biz\/organizations\/marsupials"/ }
   its('content') { should match /insights\['enable'\]\s.*=\s.*true/ }
 end
 
 describe file('/etc/hosts') do
-  its('content') { should match /172.31.54.12\s.*build-node-1 build-node-1.chordata.biz/ }
-  its('content') { should match /172.31.54.10\s.*chef-server chef-server.chordata.biz/ }
-  its('content') { should match /172.31.54.11\s.*delivery delivery.chordata.biz/ }
+  its('content') { should match /172.31.54.12\s.*build-node-1 build-node-1.animals.biz/ }
+  its('content') { should match /172.31.54.10\s.*chef-server chef-server.animals.biz/ }
+  its('content') { should match /172.31.54.11\s.*delivery delivery.animals.biz/ }
 end
 
 # add tests to verify users and passwords
