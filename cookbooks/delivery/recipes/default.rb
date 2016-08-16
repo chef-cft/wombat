@@ -7,9 +7,9 @@
 chef_server_url = "https://#{node['demo']['domain_prefix']}chef-server.#{node['demo']['domain']}/organizations/#{node['demo']['org']}"
 delivery_url = "https://#{node['demo']['domain_prefix']}delivery.#{node['demo']['domain']}/e/#{node['demo']['enterprise']}"
 
-append_if_no_line "Add loopback => hostname" do
+append_if_no_line "Add temporary hostsfile entry: #{node['ipaddress']}" do
   path "/etc/hosts"
-  line "127.0.0.1 #{node['demo']['domain_prefix']}delivery.#{node['demo']['domain']} delivery"
+  line "#{node['ipaddress']} #{node['demo']['domain_prefix']}delivery.#{node['demo']['domain']} delivery"
 end
 
 execute 'set hostname' do
@@ -116,9 +116,10 @@ node['demo']['users'].each do |user, info|
 end
 
 include_recipe 'delivery::update-users'
-include_recipe 'wombat::etc-hosts'
 
-delete_lines "Remove loopback entry we added earlier" do
+delete_lines "Remove temporary hostfile entry we added earlier" do
   path "/etc/hosts"
-  pattern "^127\.0\.0\.1.*localhost.*#{node['demo']['domain_prefix']}delivery\.#{node['demo']['domain']}.*delivery"
+  pattern "^#{node['ipaddress']}.*#{node['demo']['domain_prefix']}delivery\.#{node['demo']['domain']}.*delivery"
 end
+
+include_recipe 'wombat::etc-hosts'

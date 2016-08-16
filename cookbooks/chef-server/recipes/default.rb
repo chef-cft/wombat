@@ -4,9 +4,9 @@
 #
 # Copyright (c) 2016 The Authors, All Rights Reserved.
 
-append_if_no_line "Add loopback => hostname" do
+append_if_no_line "Add temporary hostsfile entry: #{node['ipaddress']}" do
   path "/etc/hosts"
-  line "127.0.0.1 #{node['demo']['domain_prefix']}chef-server.#{node['demo']['domain']} chef-server"
+  line "#{node['ipaddress']} #{node['demo']['domain_prefix']}chef-server.#{node['demo']['domain']} chef-server"
 end
 
 execute 'set hostname' do
@@ -70,9 +70,9 @@ end
 
 include_recipe 'chef-server::cheffish'
 
-include_recipe 'wombat::etc-hosts'
-
-delete_lines "Remove loopback entry we added earlier" do
+delete_lines "Remove temporary hostfile entry we added earlier" do
   path "/etc/hosts"
-  pattern "^127\.0\.0\.1.*localhost.*#{node['demo']['domain_prefix']}chef-server\.#{node['demo']['domain']}.*chef-server"
+  pattern "^#{node['ipaddress']}.*#{node['demo']['domain_prefix']}chef-server\.#{node['demo']['domain']}.*chef-server"
 end
+
+include_recipe 'wombat::etc-hosts'
