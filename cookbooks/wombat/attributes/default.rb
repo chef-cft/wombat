@@ -40,3 +40,15 @@ default['demo']['users'] = {
     "pem"       => "/tmp/private.pem"
   }
 }
+
+1.upto(node['demo']['workstations'].to_i) do |i|
+  default['demo']['users']["workstation-#{i}"] = {
+      "first"     => "workstation-#{i}",
+      "last"      => "user",
+      "email"     => "workstation-#{i}@#{node['demo']['domain']}",
+      "password"  => "workstation!",
+      "roles"     => ["admin"],
+      "ssh_key"   => "/tmp/public.pub",
+      "pem"       => "/tmp/private.pem"
+  }
+end

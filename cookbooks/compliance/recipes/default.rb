@@ -50,7 +50,9 @@ delete_lines "Remove loopback entry we added earlier" do
   pattern "^127\.0\.0\.1.*localhost.*#{node['demo']['domain_prefix']}compliance\.#{node['demo']['domain']}.*compliance"
 end
 
-compliance_user 'workstation' do
-  username 'workstation'
-  password node['demo']['users']['workstation']['password']
+1.upto(node['demo']['workstations'].to_i) do |i|
+  compliance_user "workstation-#{i}" do
+    username "workstation-#{i}"
+    password node['demo']['users']["workstation-#{i}"]['password']
+  end
 end
