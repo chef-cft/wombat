@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/chef-cft/wombat.png?label=ready&title=Ready)](https://waffle.io/chef-cft/wombat)
 # `Project Wombat`
 A combination of packer templates and terraform plan to configure a demo environment which includes:
 
