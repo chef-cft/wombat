@@ -246,7 +246,7 @@ def packer_build(template, builder, options={})
   cmd.insert(2, "--var node-number=#{options['node-number']}") if template =~ /build-node/
   cmd.insert(2, "--var build-nodes=#{wombat['build-nodes']}")
   cmd.insert(2, "--var workstation-number=#{options['workstation-number']}") if template =~ /workstation/
-  cmd.insert(2, "--var workstations=#{wombat['workstations']}") if template =~ /workstation/
+  cmd.insert(2, "--var workstations=#{wombat['workstations']}")
   cmd.insert(2, "--var source_ami=#{source_ami}")
   cmd.join(' ')
 end

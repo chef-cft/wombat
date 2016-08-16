@@ -3,6 +3,7 @@ default['demo']['domain'] = 'animals.biz'
 default['demo']['enterprise'] = 'mammals'
 default['demo']['org'] = 'marsupials'
 default['demo']['build-nodes'] = 1
+default['demo']['workstations'] = 1
 default['demo']['infranodes'] = {}
 default['demo']['admin-user'] = 'ubuntu'
 default['demo']['versions'].tap do |pkg|
@@ -34,15 +35,6 @@ default['demo']['users'] = {
     "last"      => "user",
     "email"     => "delivery@#{node['demo']['domain']}",
     "password"  => "delivery!",
-    "roles"     => ["admin"],
-    "ssh_key"   => "/tmp/public.pub",
-    "pem"       => "/tmp/private.pem"
-  },
-  "workstation" => {
-    "first"     => "workstation",
-    "last"      => "user",
-    "email"     => "workstation@#{node['demo']['domain']}",
-    "password"  => "workstation!",
     "roles"     => ["admin"],
     "ssh_key"   => "/tmp/public.pub",
     "pem"       => "/tmp/private.pem"

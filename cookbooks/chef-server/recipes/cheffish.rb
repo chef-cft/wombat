@@ -40,6 +40,7 @@ conf_with_org = config.merge({
 
 all_nodes = {}
 build_node_num = node['demo']['build-nodes'].to_i
+workstation_num = node['demo']['workstations'].to_i
 
 if File.exists?('/tmp/infranodes-info.json')
   infranodes = JSON(File.read('/tmp/infranodes-info.json'))
@@ -50,6 +51,20 @@ end
 1.upto(build_node_num) do |i|
   build_node_name = "build-node-#{i}"
   all_nodes[build_node_name] = []
+end
+
+1.upto(workstation_num) do |i|
+  workstation_name = "workstation-#{i}"
+  all_nodes[workstation_name] = []
+  node.default['demo']['users']["workstation-#{i}"] = {
+      "first"     => "workstation-#{i}",
+      "last"      => "user",
+      "email"     => "workstation-#{i}@#{node['demo']['domain']}",
+      "password"  => "workstation!",
+      "roles"     => ["admin"],
+      "ssh_key"   => "/tmp/public.pub",
+      "pem"       => "/tmp/private.pem"
+  }
 end
 
 infranodes.each do |infra_node_name, rl|
