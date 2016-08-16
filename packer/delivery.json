@@ -9,16 +9,18 @@
     "azure_subscription_id": "{{env `AZURE_SUBSCRIPTION_ID`}}",
     "azure_storage_account": "{{env `AZURE_STORAGE_ACCOUNT`}}",
     "azure_resource_group": "{{env `AZURE_RESOURCE_GROUP`}}",
-    "source_ami": "ami-8c4cb0ec",
-    "install_sh_url": "curl -L https://omnitruck.chef.io/install.sh",
-    "chef": "12.12.15",
+    "build-nodes": "1",
     "chef_channel": "stable",
-    "chefdk": "0.16.28",
-    "delivery": "0.5.1",
+    "chef_install_url": "curl -L https://omnitruck.chef.io/install.sh",
+    "chef_ver": "latest",
+    "chefdk": "stable-latest",
+    "delivery": "stable-latest",
     "domain": "animals.biz",
     "domain_prefix": "",
+    "enterprise": "mammals",
     "org": "marsupials",
-    "build-nodes": "1"
+    "source_ami": "ami-8c4cb0ec",
+    "workstations": "1"
   },
 
   "builders": [
@@ -67,7 +69,7 @@
     },
     {
       "type": "chef-solo",
-      "install_command": "{{user `install_sh_url`}} | sudo bash -s -- -c {{user `chef_channel`}} -v {{user `chef`}}",
+      "install_command": "{{user `chef_install_url`}} | sudo bash -s -- -c {{user `chef_channel`}} -v {{user `chef_ver`}}",
       "cookbook_paths": [ "{{pwd}}/vendored-cookbooks/delivery" ],
       "run_list": [ "apt", "delivery" ],
       "json": {
@@ -77,6 +79,7 @@
           "enterprise": "{{user `enterprise`}}",
           "org": "{{user `org`}}",
           "build-nodes": "{{user `build-nodes`}}",
+          "workstations":  "{{user `workstations`}}",
           "versions": {
             "chefdk": "{{user `chefdk`}}",
             "delivery": "{{user `delivery`}}"

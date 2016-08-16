@@ -9,17 +9,17 @@
     "azure_subscription_id": "{{env `AZURE_SUBSCRIPTION_ID`}}",
     "azure_storage_account": "{{env `AZURE_STORAGE_ACCOUNT`}}",
     "azure_resource_group": "{{env `AZURE_RESOURCE_GROUP`}}",
-    "source_ami": "ami-87c037e7",
-    "chefdk": "0.16.28",
+    "build-nodes": "1",
+    "chefdk": "stable-latest",
     "domain_prefix": "",
     "domain": "animals.biz",
     "enterprise": "mammals",
     "org": "marsupials",
-    "build-nodes": "1",
-    "workstations": "1",
-    "workstation-number": "1",
+    "source_ami": "ami-87c037e7",
+    "winrm_password": "RL9@T40BTmXh",
     "winrm_username": "Administrator",
-    "winrm_password": "RL9@T40BTmXh"
+    "workstation-number": "1",
+    "workstations": "1"
   },
 
   "builders": [
@@ -53,6 +53,8 @@
     },
     {
       "type": "chef-solo",
+      "install_command": ". { iwr -useb https://omnitruck.chef.io/install.ps1 } | iex; install -channel {{user `chef_channel`}} -version {{user `chef_ver`}}",
+      "cookbook_paths": [ "{{pwd}}/vendored-cookbooks/delivery" ],
       "guest_os_type": "windows",
       "cookbook_paths": [ "{{pwd}}/vendored-cookbooks/workstation" ],
       "run_list": [ "workstation" ],
