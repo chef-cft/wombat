@@ -9,12 +9,17 @@
     "azure_subscription_id": "{{env `AZURE_SUBSCRIPTION_ID`}}",
     "azure_storage_account": "{{env `AZURE_STORAGE_ACCOUNT`}}",
     "azure_resource_group": "{{env `AZURE_RESOURCE_GROUP`}}",
-    "source_ami": "ami-8c4cb0ec",
-    "compliance": "1.3.1",
+    "build-nodes": "1",
+    "chef_channel": "stable",
+    "chef_install_url": "curl -L https://omnitruck.chef.io/install.sh",
+    "chef_ver": "latest",
+    "compliance": "stable-latest",
     "domain": "animals.biz",
     "domain_prefix": "",
+    "enterprise": "mammals",
     "org": "marsupials",
-    "build-nodes": "1"
+    "source_ami": "ami-8c4cb0ec",
+    "workstations": "1"
   },
 
   "builders": [
@@ -40,7 +45,7 @@
       "subscription_id": "{{user `azure_subscription_id`}}",
       "tenant_id": "{{user `azure_tenant_id`}}",
       "capture_container_name": "images",
-      "capture_name_prefix": "complaince",
+      "capture_name_prefix": "compliance",
       "image_publisher": "Canonical",
       "image_offer": "UbuntuServer",
       "image_sku": "14.04.3-LTS",
@@ -63,6 +68,7 @@
     },
     {
       "type": "chef-solo",
+      "install_command": "{{user `chef_install_url`}} | sudo bash -s -- -c {{user `chef_channel`}} -v {{user `chef_ver`}}",
       "cookbook_paths": [ "{{pwd}}/vendored-cookbooks/compliance" ],
       "run_list": [ "apt", "compliance" ],
       "json": {
@@ -72,6 +78,7 @@
           "enterprise": "{{user `enterprise`}}",
           "org": "{{user `org`}}",
           "build-nodes": "{{user `build-nodes`}}",
+          "workstations":  "{{user `workstations`}}",
           "versions": {
             "compliance": "{{user `compliance`}}"
           }
