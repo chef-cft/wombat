@@ -68,11 +68,13 @@
       "Description": "AMI ID for <%= name %>"
     },
 <% end -%>
-    "WindowsWorkstationAMI": {
+<% 1.upto(@workstations) do |i| -%>
+    "WindowsWorkstation<%= i.to_s %>AMI": {
       "Type": "String",
-      "Default": "<%= @workstation_ami %>",
+      "Default": "<%= @workstation_ami[i] %>",
       "Description": "AMI ID for the Windows Workstation"
     }
+<% end -%>
   },
   "Resources": {
     "VPC": {

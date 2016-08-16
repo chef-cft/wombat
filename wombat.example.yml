@@ -7,6 +7,8 @@ domain: animals.biz
 enterprise: mammals
 org: marsupials
 build-nodes: '1'
+workstations: '1'
+workstation-passwd: 'RL9@T40BTmXh'
 infranodes:
   # Add a list of infrastructure nodes here with their associated run list to have these nodes precreated on the Chef Server
   # Note: the cookbook content won't be automatically uploaded, only the node object will be created with the run list added,
