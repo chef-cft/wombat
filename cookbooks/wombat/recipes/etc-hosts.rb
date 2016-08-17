@@ -30,10 +30,10 @@ end
 end
 
 1.upto(node['demo']['workstations'].to_i) do |i|
-  build_node_name = "workstation-#{i}"
-  next if all_hosts.key?(build_node_name)
-  build_ip += 1
-  all_hosts[build_node_name] = "172.31.54.#{build_ip}"
+  wkstn_name = "workstation-#{i}"
+  next if all_hosts.key?(wkstn_name)
+  wkstn_ip += 1
+  all_hosts[wkstn_name] = "172.31.54.#{wkstn_ip}"
 end
 
 infranodes.sort.each do |name, run_list|

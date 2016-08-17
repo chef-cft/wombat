@@ -51,6 +51,4 @@ default['demo']['users'] = {
       "ssh_key"   => "/tmp/public.pub",
       "pem"       => "/tmp/private.pem"
   }
-  
-  default['demo']['hosts']["workstation-#{i}"] = "172.31.54.12"
 end
