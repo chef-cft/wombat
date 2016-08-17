@@ -1,10 +1,10 @@
-name 'chef-server'
+name 'chef_server'
 maintainer 'The Authors'
 maintainer_email 'you@example.com'
 license 'all_rights'
 description 'Installs/Configures chef-server'
 long_description 'Installs/Configures chef-server'
-version '0.2.0'
+version '0.3.0'
 
 depends 'apt'
 depends 'chef-ingredient', '>= 0.18.5'

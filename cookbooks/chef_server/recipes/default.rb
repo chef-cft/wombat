@@ -68,7 +68,7 @@ chef_ingredient 'manage' do
   action :reconfigure
 end
 
-include_recipe 'chef-server::cheffish'
+include_recipe 'chef_server::cheffish'
 
 delete_lines "Remove temporary hostfile entry we added earlier" do
   path "/etc/hosts"

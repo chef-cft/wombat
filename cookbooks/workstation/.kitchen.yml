@@ -18,5 +18,5 @@ platforms:
 suites:
   - name: default
     run_list:
-      - recipe[mock-data]
+      - recipe[mock_data]
       - recipe[workstation]
