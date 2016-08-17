@@ -53,7 +53,7 @@
     },
     {
       "type": "chef-solo",
-      "install_command": ". { iwr -useb https://omnitruck.chef.io/install.ps1 } | iex; install -channel {{user `chef_channel`}} -version {{user `chef_ver`}}",
+      "install_command": "powershell.exe -Command \". { iwr -useb https://omnitruck.chef.io/install.ps1 } | iex; install -channel {{user `chef_channel`}} -version {{user `chef_ver`}}\"",
       "cookbook_paths": [ "{{pwd}}/vendored-cookbooks/delivery" ],
       "guest_os_type": "windows",
       "cookbook_paths": [ "{{pwd}}/vendored-cookbooks/workstation" ],
