@@ -75,6 +75,7 @@ end
   file "/var/opt/delivery/nginx/ca/#{node['demo']['domain_prefix']}automate.#{node['demo']['domain']}.#{ext}" do
     content lazy { IO.read("/tmp/automate.#{ext}") }
     action :create
+    sensitive true
   end
 end
 
