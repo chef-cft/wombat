@@ -9,7 +9,7 @@ require 'aws-sdk'
 namespace :keys do
   desc 'create keys'
   task :create do
-    %w(chef-server delivery compliance).each do |hostname|
+    %w(chef automate compliance).each do |hostname|
       gen_x509_cert(hostname)
     end
     gen_ssh_key
@@ -19,7 +19,7 @@ end
 namespace :cookbook do
   desc 'Vendor cookbooks for a template'
   task :vendor, :template do |_t, args|
-    has_cookbook = %w(build-node compliance chef-server delivery infranodes workstation)
+    has_cookbook = %w(build-node compliance chef-server automate infranodes workstation)
     base = args[:template].split('.json')[0]
     if has_cookbook.any? { |t| args[:template].include? t }
       sh "rm -rf vendored-cookbooks/#{base}"
@@ -128,7 +128,7 @@ namespace :cfn do
     puts 'Generating CloudFormation template from lockfile'
     region = lock['aws']['region']
     @chef_server_ami = lock['amis'][region]['chef-server']
-    @delivery_ami = lock['amis'][region]['delivery']
+    @automate_ami = lock['amis'][region]['automate']
     @compliance_ami = lock['amis'][region]['compliance']
     @build_nodes = lock['build-nodes'].to_i
     @build_node_ami = {}
@@ -173,16 +173,16 @@ end
 
 namespace :tf do
   desc 'Update AMIS in tfvars'
-  task :update_amis, :chef_server_ami, :delivery_ami, :build_node_ami, :workstation_ami do |_t, args|
+  task :update_amis, :chef_server_ami, :automate_ami, :build_node_ami, :workstation_ami do |_t, args|
     chef_server = args[:chef_server_ami] || File.read('./packer/logs/ami-chef-server.log').split("\n").last.split(' ')[1]
-    delivery = args[:delivery_ami] || File.read('./packer/logs/ami-delivery.log').split("\n").last.split(' ')[1]
+    automate = args[:automate_ami] || File.read('./packer/logs/ami-automate.log').split("\n").last.split(' ')[1]
     compliance = args[:compliance_ami] || File.read('./packer/logs/ami-compliance.log').split("\n").last.split(' ')[1]
     builder = args[:build_node_ami] || File.read('./packer/logs/ami-build-node.log').split("\n").last.split(' ')[1]
     workstation = args[:workstation_ami] || File.read('./packer/logs/ami-workstation.log').split("\n").last.split(' ')[1]
-    raise 'packer build logs not found, nor were image ids provided' unless chef_server && delivery && builder && workstation
+    raise 'packer build logs not found, nor were image ids provided' unless chef_server && automate && builder && workstation
     puts 'Updating tfvars based on most recent packer logs'
     @chef_server_ami = chef_server
-    @delivery_ami = delivery
+    @automate_ami = automate
     @compliance_ami = compliance
     @build_node_ami = builder
     @workstation_ami = workstation
@@ -241,12 +241,13 @@ def packer_build(template, builder, options={})
   cmd.insert(2, "--var chefdk=#{wombat['products']['chefdk']}")
   cmd.insert(2, "--var chef_ver=#{wombat['products']['chef'].split('-')[1]}")
   cmd.insert(2, "--var chef_channel=#{wombat['products']['chef'].split('-')[0]}")
-  cmd.insert(2, "--var delivery=#{wombat['products']['delivery']}")
+  cmd.insert(2, "--var automate=#{wombat['products']['automate']}")
   cmd.insert(2, "--var compliance=#{wombat['products']['compliance']}")
   cmd.insert(2, "--var chef-server=#{wombat['products']['chef-server']}")
   cmd.insert(2, "--var node-name=#{options['node-name']}") if template =~ /infranodes/
   cmd.insert(2, "--var node-number=#{options['node-number']}") if template =~ /build-node/
   cmd.insert(2, "--var build-nodes=#{wombat['build-nodes']}")
+  cmd.insert(2, "--var winrm_password=#{wombat['workstation-passwd']}") if template =~ /workstation/
   cmd.insert(2, "--var workstation-number=#{options['workstation-number']}") if template =~ /workstation/
   cmd.insert(2, "--var workstations=#{wombat['workstations']}")
   cmd.insert(2, "--var source_ami=#{source_ami}")
@@ -350,7 +351,7 @@ def gen_ssh_key
 end
 
 def templates
-  %w(build-node compliance chef-server delivery infranodes workstation)
+  %w(build-node compliance chef-server automate infranodes workstation)
 end
 
 def parse_ami(instance)

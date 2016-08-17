@@ -19,7 +19,7 @@ Vagrant.configure(2) do |config|
   # Provision a Chef server with push jobs installed
   config.vm.define "chef-server" do |cs|
 
-    cs.vm.hostname = "chef-server"
+    cs.vm.hostname = "chef"
     cs.vm.network "private_network", ip: "172.31.54.10"
 
     cs.vm.provider "virtualbox" do |v|
@@ -40,19 +40,19 @@ Vagrant.configure(2) do |config|
 
   end
 
-  config.vm.define "delivery" do |d|
+  config.vm.define "automate" do |d|
 
     d.vm.network "private_network", ip: "172.31.54.11"
-    d.vm.hostname = "delivery"
+    d.vm.hostname = "automate"
     d.vm.provider "virtualbox" do |v|
       v.memory = 2048
       v.cpus = 2
     end
 
     d.vm.provision "chef_solo" do |chef|
-      chef.cookbooks_path = "vendored-cookbooks/delivery"
+      chef.cookbooks_path = "vendored-cookbooks/automate"
       chef.add_recipe "mock-data"
-      chef.add_recipe "delivery"
+      chef.add_recipe "automate"
       chef.json = {
         "demo" => {
           "admin-user" => "vagrant"

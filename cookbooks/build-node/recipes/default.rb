@@ -14,7 +14,7 @@ end
 directory '/etc/chef'
 directory '/etc/chef/trusted_certs'
 
-%w(chef-server delivery compliance).each do |f|
+%w(chef automate compliance).each do |f|
   file "/etc/chef/trusted_certs/#{node['demo']['domain_prefix']}#{f}_#{node['demo']['domain'].tr('.','_')}.crt" do
     content lazy { IO.read("/tmp/#{f}.crt") }
     action :create

@@ -1,19 +1,19 @@
 #
-# Cookbook Name:: delivery
+# Cookbook Name:: automate
 # Recipe:: default
 #
 # Copyright (c) 2016 The Authors, All Rights Reserved.
 
-chef_server_url = "https://#{node['demo']['domain_prefix']}chef-server.#{node['demo']['domain']}/organizations/#{node['demo']['org']}"
-delivery_url = "https://#{node['demo']['domain_prefix']}delivery.#{node['demo']['domain']}/e/#{node['demo']['enterprise']}"
+chef_server_url = "https://#{node['demo']['domain_prefix']}chef.#{node['demo']['domain']}/organizations/#{node['demo']['org']}"
+automate_url = "https://#{node['demo']['domain_prefix']}automate.#{node['demo']['domain']}/e/#{node['demo']['enterprise']}"
 
 append_if_no_line "Add temporary hostsfile entry: #{node['ipaddress']}" do
   path "/etc/hosts"
-  line "#{node['ipaddress']} #{node['demo']['domain_prefix']}delivery.#{node['demo']['domain']} delivery"
+  line "#{node['ipaddress']} #{node['demo']['domain_prefix']}automate.#{node['demo']['domain']} automate"
 end
 
 execute 'set hostname' do
-  command 'hostnamectl set-hostname delivery'
+  command 'hostnamectl set-hostname automate'
   action :run
 end
 
@@ -43,8 +43,8 @@ chef_ingredient 'chefdk' do
 end
 
 chef_ingredient 'delivery' do
-  channel node['demo']['versions']['delivery'].split('-')[0].to_sym
-  version node['demo']['versions']['delivery'].split('-')[1]
+  channel node['demo']['versions']['automate'].split('-')[0].to_sym
+  version node['demo']['versions']['automate'].split('-')[1]
   action :install
 end
 
@@ -56,7 +56,7 @@ directory '/etc/delivery' do
   mode '0644'
 end
 
-file '/etc/delivery/delivery.pem' do
+file '/etc/delivery/automate.pem' do
   content lazy { IO.read('/tmp/private.pem') }
   action :create
 end
@@ -72,8 +72,8 @@ file '/etc/delivery/builder_key.pub' do
 end
 
 %w(crt key).each do |ext|
-  file "/var/opt/delivery/nginx/ca/#{node['demo']['domain_prefix']}delivery.#{node['demo']['domain']}.#{ext}" do
-    content lazy { IO.read("/tmp/delivery.#{ext}") }
+  file "/var/opt/delivery/nginx/ca/#{node['demo']['domain_prefix']}automate.#{node['demo']['domain']}.#{ext}" do
+    content lazy { IO.read("/tmp/automate.#{ext}") }
     action :create
   end
 end
@@ -115,11 +115,11 @@ node['demo']['users'].each do |user, info|
   end
 end
 
-include_recipe 'delivery::update-users'
+include_recipe 'automate::update-users'
 
 delete_lines "Remove temporary hostfile entry we added earlier" do
   path "/etc/hosts"
-  pattern "^#{node['ipaddress']}.*#{node['demo']['domain_prefix']}delivery\.#{node['demo']['domain']}.*delivery"
+  pattern "^#{node['ipaddress']}.*#{node['demo']['domain_prefix']}automate\.#{node['demo']['domain']}.*automate"
 end
 
 include_recipe 'wombat::etc-hosts'

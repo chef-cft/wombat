@@ -19,8 +19,7 @@ suites:
     run_list:
       - recipe[apt::default]
       - recipe[mock-data::default]
-      - recipe[delivery::default]
+      - recipe[automate::default]
     attributes:
       demo:
         admin-user: 'vagrant'
-

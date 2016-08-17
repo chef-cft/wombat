@@ -14,7 +14,7 @@
     "chef_install_url": "curl -L https://omnitruck.chef.io/install.sh",
     "chef_ver": "latest",
     "chefdk": "stable-latest",
-    "delivery": "stable-latest",
+    "automate": "stable-latest",
     "domain": "animals.biz",
     "domain_prefix": "",
     "enterprise": "mammals",
@@ -35,7 +35,7 @@
       "ssh_private_ip": false,
       "ssh_username": "ubuntu",
       "ssh_pty" : true,
-      "ami_name": "delivery-{{timestamp}}"
+      "ami_name": "automate-{{timestamp}}"
     },
     {
       "type": "azure-arm",
@@ -70,8 +70,8 @@
     {
       "type": "chef-solo",
       "install_command": "{{user `chef_install_url`}} | sudo bash -s -- -c {{user `chef_channel`}} -v {{user `chef_ver`}}",
-      "cookbook_paths": [ "{{pwd}}/vendored-cookbooks/delivery" ],
-      "run_list": [ "apt", "delivery" ],
+      "cookbook_paths": [ "{{pwd}}/vendored-cookbooks/automate" ],
+      "run_list": [ "apt", "automate" ],
       "json": {
         "demo": {
           "domain_prefix": "{{user `domain_prefix`}}",
@@ -82,7 +82,7 @@
           "workstations":  "{{user `workstations`}}",
           "versions": {
             "chefdk": "{{user `chefdk`}}",
-            "delivery": "{{user `delivery`}}"
+            "automate": "{{user `automate`}}"
           }
         }
       }

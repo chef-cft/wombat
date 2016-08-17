@@ -28,7 +28,7 @@ suites:
       demo:
         build-nodes: 1
         versions:
-          delivery: current-0.4.553
+          automate: current-0.4.553
           chefdk: stable-0.16.28
       wombat:
         packer:

@@ -87,8 +87,8 @@
         },
         "delivery_build": {
           "trusted_certs": {
-            "chef-server": "/tmp/chef-server.crt",
-            "delivery": "/tmp/delivery.crt"
+            "chef-server": "/tmp/chef.crt",
+            "delivery": "/tmp/automate.crt"
           }
         }
       }

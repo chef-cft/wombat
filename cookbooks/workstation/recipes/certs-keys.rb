@@ -12,13 +12,13 @@ template "#{home}/.ssh/config" do
   source 'ssh_config.erb'
   variables(
     home: home,
-    server: "#{node['demo']['domain_prefix']}delivery.#{node['demo']['domain']}",
+    server: "#{node['demo']['domain_prefix']}automate.#{node['demo']['domain']}",
     ent: node['demo']['enterprise'],
-    user: node['demo']['users']['delivery']['first']
+    user: node['demo']['users']['automate']['first']
   )
 end
 
-%w(chef-server delivery compliance).each do |f|
+%w(chef automate compliance).each do |f|
   file "#{home}/.chef/trusted_certs/#{node['demo']['domain_prefix']}#{f}_#{node['demo']['domain'].tr('.','_')}.crt" do
     content  lazy { IO.read("C:/Windows/Temp/#{f}.crt") }
     action :create

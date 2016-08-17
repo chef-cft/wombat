@@ -10,7 +10,7 @@ cookbook_file '/tmp/private.pem' do
   action :create
 end 
 
-%w(chef-server delivery compliance).each do |f|
+%w(chef automate compliance).each do |f|
   cookbook_file "/tmp/#{f}.crt" do
     content "#{f}.crt"
     action :create

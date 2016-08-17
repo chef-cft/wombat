@@ -1,7 +1,7 @@
 current_dir = File.dirname(__FILE__)
 log_level            :info
 log_location         STDOUT
-node_name            'workstation'
+node_name            '<%= @node_name %>'
 chef_server_url      '<%= @chef_server_url %>'
 client_key           '<%= @home %>/.chef/private.pem'
 trusted_certs_dir    '<%= @home %>/.chef/trusted_certs'

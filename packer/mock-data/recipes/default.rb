@@ -8,7 +8,7 @@ require 'cheffish'
 Chef::Config.ssl_verify_mode :verify_none
 
 config = {
-  :chef_server_url => 'https://chef-server',
+  :chef_server_url => 'https://chef',
   :options => {
     :client_name => 'pivotal',
     :signing_key_filename => '/etc/opscode/pivotal.pem'
@@ -16,12 +16,12 @@ config = {
 }
 
 #taken from cheffish
-chef_user 'delivery' do
+chef_user 'automate' do
   chef_server config
   admin true
-  display_name 'delivery'
+  display_name 'automate'
   email 'chefeval@chef.io'
-  password 'delivery'
+  password 'automate'
   source_key_path '/tmp/private.pem'
 end
 
@@ -35,7 +35,7 @@ chef_user 'workstation' do
 end
 
 chef_organization "#{ENV['ORG']}" do
-  members ['delivery', 'workstation']
+  members ['automate', 'workstation']
   chef_server config
 end
 
@@ -63,7 +63,7 @@ build_nodes.each do |node_name|
 end
 
 chef_acl "" do
-  rights :all, users: %w(delivery workstation), clients: build_nodes
+  rights :all, users: %w(automate workstation), clients: build_nodes
   recursive true
   chef_server conf_with_org
 end

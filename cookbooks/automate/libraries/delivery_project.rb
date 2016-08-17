@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: delivery-demo
+# Cookbook Name:: automate
 # Libraries:: delivery_project
 #
 # Author:: Salim Afiune (<afiune@chef.io>)

@@ -24,7 +24,7 @@ variable "num_builders" {
 variable "ami-chef-server" {
   default = "ami-f3f10893"
 }
-variable "ami-delivery" {
+variable "ami-automate" {
   default = "ami-6abf460a"
 }
 variable "ami-build-node" {
@@ -53,7 +53,7 @@ resource "aws_vpc" "wombat" {
     }
 }
 
-resource "aws_subnet" "delivery" {
+resource "aws_subnet" "automate" {
     vpc_id                  = "${aws_vpc.wombat.id}"
     cidr_block              = "172.31.54.0/24"
     availability_zone       = "${var.az}"
@@ -62,7 +62,7 @@ resource "aws_subnet" "delivery" {
     tags {
         "Customer" = "${var.customer}"
         "TTL" = "${var.ttl}"
-        "Name" = "${var.customer} wombat Delivery Subnet"
+        "Name" = "${var.customer} wombat automate Subnet"
     }
 }
 
@@ -117,9 +117,9 @@ resource "aws_route_table" "route-table" {
     }
 }
 
-resource "aws_route_table_association" "delivery-rta" {
+resource "aws_route_table_association" "automate-rta" {
     route_table_id = "${aws_route_table.route-table.id}"
-    subnet_id = "${aws_subnet.delivery.id}"
+    subnet_id = "${aws_subnet.automate.id}"
 }
 
 resource "aws_route_table_association" "prod-rta" {
@@ -134,7 +134,7 @@ resource "aws_route_table_association" "workstations-rta" {
 
 resource "aws_network_acl" "wombat-network-acl" {
     vpc_id     = "${aws_vpc.wombat.id}"
-    subnet_ids = ["${aws_subnet.delivery.id}", "${aws_subnet.prod.id}", "${aws_subnet.workstations.id}"]
+    subnet_ids = ["${aws_subnet.automate.id}", "${aws_subnet.prod.id}", "${aws_subnet.workstations.id}"]
 
     ingress {
         from_port  = 0
@@ -166,7 +166,7 @@ resource "aws_instance" "chef-server" {
     availability_zone           = "${var.az}"
     instance_type               = "c3.xlarge"
     key_name                    = "${var.key_name}"
-    subnet_id                   = "${aws_subnet.delivery.id}"
+    subnet_id                   = "${aws_subnet.automate.id}"
     vpc_security_group_ids      = ["${aws_security_group.wombat.id}"]
     associate_public_ip_address = false
     private_ip                  = "172.31.54.10"
@@ -193,32 +193,32 @@ resource "aws_instance" "chef-server" {
     }
 }
 
-resource "aws_instance" "delivery" {
-    ami                         = "${var.ami-delivery}"
+resource "aws_instance" "automate" {
+    ami                         = "${var.ami-automate}"
     availability_zone           = "${var.az}"
     instance_type               = "c3.xlarge"
     key_name                    = "${var.key_name}"
-    subnet_id                   = "${aws_subnet.delivery.id}"
+    subnet_id                   = "${aws_subnet.automate.id}"
     vpc_security_group_ids      = ["${aws_security_group.wombat.id}"]
     associate_public_ip_address = false
     private_ip                  = "172.31.54.11"
 
     tags {
       "Customer" = "${var.customer}"
-      "Name" = "wombat delivery server"
+      "Name" = "wombat automate server"
       "TTL" = "${var.ttl}"
     }
 
     provisioner "remote-exec" {
       connection {
         user = "ubuntu"
-        host = "${aws_instance.delivery.public_ip}"
+        host = "${aws_instance.automate.public_ip}"
         timeout = "1m"
         key_file = "${var.key_file}"
       }
       inline = [
-        "sudo hostnamectl set-hostname delivery",
-        "sudo delivery-ctl reconfigure"
+        "sudo hostnamectl set-hostname automate",
+        "sudo automate-ctl reconfigure"
       ]
     }
 }
@@ -228,21 +228,21 @@ resource "aws_instance" "build-node-1" {
     availability_zone           = "${var.az}"
     instance_type               = "c3.large"
     key_name                    = "${var.key_name}"
-    subnet_id                   = "${aws_subnet.delivery.id}"
+    subnet_id                   = "${aws_subnet.automate.id}"
     vpc_security_group_ids      = ["${aws_security_group.wombat.id}"]
     associate_public_ip_address = false
     private_ip                  = "172.31.54.12"
 
     tags {
       "Customer" = "${var.customer}"
-      "Name" = "wombat delivery build node 1"
+      "Name" = "wombat automate build node 1"
       "TTL" = "${var.ttl}"
     }
 
     provisioner "remote-exec" {
       connection {
         user = "ubuntu"
-        host = "${aws_instance.delivery.public_ip}"
+        host = "${aws_instance.automate.public_ip}"
         timeout = "1m"
         key_file = "${var.key_file}"
       }
@@ -257,7 +257,7 @@ resource "aws_instance" "workstation" {
     availability_zone           = "${var.az}"
     instance_type               = "m3.large"
     key_name                    = "${var.key_name}"
-    subnet_id                   = "${aws_subnet.delivery.id}"
+    subnet_id                   = "${aws_subnet.automate.id}"
     vpc_security_group_ids      = ["${aws_security_group.wombat.id}"]
     associate_public_ip_address = true
     private_ip                  = "172.31.54.101"

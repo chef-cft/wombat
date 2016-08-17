@@ -10,13 +10,13 @@ default['demo']['versions'].tap do |pkg|
   pkg['chef'] = 'stable-latest'
   pkg['chefdk'] = 'stable-latest'
   pkg['chef-server'] = 'stable-latest'
-  pkg['delivery'] = 'stable-latest'
+  pkg['automate'] = 'stable-latest'
   pkg['compliance'] = 'stable-latest'
 end
 
 default['demo']['hosts'] = {
-  'chef-server' => '172.31.54.10',
-  'delivery' => '172.31.54.11',
+  'chef' => '172.31.54.10',
+  'automate' => '172.31.54.11',
   'compliance' => '172.31.54.12'
 }
 
@@ -30,11 +30,11 @@ default['demo']['users'] = {
     "ssh_key"   => "/tmp/public.pub",
     "pem"       => "/tmp/private.pem"
   },
-  "delivery" => {
-    "first"     => "delivery",
+  "automate" => {
+    "first"     => "automate",
     "last"      => "user",
-    "email"     => "delivery@#{node['demo']['domain']}",
-    "password"  => "delivery!",
+    "email"     => "automate@#{node['demo']['domain']}",
+    "password"  => "automate!",
     "roles"     => ["admin"],
     "ssh_key"   => "/tmp/public.pub",
     "pem"       => "/tmp/private.pem"
@@ -51,4 +51,6 @@ default['demo']['users'] = {
       "ssh_key"   => "/tmp/public.pub",
       "pem"       => "/tmp/private.pem"
   }
+  
+  default['demo']['hosts']["workstation-#{i}"] = "172.31.54.12"
 end

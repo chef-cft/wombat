@@ -1,0 +1,5 @@
+delivery_fqdn "<%= @domain_prefix %>automate.<%= @domain %>"
+delivery['chef_username'] = "automate"
+delivery['chef_private_key'] = "/etc/delivery/automate.pem"
+delivery['chef_server'] = "<%= @chef_server_url %>"
+insights['enable'] = true

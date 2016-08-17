@@ -5,8 +5,9 @@
 # Copyright (c) 2016 The Authors, All Rights Reserved.
 
 all_hosts = node['demo']['hosts'].to_h
-build_ip = 100
-infra_ip = 200
+build_ip = 50
+infra_ip = 100
+wkstn_ip = 200
 if node['platform'] == 'windows'
   tmp_dir = "C:\\Windows\\Temp"
 else
@@ -23,6 +24,13 @@ end
 
 1.upto(node['demo']['build-nodes'].to_i) do |i|
   build_node_name = "build-node-#{i}"
+  next if all_hosts.key?(build_node_name)
+  build_ip += 1
+  all_hosts[build_node_name] = "172.31.54.#{build_ip}"
+end
+
+1.upto(node['demo']['workstations'].to_i) do |i|
+  build_node_name = "workstation-#{i}"
   next if all_hosts.key?(build_node_name)
   build_ip += 1
   all_hosts[build_node_name] = "172.31.54.#{build_ip}"

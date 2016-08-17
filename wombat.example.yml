@@ -1,7 +1,7 @@
 ---
 name: wombat
 # Uncomment domain_prefix if you wish to prepend your generated domain.
-# Ex: The below example would create foo-chef-server.animals.biz.
+# Ex: The below example would create foo-chef.animals.biz.
 # domain_prefix: foo-
 domain: animals.biz
 enterprise: mammals
@@ -23,7 +23,7 @@ products:
   chef-server: stable-12.8.0
   chefdk: stable-0.16.28
   compliance: stable-1.3.1
-  delivery: stable-0.5.1
+  automate: stable-0.5.1
 aws:
   region: ap-southeast-2
   az: ap-southeast-2c
