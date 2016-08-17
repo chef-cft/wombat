@@ -6,11 +6,11 @@
 
 append_if_no_line "Add temporary hostsfile entry: #{node['ipaddress']}" do
   path "/etc/hosts"
-  line "#{node['ipaddress']} #{node['demo']['domain_prefix']}chef-server.#{node['demo']['domain']} chef-server"
+  line "#{node['ipaddress']} #{node['demo']['domain_prefix']}chef.#{node['demo']['domain']} chef"
 end
 
 execute 'set hostname' do
-  command 'hostnamectl set-hostname chef-server'
+  command 'hostnamectl set-hostname chef'
   action :run
 end
 
@@ -27,8 +27,8 @@ directory '/etc/opscode' do
 end
 
 %w(crt key).each do |ext|
-  file "/var/opt/opscode/nginx/ca/#{node['demo']['domain_prefix']}chef-server.#{node['demo']['domain']}.#{ext}" do
-    content lazy { IO.read("/tmp/chef-server.#{ext}") }
+  file "/var/opt/opscode/nginx/ca/#{node['demo']['domain_prefix']}chef.#{node['demo']['domain']}.#{ext}" do
+    content lazy { IO.read("/tmp/chef.#{ext}") }
     action :create
   end
 end
@@ -40,7 +40,7 @@ end
 
 chef_ingredient 'chef-server' do
   action :reconfigure
-  config "api_fqdn 'chef-server.#{node['demo']['domain']}'"
+  config "api_fqdn 'chef.#{node['demo']['domain']}'"
 end
 
 chef_ingredient 'push-jobs-server' do
@@ -72,7 +72,7 @@ include_recipe 'chef-server::cheffish'
 
 delete_lines "Remove temporary hostfile entry we added earlier" do
   path "/etc/hosts"
-  pattern "^#{node['ipaddress']}.*#{node['demo']['domain_prefix']}chef-server\.#{node['demo']['domain']}.*chef-server"
+  pattern "^#{node['ipaddress']}.*#{node['demo']['domain_prefix']}chef\.#{node['demo']['domain']}.*chef"
 end
 
 include_recipe 'wombat::etc-hosts'

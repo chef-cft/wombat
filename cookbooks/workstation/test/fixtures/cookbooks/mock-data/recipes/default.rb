@@ -10,7 +10,7 @@ cookbook_file 'C:/Windows/Temp/private.pem' do
   action :create
 end
 
-%w(chef-server delivery compliance).each do |f|
+%w(chef automate compliance).each do |f|
   %w(crt key).each do |ext|
     cookbook_file "C:/Windows/Temp/#{f}.#{ext}" do
       content "#{f}.#{ext}"

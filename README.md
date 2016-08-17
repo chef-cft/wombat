@@ -2,10 +2,10 @@
 # `Project Wombat`
 A combination of packer templates and terraform plan to configure a demo environment which includes:
 
-* Chef Server 12
-* Chef Delivery
+* Chef Server
+* Chef Automate
 * Chef Compliance
-* _N_ Chef Build Node(s) for Delivery
+* _N_ Automate Build Node(s)
 * _N_ Infrastructure Nodes
 * Windows Workstation
 
@@ -13,8 +13,8 @@ A combination of packer templates and terraform plan to configure a demo environ
 Usage
 ------------
 
-##### Download your Delivery license key
-Delivery requires a valid license to activate successfully. **If you do
+##### Download your Automate license key
+Automate requires a valid license to activate successfully. **If you do
 not have a license key, you can request one from your CHEF account
 representative.**
 
@@ -35,22 +35,29 @@ Create a wombat.yml - there is an example `wombat.example.yml` for reference and
 ```
 ---
 name: wombat
+# Uncomment domain_prefix if you wish to prepend your generated domain.
+# Ex: The below example would create foo-chef.animals.biz.
+# domain_prefix: foo-
 domain: animals.biz
 enterprise: mammals
 org: marsupials
 build-nodes: '1'
-workstation-passwd: 'RL9@T40BTmXh'
 workstations: '1'
-version: 0.0.12
+workstation-passwd: 'RL9@T40BTmXh'
+version: 0.2.0
 products:
-  chef-server: 12.7.0
-  chefdk: 0.16.28
-  compliance: 1.3.1
-  delivery: 0.5.1
+  chef: stable-12.13.37
+  chef-server: stable-12.8.0
+  chefdk: stable-0.16.28
+  compliance: stable-1.3.1
+  automate: stable-0.5.1
 aws:
   region: ap-southeast-2
   az: ap-southeast-2c
   keypair: keypair-ap-southeast-2
+  source_ami:
+    ubuntu: ami-8c4cb0ec
+    windows: ami-87c037e7
 ```
 
 *NOTE:* workstation-passwd must meet the minimum Microsoft [Complexity Requirements](https://technet.microsoft.com/en-us/library/hh994562(v=ws.11).aspx)
@@ -142,7 +149,7 @@ customer = "wombat"
 
 # Customize AMIs for building the demo
 ami-chef-server = ""
-ami-delivery = ""
+ami-automate = ""
 ami-build-node = ""
 ami-workstation = ""
 

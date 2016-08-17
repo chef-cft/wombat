@@ -34,14 +34,14 @@ describe command('chef-server-ctl user-list') do
 end
 
 %w(crt key).each do |ext|
-  describe file("/var/opt/opscode/nginx/ca/chef-server.animals.biz.#{ext}") do
+  describe file("/var/opt/opscode/nginx/ca/chef.animals.biz.#{ext}") do
     its('content') { should eq file("/tmp/chef-server.#{ext}").content }
   end
 end
 
 describe file('/etc/hosts') do
-  its('content') { should match /172.31.54.10\s.*chef-server chef-server.animals.biz/ }
-  its('content') { should match /172.31.54.11\s.*delivery delivery.animals.biz/ }
+  its('content') { should match /172.31.54.10\s.*chef chef.animals.biz/ }
+  its('content') { should match /172.31.54.11\s.*automate automate.animals.biz/ }
   its('content') { should match /172.31.54.12\s.*build-node-1 build-node-1.animals.biz/ }
   its('content') { should match /172.31.54.13\s.*compliance compliance.animals.biz/ }
 end

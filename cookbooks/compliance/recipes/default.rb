@@ -1,8 +1,8 @@
 # compliance
 
-append_if_no_line "Add loopback => hostname" do
+append_if_no_line "Add temporary hostsfile entry: #{node['ipaddress']}" do
   path "/etc/hosts"
-  line "127.0.0.1 #{node['demo']['domain_prefix']}compliance.#{node['demo']['domain']} compliance"
+  line "#{node['ipaddress']} #{node['demo']['domain_prefix']}compliance.#{node['demo']['domain']} compliance"
 end
 
 execute 'set hostname' do
@@ -27,8 +27,6 @@ directory '/var/opt/chef-compliance/ssl/ca'
   end
 end
 
-include_recipe 'wombat::etc-hosts'
-
 compliance_server "compliance" do
   package_channel node['demo']['versions']['compliance'].split('-')[0].to_sym
   package_version node['demo']['versions']['compliance'].split('-')[1]
@@ -45,14 +43,16 @@ template "/etc/chef-compliance/chef-compliance.rb" do
   )
 end
 
-delete_lines "Remove loopback entry we added earlier" do
-  path "/etc/hosts"
-  pattern "^127\.0\.0\.1.*localhost.*#{node['demo']['domain_prefix']}compliance\.#{node['demo']['domain']}.*compliance"
-end
-
 1.upto(node['demo']['workstations'].to_i) do |i|
   compliance_user "workstation-#{i}" do
     username "workstation-#{i}"
     password node['demo']['users']["workstation-#{i}"]['password']
   end
 end
+
+delete_lines "Remove temporary hostfile entry we added earlier" do
+  path "/etc/hosts"
+  pattern "^#{node['ipaddress']}.*#{node['demo']['domain_prefix']}compliance\.#{node['demo']['domain']}.*compliance"
+end
+
+include_recipe 'wombat::etc-hosts'

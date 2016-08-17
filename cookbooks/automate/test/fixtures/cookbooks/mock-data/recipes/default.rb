@@ -8,9 +8,9 @@ end
 cookbook_file '/tmp/private.pem' do
   content 'private.pem'
   action :create
-end 
+end
 
-%w(chef-server delivery compliance).each do |f|
+%w(chef automate compliance).each do |f|
   %w(crt key).each do |ext|
     cookbook_file "/tmp/#{f}.#{ext}" do
       content "#{f}.#{ext}"
@@ -24,4 +24,4 @@ end
 cookbook_file '/tmp/delivery.license' do
   content 'delivery.license'
   action :create
-end 
+end

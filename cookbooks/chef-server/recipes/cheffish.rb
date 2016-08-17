@@ -9,7 +9,7 @@ require 'cheffish'
 OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 
 config = {
-  :chef_server_url => 'https://chef-server',
+  :chef_server_url => 'https://chef',
   :options => {
     :client_name => 'pivotal',
     :signing_key_filename => '/etc/opscode/pivotal.pem',
@@ -40,7 +40,6 @@ conf_with_org = config.merge({
 
 all_nodes = {}
 build_node_num = node['demo']['build-nodes'].to_i
-workstation_num = node['demo']['workstations'].to_i
 
 if File.exists?('/tmp/infranodes-info.json')
   infranodes = JSON(File.read('/tmp/infranodes-info.json'))
@@ -51,11 +50,6 @@ end
 1.upto(build_node_num) do |i|
   build_node_name = "build-node-#{i}"
   all_nodes[build_node_name] = []
-end
-
-1.upto(workstation_num) do |i|
-  workstation_name = "workstation-#{i}"
-  all_nodes[workstation_name] = []
 end
 
 infranodes.each do |infra_node_name, rl|

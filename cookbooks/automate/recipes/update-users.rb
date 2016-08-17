@@ -6,14 +6,6 @@ ruby_block "Create Delivery Users" do
       # Get SSH-KEY wheter is the actual key or a path
       ssh_pub_key = return_key(info['ssh_key'])
 
-      #"name": "delivery",
-      #"first": "delivery",
-      #"last": "delivery",
-      #"email": "delivery@chef.io",
-      #"user_type": "internal",
-      #"ssh_pub_key": "'"$(cat /etc/delivery/builder_key.pub)"'"}'
-
-
       # Create User
       if username == "admin"
         delivery_api.put("/users/admin",

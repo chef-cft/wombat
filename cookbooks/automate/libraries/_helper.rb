@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: delivery-demo
+# Cookbook Name:: automate
 # Recipe:: _helper
 #
 # Author:: Salim Afiune (<afiune@chef.io>)
@@ -30,7 +30,7 @@ module Delivery
     # Get delivery enterprise
 
     def delivery_fqdn
-      "#{node['demo']['domain_prefix']}delivery.#{node['demo']['domain']}"
+      "#{node['demo']['domain_prefix']}automate.#{node['demo']['domain']}"
     end
 
     def delivery_organization

@@ -5,8 +5,9 @@
 # Copyright (c) 2016 The Authors, All Rights Reserved.
 
 all_hosts = node['demo']['hosts'].to_h
-build_ip = 100
-infra_ip = 200
+build_ip = 50
+infra_ip = 100
+wkstn_ip = 200
 if node['platform'] == 'windows'
   tmp_dir = "C:\\Windows\\Temp"
 else
@@ -26,6 +27,13 @@ end
   next if all_hosts.key?(build_node_name)
   build_ip += 1
   all_hosts[build_node_name] = "172.31.54.#{build_ip}"
+end
+
+1.upto(node['demo']['workstations'].to_i) do |i|
+  wkstn_name = "workstation-#{i}"
+  next if all_hosts.key?(wkstn_name)
+  wkstn_ip += 1
+  all_hosts[wkstn_name] = "172.31.54.#{wkstn_ip}"
 end
 
 infranodes.sort.each do |name, run_list|
