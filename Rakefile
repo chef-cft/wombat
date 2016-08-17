@@ -72,11 +72,11 @@ namespace :packer do
 
   desc 'Build all AMIs'
   task :build_amis do
-    templates.each do |template|
+    %w(automate chef-server compliance).each do |t|
       Rake::Task['packer:build_ami'].invoke("#{template}")
       Rake::Task['packer:build_ami'].reenable
     end
-    %w(build_nodes infra).each do |t|
+    %w(build_nodes infra workstations).each do |t|
       Rake::Task["packer:build_#{t}"].invoke
       Rake::Task["packer:build_#{t}"].reenable
     end
@@ -381,7 +381,7 @@ def parallel_pack(templates)
         }
       end
     elsif template_name == 'workstation'
-      build_nodes.each do |name, num|
+      workstations.each do |name, num|
         proc_hash[name] = {
           'template' => 'workstation',
           'options' => {
