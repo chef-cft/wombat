@@ -70,8 +70,8 @@
     {
       "type": "chef-solo",
       "install_command": "{{user `chef_install_url`}} | sudo bash -s -- -c {{user `chef_channel`}} -v {{user `chef_ver`}}",
-      "cookbook_paths": [ "{{pwd}}/vendored-cookbooks/build-node" ],
-      "run_list": [ "apt", "build-node" ],
+      "cookbook_paths": [ "{{pwd}}/vendored-cookbooks/build_node" ],
+      "run_list": [ "apt", "build_node" ],
       "json": {
         "demo": {
           "domain_prefix": "{{user `domain_prefix`}}",

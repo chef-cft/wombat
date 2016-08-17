@@ -3,5 +3,5 @@ source 'https://supermarket.chef.io'
 metadata
 
 cookbook 'wombat', path: '../wombat'
-cookbook 'mock-data', path: 'test/fixtures/cookbooks/mock-data'
+cookbook 'mock_data', path: 'test/fixtures/cookbooks/mock_data'
 

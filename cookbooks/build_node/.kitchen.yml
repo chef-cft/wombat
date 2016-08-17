@@ -15,7 +15,7 @@ suites:
   - name: default
     run_list:
       - recipe[apt::default]
-      - recipe[mock-data::default]
+      - recipe[mock_data::default]
       - recipe[build-node::default]
     attributes:
       demo:
