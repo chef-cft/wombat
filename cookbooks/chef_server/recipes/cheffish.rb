@@ -49,17 +49,26 @@ end
 
 1.upto(build_node_num) do |i|
   build_node_name = "build-node-#{i}"
-  all_nodes[build_node_name] = []
+  all_nodes[build_node_name] = {}
 end
 
-infranodes.each do |infra_node_name, rl|
-  all_nodes[infra_node_name] = rl
+infranodes.each do |infra_node_name, info|
+  all_nodes[infra_node_name] = info
 end
 
-all_nodes.each do |node_name, rl|
+environments = infranodes.map { |_n, i| i['environment'] }.compact.uniq
+
+environments.each do |e|
+  chef_environment e do
+    chef_server conf_with_org
+  end
+end
+
+all_nodes.each do |node_name, info|
   chef_node node_name do
     tag 'delivery-build-node' if node_name.match(/^build-node/)
-    run_list rl unless rl.empty?
+    run_list info['run_list'] if info['run_list']
+    chef_environment info['environment'] if info['environment']
     chef_server conf_with_org
   end
 
