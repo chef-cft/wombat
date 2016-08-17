@@ -104,7 +104,7 @@ task :update_lock do
       end
     elsif instance == 'workstation'
       copy['amis'][region].store('workstation', {})
-      1.upto(wombat['build-nodes'].to_i) do |i|
+      1.upto(wombat['workstations'].to_i) do |i|
         copy['amis'][region]['workstation'].store(i.to_s, parse_ami("workstation-#{i}"))
       end
     elsif instance == 'infranodes'
