@@ -36,7 +36,7 @@ end
   all_hosts[wkstn_name] = "172.31.54.#{wkstn_ip}"
 end
 
-infranodes.sort.each do |name, run_list|
+infranodes.sort.each do |name, _info|
   next if all_hosts.key?(name)
   infra_ip += 1
   all_hosts[name] = "172.31.54.#{infra_ip}"

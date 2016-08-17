@@ -14,9 +14,13 @@ infranodes:
   # Note: the cookbook content won't be automatically uploaded, only the node object will be created with the run list added,
   #       if the content doesn't exist at the first checkin the chef-client run will fail.
   # acceptance:
-  #   - recipe[bacon::chewy]
+  #   environment: web-acceptance
+  #   run_list:
+  #     - recipe[bacon::chewy]
   # delivered:
-  #   - recipe[bacon::crispy]
+  #   environment: web-delivered
+  #   run_list:
+  #     - recipe[bacon::crispy]
 version: 0.1.0
 products:
   chef: stable-12.13.37
