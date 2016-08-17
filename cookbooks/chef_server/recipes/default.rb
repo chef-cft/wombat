@@ -30,6 +30,7 @@ end
   file "/var/opt/opscode/nginx/ca/#{node['demo']['domain_prefix']}chef.#{node['demo']['domain']}.#{ext}" do
     content lazy { IO.read("/tmp/chef.#{ext}") }
     action :create
+    sensitive true
   end
 end
 

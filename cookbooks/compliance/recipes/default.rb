@@ -24,6 +24,7 @@ directory '/var/opt/chef-compliance/ssl/ca'
   file "/var/opt/chef-compliance/ssl/ca/#{node['demo']['domain_prefix']}compliance.#{node['demo']['domain']}.#{ext}" do
     content lazy { IO.read("/tmp/compliance.#{ext}") }
     action :create
+    sensitive true
   end
 end
 
