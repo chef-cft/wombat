@@ -1,7 +1,7 @@
 # chef-server tests
 
 describe command('hostname') do
-  its('stdout') { should eq "chef-server\n" }
+  its('stdout') { should eq "chef\n" }
 end
 
 describe file('/home/vagrant/.ssh/authorized_keys') do
@@ -35,7 +35,7 @@ end
 
 %w(crt key).each do |ext|
   describe file("/var/opt/opscode/nginx/ca/chef.animals.biz.#{ext}") do
-    its('content') { should eq file("/tmp/chef-server.#{ext}").content }
+    its('content') { should eq file("/tmp/chef.#{ext}").content }
   end
 end
 
