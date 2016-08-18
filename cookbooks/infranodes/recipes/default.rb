@@ -17,8 +17,8 @@ end
 
 directory '/etc/chef'
 
-chef_server_url = "https://#{node['demo']['domain_prefix']}chef-server.#{node['demo']['domain']}/organizations/#{node['demo']['org']}"
-delivery_server_url = "https://#{node['demo']['domain_prefix']}delivery.#{node['demo']['domain']}"
+chef_server_url = "https://#{node['demo']['domain_prefix']}chef.#{node['demo']['domain']}/organizations/#{node['demo']['org']}"
+delivery_server_url = "https://#{node['demo']['domain_prefix']}automate.#{node['demo']['domain']}"
 
 template '/etc/chef/client.rb' do
   source 'client.rb.erb'
