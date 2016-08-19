@@ -73,7 +73,7 @@ namespace :packer do
   desc 'Build all AMIs'
   task :build_amis do
     %w(automate chef-server compliance).each do |t|
-      Rake::Task['packer:build_ami'].invoke("#{template}")
+      Rake::Task['packer:build_ami'].invoke("#{t}")
       Rake::Task['packer:build_ami'].reenable
     end
     %w(build_nodes infra workstations).each do |t|
