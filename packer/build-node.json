@@ -3,12 +3,17 @@
     "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
     "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
     "aws_region": "{{env `AWS_REGION`}}",
+    "aws_source_ami": "ami-8e0b9499",
     "azure_client_id": "{{env `AZURE_CLIENT_ID`}}",
     "azure_tenant_id": "{{env `AZURE_TENANT_ID`}}",
     "azure_client_secret": "{{env `AZURE_CLIENT_SECRET`}}",
     "azure_subscription_id": "{{env `AZURE_SUBSCRIPTION_ID`}}",
     "azure_storage_account": "{{env `AZURE_STORAGE_ACCOUNT`}}",
     "azure_resource_group": "{{env `AZURE_RESOURCE_GROUP`}}",
+    "gce_account_file": "{{env `GCE_ACCOUNT_FILE`}}",
+    "gce_project_id": "{{env `GCE_PROJECT_ID`}}",
+    "gce_zone": "{{env `GCE_ZONE`}}",
+    "gce_source_image": "ubuntu-1404-trusty-v20160809a",
     "build-nodes": "1",
     "chef_channel": "stable",
     "chef_install_url": "curl -L https://omnitruck.chef.io/install.sh",
@@ -19,7 +24,6 @@
     "enterprise": "mammals",
     "node-number": "1",
     "org": "marsupials",
-    "source_ami": "ami-8c4cb0ec",
     "workstations": "1"
   },
 
@@ -28,7 +32,7 @@
       "access_key": "{{user `aws_access_key`}}",
       "secret_key": "{{user `aws_secret_key`}}",
       "region": "{{user `aws_region`}}",
-      "source_ami": "{{user `source_ami`}}",
+      "source_ami": "{{user `aws_source_ami`}}",
       "instance_type": "c3.xlarge",
       "communicator": "ssh",
       "associate_public_ip_address": true,
@@ -53,6 +57,17 @@
       "location": "West US",
       "vm_size": "Standard_D3_V2",
       "os_type": "Linux"
+    },
+    {
+      "type": "googlecompute",
+      "account_file": "{{user `gce_account_file`}}",
+      "project_id": "{{user `gce_project_id`}}",
+      "source_image": "{{user `gce_source_image`}}",
+      "zone": "{{user `gce_zone`}}",
+      "disk_type": "pd-ssd",
+      "disk_size": "80",
+      "machine_type": "n1-highcpu-8",
+      "image_name": "build-node-{{user `node-number`}}-{{timestamp}}"
     }
   ],
 
