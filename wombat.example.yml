@@ -25,9 +25,9 @@ version: 0.1.0
 products:
   chef: stable-12.13.37
   chef-server: stable-12.8.0
-  chefdk: stable-0.16.28
+  chefdk: stable-0.17.17
   compliance: stable-1.3.1
-  automate: stable-0.5.1
+  automate: stable-0.5.125
 aws:
   region: ap-southeast-2
   az: ap-southeast-2c
@@ -35,3 +35,8 @@ aws:
   source_ami:
     ubuntu: ami-8c4cb0ec
     windows: ami-87c037e7
+gce:
+  zone: us-east1-b
+  source_image:
+    ubuntu: ubuntu-1404-trusty-v20160809a
+    windows: windows-server-2012-r2-dc-v20160809

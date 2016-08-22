@@ -23,7 +23,7 @@ directory.
 
 ##### Install and Configure ChefDK
 
-Follow the instructions at https://docs.chef.io/install_dk.html to install and configure chefdk as your default version of ruby.
+Follow the instructions at https://docs.chef.io/install_dk.html to install and configure ChefDK as your default version of ruby.
 
 ##### Install Packer
 
@@ -62,44 +62,21 @@ aws:
 
 *NOTE:* workstation-passwd must meet the minimum Microsoft [Complexity Requirements](https://technet.microsoft.com/en-us/library/hh994562(v=ws.11).aspx)
 
-##### Generate certificates and SSH Keypair
+##### Build images with Packer
 
 ```
-# generate keys
-$ rake keys:create
+# build one template
+$ rake build:image[chef-server,aws]
 
+# build all templates (sequentially)
+$ rake build:images[aws]
+
+# build all images (parallel)
+$ rake build:images_parallel[aws]
 ```
 
-##### Build AMIs with Packer
-
-```
-# build all AMIs (sequentially)
-$ rake packer:build_amis
-
-# build all AMIS (parallel)
-$ rake packer:build_amis_parallel
-
-# build just the chef-server
-$ rake packer:build_ami[chef-server]
-
-```
-
-##### Create/update wombat.lock
-
-```
-# Update wombat.lock with latest AMIs from packer logs
-$ rake update_lock
-Updating lockfile based on most recent packer logs
-```
-
-##### Create CloudFormation template
-
-```
-# Create CloudFormation template from wombat.json
-$ rake cfn:create_template
-Generating CloudFormation template from lockfile
-Generated cloudformation/wombat.json
-```
+*NOTE:* If the builder (aws, gce, ...) is not provided or is any value beside 'gce', it defaults to 'aws'.
+There is currently GCE support but image building but not deployment.
 
 ##### Deploy CloudFormation template
 
@@ -109,15 +86,13 @@ Upload the created template from the `cloudformation` directory.
 
 ###### via CLI
 
-*Requires:* aws-cli and configured ~/.aws/credentials
-
 ```
 # Deploy CloudFormation template
 $ rake cfn:create_stack
 Creating CFN stack: wombat-TIMESTAMP
 ```
 
-##### 8) Login to Windows Workstation
+##### Login to Windows Workstation
 
 ```
 # Get Windows Workstation(s) IP(s)
@@ -128,68 +103,13 @@ WindowsWorkstation (i-xxxxxxxx) => XX.XXX.XX.XXX
 From the AWS CloudFormation UI, select the Outputs tab for the desired stack.
 Use an RDP compatible client to login to the workstation with the embedded credentials.
 
-#### Terraform
-
-Terraform is intended for use as an intermediate format for the purposes of
-testing as part of a pipeline.
-
-Downloads are here: https://www.terraform.io/downloads.html . Place in your path for direct execution.
-
-*Note:* `access_key` and `secret_key` need to be defined so Terraform knows to read them  
-from environment vars or ~/.aws/credentials
-
-Create and populate `terraform.tfvars` in the `terraform` directory
-
-```
-access_key = ""
-secret_key = ""
-key_file = ""
-key_name = ""
-customer = "wombat"
-
-# Customize AMIs for building the demo
-ami-chef-server = ""
-ami-automate = ""
-ami-build-node = ""
-ami-workstation = ""
-
-```
-
-##### Deploy images with Terraform
-
-```
-# Check the plan
-$ rake tf:plan
-
-# Apply the plan
-$ rake tf:apply
-
-# alternatively
-$ cd terraform
-$ terraform plan
-$ terraform apply
-```
-
-#### Access to Resources
-
-Terraform will output the list of Public IPs for each server after an apply. Access to Linux resources
-via SSH can be had using the embedded key or by the key_pair used to create the resources in AWS. To
-access the Windows workstation use the credentials from the Packer template/bootstrap.txt with the
-Microsoft Remote Desktop Client.
-
-To list the IPs of a running stack
-```
-$ cd terraform
-$ terraform output
-```
-
 LICENSE AND AUTHORS
 ===================
 * [Andre Elizondo](https://github.com/andrewelizondo)
 * [Seth Thomas](https://github.com/cheeseplus)
 
 ```text
-Copyright:: 2015 Chef Software, Inc
+Copyright:: 2016 Chef Software, Inc
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
