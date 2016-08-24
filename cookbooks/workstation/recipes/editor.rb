@@ -15,4 +15,5 @@ end
 execute 'install Atom packages' do
   command "#{home}/AppData/Local/atom/bin/apm install --packages-file #{home}/.atom/apm-bootstrap.list"
   action :run
+  not_if { File.exist?("#{home}/.atom/packages/language-chef/README.md") }
 end

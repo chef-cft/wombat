@@ -28,6 +28,7 @@ powershell_script 'Extract PSReadline' do
   [System.Reflection.Assembly]::LoadWithPartialName("System.IO.Compression.FileSystem") | Out-Null
   [System.IO.Compression.ZipFile]::ExtractToDirectory('#{home}/PSReadLine.zip', '#{modules}/PSReadLine')
   EOH
+  not_if { File.exist?("#{home}/Documents/WindowsPowerShell/Modules/PSReadLine/PSReadline.dll") }
 end
 
 # PowerShell AllUsersAllHosts profile
