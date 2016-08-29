@@ -1,0 +1,26 @@
+---
+driver:
+  name: ec2
+  aws_ssh_key_id: <%= ENV["EC2_SSH_KEY_NAME"] %>
+  region: us-east-1
+  availability_zone: e
+  instance_type: m3.large
+
+provisioner:
+  name: chef_zero
+
+verifier:
+  name: inspec
+
+platforms:
+  - name: ubuntu-1404
+    driver:
+      image_id: ami-8e0b9499
+    transport:
+      ssh_key: <%= ENV["EC2_SSH_KEY_PATH"] %>
+
+suites:
+  - name: default
+    run_list:
+      - recipe[mock_data]
+      - recipe[compliance]

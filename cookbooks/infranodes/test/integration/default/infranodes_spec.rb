@@ -1,21 +1,11 @@
-# compliance tests
+# automate tests
 
-describe command('hostname') do
-  its('stdout') { should eq "compliance\n" }
-end
-
-describe file('/home/vagrant/.ssh/authorized_keys') do
+describe file('/home/ubuntu/.ssh/authorized_keys') do
   its('content') { file("/tmp/public.pub").content }
 end
 
-describe package('chef-compliance') do
+describe package('push-jobs-client') do
   it { should be_installed }
-end
-
-%w(crt key).each do |ext|
-  describe file("/var/opt/chef-compliance/ssl/ca/compliance.animals.biz.#{ext}") do
-    its('content') { should eq file("/tmp/compliance.#{ext}").content }
-  end
 end
 
 describe file('/etc/hosts') do
@@ -25,3 +15,6 @@ describe file('/etc/hosts') do
   its('content') { should match /172.31.54.51\s.*build-node-1.animals.biz build-node-1/ }
   its('content') { should match /172.31.54.201\s.*workstation-1.animals.biz workstation-1/ }
 end
+
+# add tests to verify users and passwords
+# delivery-ctl list-users doesn't work
