@@ -65,8 +65,11 @@
       "zone": "{{user `gce_zone`}}",
       "disk_type": "pd-ssd",
       "disk_size": "80",
-      "machine_type": "n1-highcpu-8",
-      "image_name": "automate-infranode-{{user `node-name`}}-{{timestamp}}"
+      "image_name": "automate-infranode-{{user `node-name`}}-{{timestamp}}",
+      "machine_type": "n1-standard-2",
+      "image_name": "chef-{{timestamp}}",
+      "ssh_username": "ubuntu",
+      "ssh_pty" : true
     }
   ],
 

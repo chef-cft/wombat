@@ -65,8 +65,10 @@
       "zone": "{{user `gce_zone`}}",
       "disk_type": "pd-ssd",
       "disk_size": "80",
-      "machine_type": "n1-highcpu-8",
-      "image_name": "compliance-{{timestamp}}"
+      "image_name": "compliance-{{timestamp}}",
+      "machine_type": "n1-standard-2",
+      "ssh_username": "ubuntu",
+      "ssh_pty" : true
     }
   ],
 
