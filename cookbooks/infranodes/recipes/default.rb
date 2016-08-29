@@ -4,11 +4,6 @@
 #
 # Copyright (c) 2016 The Authors, All Rights Reserved.
 
-append_if_no_line "Add certificate to authorized_keys" do
-  path "/home/#{node['demo']['admin-user']}/.ssh/authorized_keys"
-  line lazy { IO.read('/tmp/public.pub') }
-end
-
 chef_ingredient 'chef' do
   channel node['demo']['versions']['chef'].split('-')[0].to_sym
   version node['demo']['versions']['chef'].split('-')[1]
@@ -17,20 +12,17 @@ end
 
 directory '/etc/chef'
 
-chef_server_url = "https://#{node['demo']['domain_prefix']}chef.#{node['demo']['domain']}/organizations/#{node['demo']['org']}"
-delivery_server_url = "https://#{node['demo']['domain_prefix']}automate.#{node['demo']['domain']}"
-
 template '/etc/chef/client.rb' do
   source 'client.rb.erb'
   variables({
-      :chef_server_url => chef_server_url,
+      :chef_server_url => node['demo']['chef_server_url'],
       :name => node['demo']['node-name'],
-      :delivery_server_url => delivery_server_url
+      :automate_fqdn => node['demo']['automate_fqdn']
   })
 end
 
 file '/etc/chef/client.pem' do
-  content IO.read('/tmp/private.pem')
+  content lazy { IO.read('/tmp/private.pem') }
 end
 
 ###todo: centralize this into the wombat cookbook
@@ -38,11 +30,12 @@ directory '/etc/chef/trusted_certs'
 
 %w(chef automate compliance).each do |f|
   file "/etc/chef/trusted_certs/#{node['demo']['domain_prefix']}#{f}_#{node['demo']['domain'].tr('.','_')}.crt" do
-    content IO.read("/tmp/#{f}.crt")
+    content lazy { IO.read("/tmp/#{f}.crt") }
   end
 end
 ###
-node.set['push_jobs']['chef']['chef_server_url'] = chef_server_url
+node.set['push_jobs']['chef']['chef_server_url'] = node['demo']['chef_server_url']
 node.set['push_jobs']['chef']['node_name'] = node['demo']['node-name']
+include_recipe 'wombat::authorized-keys'
 include_recipe 'wombat::etc-hosts'
 include_recipe 'push-jobs'

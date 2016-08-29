@@ -20,6 +20,23 @@ default['demo']['hosts'] = {
   'compliance' => '172.31.54.12'
 }
 
+default['demo']['automate_fqdn'] = "#{node['demo']['domain_prefix']}automate.#{node['demo']['domain']}"
+default['demo']['chef_fqdn'] = "#{node['demo']['domain_prefix']}chef.#{node['demo']['domain']}"
+default['demo']['chef_server_url'] = "https://#{node['demo']['chef_fqdn']}/organizations/#{node['demo']['org']}"
+default['demo']['compliance_fqdn'] = "#{node['demo']['domain_prefix']}compliance.#{node['demo']['domain']}"
+
+default['demo']['pkgs'] = %w(
+  cmder
+  googlechrome
+  atom
+  git
+  hub
+  gitextensions
+  git-credential-manager-for-windows
+)
+
+default['demo']['tutorial_url'] = 'https://learn.chef.io/tutorials/#chef-automate'
+
 default['demo']['users'] = {
   "admin" => {
     "first"     => "admin",
