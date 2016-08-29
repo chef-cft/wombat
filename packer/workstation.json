@@ -51,7 +51,14 @@
       "disk_type": "pd-ssd",
       "disk_size": "80",
       "machine_type": "n1-highcpu-8",
-      "image_name": "workstation-{{user `workstation-number`}}-{{timestamp}}"
+      "image_name": "workstation-{{user `workstation-number`}}-{{timestamp}}",
+      "communicator": "winrm",
+      "winrm_port": 5985,
+      "winrm_username": "{{user `winrm_username`}}",
+      "winrm_password": "{{user `winrm_password`}}",
+      "metadata": {
+        "windows-startup-script-ps1": "gs://wombat-bootstrap/win-bootstrap.ps1"
+      }
     }
   ],
 
