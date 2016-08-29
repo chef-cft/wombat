@@ -13,10 +13,6 @@ describe file('/home/vagrant/.ssh/authorized_keys') do
   its('content') { file("/tmp/public.pub").content }
 end
 
-# describe package('chefdk') do
-#   it { should be_installed }
-# end
-
 describe package('delivery') do
   it { should be_installed }
 end
