@@ -10,17 +10,17 @@ end
 
 describe package('chef-server-core') do
   it { should be_installed }
-  its('version') { should match '12.7.0' }
+  its('version') { should match '12.8.0' }
 end
 
 describe package('chef-manage') do
   it { should be_installed }
-  its('version') { should match '2.3.0' }
+  its('version') { should match '2.4.2' }
 end
 
 describe package('opscode-push-jobs-server') do
   it { should be_installed }
-  its('version') { should match '1.1.6' }
+  its('version') { should match '2.1.0' }
 end
 
 describe command('chef-server-ctl org-list') do
@@ -28,8 +28,8 @@ describe command('chef-server-ctl org-list') do
 end
 
 describe command('chef-server-ctl user-list') do
-  its('stdout') { should match "workstation" }
-  its('stdout') { should match "delivery" }
+  its('stdout') { should match "workstation-1" }
+  its('stdout') { should match "automate" }
   its('stdout') { should match "pivotal" }
 end
 
@@ -40,8 +40,8 @@ end
 end
 
 describe file('/etc/hosts') do
-  its('content') { should match /172.31.54.10\s.*chef chef.animals.biz/ }
-  its('content') { should match /172.31.54.11\s.*automate automate.animals.biz/ }
-  its('content') { should match /172.31.54.12\s.*build-node-1 build-node-1.animals.biz/ }
-  its('content') { should match /172.31.54.13\s.*compliance compliance.animals.biz/ }
+  its('content') { should match /172.31.54.10\s.*chef.animals.biz chef/ }
+  its('content') { should match /172.31.54.11\s.*automate.animals.biz automate/ }
+  its('content') { should match /172.31.54.12\s.*compliance.animals.biz compliance/ }
+  its('content') { should match /172.31.54.51\s.*build-node-1.animals.biz build-node-1/ }
 end

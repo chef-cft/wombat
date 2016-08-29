@@ -3,13 +3,11 @@
 cookbook_file '/tmp/public.pub' do
   content 'public.pub'
   action :create
-  sensitive true
 end
 
 cookbook_file '/tmp/private.pem' do
   content 'private.pem'
   action :create
-  sensitive true
 end
 
 %w(chef automate compliance).each do |f|
