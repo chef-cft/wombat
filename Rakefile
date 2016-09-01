@@ -15,6 +15,7 @@ namespace :build do
     end
     gen_ssh_key
     vendor_cookbooks(args[:template])
+    bootstrap_aws
     sh packer_build(args[:template], cloud)
   end
 
