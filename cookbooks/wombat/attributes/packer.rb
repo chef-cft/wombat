@@ -4,7 +4,7 @@ default['wombat']['packer']['aws'].tap do |a|
   a['access_key'] = "xxxxx"
   a['keypair'] = "xxxxx"
   a['source_ami']['ubuntu'] = "ami-8c4cb0ec"
-  a['source_ami']['windows'] = "ami-87c037e7"
+  a['source_ami']['windows'] = "ami-1712d877"
 end
 
 default['wombat']['packer']['azure'].tap do |az|

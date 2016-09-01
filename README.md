@@ -57,7 +57,7 @@ aws:
   keypair: keypair-ap-southeast-2
   source_ami:
     ubuntu: ami-8c4cb0ec
-    windows: ami-87c037e7
+    windows: ami-1712d877
 ```
 
 *NOTE:* workstation-passwd must meet the minimum Microsoft [Complexity Requirements](https://technet.microsoft.com/en-us/library/hh994562(v=ws.11).aspx)
