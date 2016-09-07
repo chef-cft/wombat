@@ -1,0 +1,696 @@
+#!/usr/bin/env ruby
+# -*- encoding: utf-8 -*-
+
+Signal.trap("INT") { exit 1 }
+
+$stdout.sync = true
+$stderr.sync = true
+
+require 'benchmark'
+require 'digest'
+require 'json'
+require 'optparse'
+require 'ostruct'
+require 'tempfile'
+require 'net/ssh'
+require 'parallel'
+require 'openssl'
+require 'aws-sdk'
+require 'mixlib/shellout'
+require 'erb'
+require 'yaml'
+
+class Options
+
+  NAME = File.basename($0).freeze
+
+  def self.parse(args)
+    options = OpenStruct.new
+    options.templates = calculate_templates("*.json")
+
+    global = OptionParser.new do |opts|
+      opts.banner = "Usage: #{NAME} [SUBCOMMAND [options]]"
+      opts.separator ""
+      opts.separator <<-COMMANDS.gsub(/^ {8}/, "")
+        build        :   build one or more templates
+        help         :   prints this help message
+        list         :   list all templates in project
+        deploy       :   deploy a stack
+        outputs      :   get outputs for a stack
+        delete       :   delete a stack
+      COMMANDS
+    end
+
+    templates_argv_proc = proc { |options|
+      options.templates = calculate_templates(args) unless args.empty?
+
+      options.templates.each do |t|
+        if !File.exists?("packer/#{t}.json")
+          $stderr.puts "File packer/#{t}.json does not exist for template '#{t}'"
+          exit(1)
+        end
+      end
+    }
+
+    box_version_argv_proc = proc { |options|
+      options.box = ARGV[0]
+      options.version = ARGV[1]
+    }
+
+    stack_argv_proc = proc { |options|
+      options.stack = ARGV[0]
+    }
+
+    subcommand = {
+      help: {
+        parser: OptionParser.new {},
+        argv: proc { |options|
+          puts global
+          exit(0)
+        }
+      },
+      build: {
+        class: BuildRunner,
+        parser: OptionParser.new { |opts|
+          opts.banner = "Usage: #{NAME} build [options] TEMPLATE[ TEMPLATE ...]"
+
+          opts.on("-c CONFIG", "--config CONFIG", "Use config file") do |opt|
+            options.config = opt
+          end
+
+          opts.on("-o BUILDER", "--only BUILDER", "Use config file") do |opt|
+            options.builder = opt
+          end
+
+          opts.on("--parallel", "Build in parallel") do |opt|
+            options.parallel = opt
+          end
+        },
+        argv: templates_argv_proc
+      },
+      list: {
+        class: ListRunner,
+        parser: OptionParser.new { |opts|
+          opts.banner = "Usage: #{NAME} list [TEMPLATE ...]"
+        },
+        argv: templates_argv_proc
+      },
+      outputs: {
+        class: OutputRunner,
+        parser: OptionParser.new { |opts|
+          opts.banner = "Usage: #{NAME} outputs [TEMPLATE ...]"
+        },
+        argv: stack_argv_proc
+      },
+      deploy: {
+        class: DeployRunner,
+        parser: OptionParser.new { |opts|
+          opts.banner = "Usage: #{NAME} deploy STACK"
+
+          opts.on("-c CLOUD", "--cloud CLOUD", "Select cloud") do |opt|
+            options.cloud = opt
+          end
+        },
+        argv: stack_argv_proc
+      },
+      delete: {
+        class: DeleteRunner,
+        parser: OptionParser.new { |opts|
+          opts.banner = "Usage: #{NAME} delete STACK"
+
+          opts.on("-c CLOUD", "--cloud CLOUD", "Select cloud") do |opt|
+            options.cloud = opt
+          end
+        },
+
+        argv: stack_argv_proc
+      }
+    }
+
+    global.order!
+    command = args.empty? ? :help : ARGV.shift.to_sym
+    subcommand.fetch(command).fetch(:parser).order!
+    subcommand.fetch(command).fetch(:argv).call(options)
+
+    options.command = command
+    options.klass = subcommand.fetch(command).fetch(:class)
+
+    options
+  end
+
+  def self.calculate_templates(globs)
+    Dir.chdir('packer') do
+      Array(globs).
+        map { |glob| result = Dir.glob("#{glob}"); result.empty? ? glob : result }.
+        flatten.
+        sort.
+        delete_if { |file| file =~ /\.variables\./ }.
+        map { |template| template.sub(/\.json$/, '') }
+    end
+  end
+end
+
+module Common
+
+  def banner(msg)
+    puts "==> #{msg}"
+  end
+
+  def info(msg)
+    puts "    #{msg}"
+  end
+
+  def warn(msg)
+    puts ">>> #{msg}"
+  end
+
+  def duration(total)
+    total = 0 if total.nil?
+    minutes = (total / 60).to_i
+    seconds = (total - (minutes * 60))
+    format("%dm%.2fs", minutes, seconds)
+  end
+
+  def wombat
+    if !File.exists?('wombat.yml')
+      File.open('wombat.yml', 'w') do |f|
+        f.puts File.read('wombat.example.yml')
+      end
+    end
+    YAML.load(File.read('wombat.yml'))
+  end
+
+  def lock
+    JSON.parse(File.read('wombat.lock'))
+  end
+
+  def bootstrap_aws
+    puts 'Generating bootstrap script from template'
+    @workstation_passwd = wombat['workstation-passwd']
+    rendered = ERB.new(File.read('packer/scripts/bootstrap-aws.erb'), nil, '-').result(binding)
+    File.open("packer/scripts/bootstrap-aws.txt", 'w') { |file| file.puts rendered }
+    puts "packer/scripts/bootstrap-aws.txt"
+  end
+
+  def gen_x509_cert(hostname)
+    rsa_key = OpenSSL::PKey::RSA.new(2048)
+    public_key = rsa_key.public_key
+
+    subject = "/C=AU/ST=New South Wales/L=Sydney/O=#{wombat['org']}/OU=wombats/CN=#{wombat['domain_prefix']}#{hostname}.#{wombat['domain']}"
+
+    cert = OpenSSL::X509::Certificate.new
+    cert.subject = cert.issuer = OpenSSL::X509::Name.parse(subject)
+    cert.not_before = Time.now
+    cert.not_after = Time.now + 365 * 24 * 60 * 60
+    cert.public_key = public_key
+    cert.serial = 0x0
+    cert.version = 2
+
+    ef = OpenSSL::X509::ExtensionFactory.new
+    ef.subject_certificate = cert
+    ef.issuer_certificate = cert
+    cert.extensions = [
+      ef.create_extension('basicConstraints', 'CA:TRUE', true),
+      ef.create_extension('subjectKeyIdentifier', 'hash'),
+      # ef.create_extension("keyUsage", "cRLSign,keyCertSign", true),
+    ]
+    cert.add_extension ef.create_extension('authorityKeyIdentifier',
+                                           'keyid:always,issuer:always')
+
+    cert.sign(rsa_key, OpenSSL::Digest::SHA256.new)
+    key_dir = 'packer/keys'
+
+    if File.exist?("#{key_dir}/#{hostname}.crt") && File.exist?("#{key_dir}/#{hostname}.key")
+      puts "An x509 certificate already exists for #{hostname}"
+    else
+      File.open("#{key_dir}/#{hostname}.crt", 'w') { |file| file.puts cert.to_pem }
+      File.open("#{key_dir}/#{hostname}.key", 'w') { |file| file.puts rsa_key.to_pem }
+      puts "Certificate created for #{wombat['domain_prefix']}#{hostname}.#{wombat['domain']}"
+    end
+  end
+
+  def gen_ssh_key
+    rsa_key = OpenSSL::PKey::RSA.new 2048
+
+    type = rsa_key.ssh_type
+    data = [rsa_key.to_blob].pack('m0')
+
+    openssh_format = "#{type} #{data}"
+    key_dir = 'packer/keys'
+
+    if File.exist?("#{key_dir}/public.pub") && File.exist?("#{key_dir}/private.pem")
+      puts 'An SSH keypair already exists'
+    else
+      File.open("#{key_dir}/public.pub", 'w') { |file| file.puts openssh_format }
+      File.open("#{key_dir}/private.pem", 'w') { |file| file.puts rsa_key.to_pem }
+      puts 'SSH Keypair created'
+    end
+  end
+
+  def parse_log(instance, cloud)
+    log_dir = 'packer/logs'
+    case cloud
+    when "aws", "amazon", "jeffbezosband", "cfn"
+      File.read("#{log_dir}/aws-#{instance}.log").split("\n").grep(/#{wombat['aws']['region']}:/) {|x| x.split[1]}.last
+    when "gce", "gcp", "google", "gdm"
+      File.read("#{log_dir}/gce-#{instance}.log").split("\n").grep(/A disk image was created:/) {|x| x.split[1]}.last
+    end
+  end
+
+  def infranodes
+    unless wombat['infranodes'].nil?
+      wombat['infranodes'].sort
+    else
+      puts 'No infranodes listed in wombat.yml'
+    end
+  end
+
+  def build_nodes
+    build_nodes = {}
+    1.upto(wombat['build-nodes'].to_i) do |i|
+      build_nodes["build-node-#{i}"] = i
+    end
+    build_nodes
+  end
+
+  def workstations
+    workstations = {}
+    1.upto(wombat['workstations'].to_i) do |i|
+      workstations["workstation-#{i}"] = i
+    end
+    workstations
+  end
+
+  def create_infranodes_json
+    if File.exists?('packer/file/infranodes-info.json')
+      current_state = JSON(File.read('files/infranodes-info.json'))
+    else
+      current_state = nil
+    end
+    return if current_state == infranodes # yay idempotence
+    File.open('packer/files/infranodes-info.json', 'w') do |f|
+      f.puts JSON.pretty_generate(infranodes)
+    end
+  end
+
+  def s3_bucket
+    @s3_bucket ||= ENV['BENTO_S3_BUCKET']
+  end
+end
+
+class BuildRunner
+
+  include Common
+
+  attr_reader :templates, :builder, :config, :parallel
+
+  def initialize(opts)
+    @templates = opts.templates
+    @builder = opts.builder.nil? ? "amazon-ebs" : opts.builder
+    @config = opts.config
+    @parallel = opts.parallel
+  end
+
+  def start
+    banner("Generating keys (if necessary)")
+    %w(chef automate compliance).each do |hostname|
+      gen_x509_cert(hostname)
+    end
+
+    gen_ssh_key
+
+    if parallel
+      time = Benchmark.measure do
+        banner("Starting parallel build for templates: #{templates}")
+        parallel_pack(templates, builder)
+      end
+    else
+      time = Benchmark.measure do
+        banner("Starting sequential build for templates: #{templates}")
+        templates.each do |template|
+          options = {}
+          case template
+          when 'build-node', 'build-nodes'
+            vendor_cookbooks('build-node')
+            build_nodes.each do |name, num|
+              template = 'build-node'
+              options = {'node-number' => num}
+              packer_cmd = Mixlib::ShellOut.new(packer_build(template, builder, options), :timeout => 3600, live_stream: STDOUT)
+              packer_cmd.run_command
+            end
+          when 'workstation', 'workstations'
+            bootstrap_aws
+            vendor_cookbooks('workstation')
+            workstations.each do |name, num|
+              template = 'workstation'
+              options = {'workstation-number' => num}
+              packer_cmd = Mixlib::ShellOut.new(packer_build(template, builder, options), :timeout => 3600, live_stream: STDOUT)
+              packer_cmd.run_command
+            end
+          when 'infranode', 'infranodes'
+            vendor_cookbooks('infranodes')
+            infranodes.each do |name, num|
+              template = 'infranodes'
+              options = {'node-name' => name}
+              packer_cmd = Mixlib::ShellOut.new(packer_build(template, builder, options), :timeout => 3600, live_stream: STDOUT)
+              packer_cmd.run_command
+            end
+          else
+            vendor_cookbooks(template)
+            packer_cmd = Mixlib::ShellOut.new(packer_build(template, builder, options), :timeout => 3600, live_stream: STDOUT)
+            packer_cmd.run_command
+            puts packer_cmd
+            puts packer_cmd.stdout
+            puts packer_cmd.stderr unless packer_cmd.stderr.empty?
+          end
+        end
+      end
+    end
+    banner("Build finished in #{duration(time.real)}.")
+  end
+
+  private
+
+  def vendor_cookbooks(template)
+    base = template.split('.json')[0].tr('-', '_')
+    rm = Mixlib::ShellOut.new("rm -rf vendored-cookbooks/#{base} cookbooks/#{base}/Berksfile.lock", live_stream: STDOUT)
+    rm.run_command
+    puts "Vendoring cookbooks for #{template}"
+    vendor = Mixlib::ShellOut.new("berks vendor -q -b cookbooks/#{base}/Berksfile vendored-cookbooks/#{base}", live_stream: STDOUT)
+    vendor.run_command
+  end
+
+  def packer_build(template, builder, options={})
+    create_infranodes_json
+    case template
+    when 'build-node'
+      log_name = "build-node-#{options['node-number']}"
+    when 'workstation'
+      log_name = "workstation-#{options['workstation-number']}"
+    when 'infranodes'
+      log_name = "infranodes-#{options['node-name']}"
+    else
+     log_name = template
+    end
+
+    case builder
+    when 'amazon-ebs'
+      if template == 'workstation'
+        source_ami = wombat['aws']['source_ami']['windows']
+      else
+        source_ami = wombat['aws']['source_ami']['ubuntu']
+      end
+      if ENV['AWS_REGION']
+        puts "Region set by environment: #{ENV['AWS_REGION']}"
+      else
+        puts "$AWS_REGION not set, setting to #{wombat['aws']['region']}"
+        ENV['AWS_REGION'] = wombat['aws']['region']
+      end
+      log_prefix = "aws"
+    when 'googlecompute'
+      if template == 'workstation'
+        source_image = wombat['gce']['source_image']['windows']
+      else
+        source_image = wombat['gce']['source_image']['ubuntu']
+      end
+      log_prefix = "gce"
+    end
+
+    cmd = %W(packer build packer/#{template}.json | tee packer/logs/#{log_prefix}-#{log_name}.log)
+    cmd.insert(2, "--only #{builder}")
+    cmd.insert(2, "--var org=#{wombat['org']}")
+    cmd.insert(2, "--var domain=#{wombat['domain']}")
+    cmd.insert(2, "--var domain_prefix=#{wombat['domain_prefix']}")
+    cmd.insert(2, "--var enterprise=#{wombat['enterprise']}")
+    cmd.insert(2, "--var chefdk=#{wombat['products']['chefdk']}")
+    cmd.insert(2, "--var chef_ver=#{wombat['products']['chef'].split('-')[1]}")
+    cmd.insert(2, "--var chef_channel=#{wombat['products']['chef'].split('-')[0]}")
+    cmd.insert(2, "--var automate=#{wombat['products']['automate']}")
+    cmd.insert(2, "--var compliance=#{wombat['products']['compliance']}")
+    cmd.insert(2, "--var chef-server=#{wombat['products']['chef-server']}")
+    cmd.insert(2, "--var node-name=#{options['node-name']}") if template =~ /infranodes/
+    cmd.insert(2, "--var node-number=#{options['node-number']}") if template =~ /build-node/
+    cmd.insert(2, "--var build-nodes=#{wombat['build-nodes']}")
+    cmd.insert(2, "--var winrm_password=#{wombat['workstation-passwd']}") if template =~ /workstation/
+    cmd.insert(2, "--var workstation-number=#{options['workstation-number']}") if template =~ /workstation/
+    cmd.insert(2, "--var workstations=#{wombat['workstations']}")
+    cmd.insert(2, "--var aws_source_ami=#{source_ami}")
+    cmd.insert(2, "--var gce_source_image=#{source_image}")
+    cmd.join(' ')
+  end
+
+  def parallel_pack(templates, builder)
+    proc_hash = {}
+    templates.each do |template_name|
+      if template_name == 'infranodes'
+        infranodes.each do |name, _rl|
+          next if name.empty?
+          proc_hash[name] = {
+            'template' => 'infranodes',
+            'options' => {
+              'node-name' => name
+            }
+          }
+        end
+      elsif template_name == 'build-node'
+        build_nodes.each do |name, num|
+          proc_hash[name] = {
+            'template' => 'build-node',
+            'options' => {
+              'node-number' => num
+            }
+          }
+        end
+      elsif template_name == 'workstation'
+        workstations.each do |name, num|
+          proc_hash[name] = {
+            'template' => 'workstation',
+            'options' => {
+              'workstation-number' => num
+            }
+          }
+        end
+      else
+        proc_hash[template_name] = {
+          'template' => template_name,
+          'options' => {}
+        }
+      end
+      vendor_cookbooks(template_name)
+    end
+    puts proc_hash
+    Parallel.map(proc_hash.keys, in_threads: proc_hash.count) do |name|
+      cmd = packer_build(proc_hash[name]['template'], builder, proc_hash[name]['options'])
+      packer_cmd = Mixlib::ShellOut.new(cmd, :timeout => 3600, live_stream: STDOUT)
+      packer_cmd.run_command
+    end
+  end
+end
+
+class DeployRunner
+  include Common
+
+  attr_reader :stack, :cloud
+
+  def initialize(opts)
+    @stack = opts.stack
+    @cloud = opts.cloud.nil? ? "aws" : opts.cloud
+  end
+
+  def start
+    case cloud
+    when 'aws'
+      update_lock(cloud)
+      create_template
+      create_stack(stack)
+    end
+  end
+
+  private
+
+  def create_stack(stack)
+    template_file = File.read("cloudformation/#{stack}.json")
+    cfn = Aws::CloudFormation::Client.new(region: lock['aws']['region'])
+
+    banner("Creating CloudFormation stack")
+    resp = cfn.create_stack({
+      stack_name: "#{stack}",
+      template_body: template_file,
+      capabilities: ["CAPABILITY_IAM"],
+      on_failure: "DELETE",
+      parameters: [
+        {
+          parameter_key: "KeyName",
+          parameter_value: lock['aws']['keypair'],
+        }
+      ]
+    })
+    puts "Created: #{resp.stack_id}"
+  end
+
+  def create_template
+    region = lock['aws']['region']
+    @chef_server_ami = lock['amis'][region]['chef-server']
+    @automate_ami = lock['amis'][region]['automate']
+    @compliance_ami = lock['amis'][region]['compliance']
+    @build_nodes = lock['build-nodes'].to_i
+    @build_node_ami = {}
+    1.upto(@build_nodes) do |i|
+      @build_node_ami[i] = lock['amis'][region]['build-node'][i.to_s]
+    end
+    @infra = {}
+    infranodes.each do |name, _rl|
+      @infra[name] = lock['amis'][region]['infranodes'][name]
+    end
+    @workstations = lock['workstations'].to_i
+    @workstation_ami = {}
+    1.upto(@workstations) do |i|
+      @workstation_ami[i] = lock['amis'][region]['workstation'][i.to_s]
+    end
+    @availability_zone = lock['aws']['az']
+    @demo = lock['name']
+    @version = lock['version']
+    @ttl = lock['ttl']
+    rendered_cfn = ERB.new(File.read('cloudformation/cfn.json.erb'), nil, '-').result(binding)
+    File.open("cloudformation/#{@demo}.json", 'w') { |file| file.puts rendered_cfn }
+    banner("Generate CloudFormation JSON: #{@demo}.json")
+  end
+
+  def update_lock(cloud)
+    copy = {}
+    copy = wombat
+    region = copy[cloud]['region']
+    banner('Updating wombat.lock')
+    copy['amis'] = { region => {} }
+    Dir.glob("packer/logs/#{cloud}*.log") do |log|
+      instance = log.match('aws-(.*)\.log')[1]
+      if instance =~ /build-node/
+        copy['amis'][region].store('build-node', {})
+        1.upto(wombat['build-nodes'].to_i) do |i|
+          copy['amis'][region]['build-node'].store(i.to_s, parse_log("build-node-#{i}", "aws"))
+        end
+      elsif instance =~ /workstation/
+        copy['amis'][region].store('workstation', {})
+        1.upto(wombat['workstations'].to_i) do |i|
+          copy['amis'][region]['workstation'].store(i.to_s, parse_log("workstation-#{i}", "aws"))
+        end
+      elsif instance =~ /infranodes/
+        copy['amis'][region].store('infranodes', {})
+        infranodes.each do |name, _rl|
+          copy['amis'][region]['infranodes'].store(name, parse_log("infranodes-#{name}", "aws"))
+        end
+      else
+        copy['amis'][region].store(instance, parse_log(instance, "aws"))
+      end
+    end
+    copy['last_updated'] = Time.now.gmtime.strftime('%Y%m%d%H%M%S')
+    File.open('wombat.lock', 'w') do |f|
+      f.write(JSON.pretty_generate(copy))
+    end
+  end
+
+end
+
+class DeleteRunner
+  include Common
+
+  attr_reader :stack, :cloud
+
+  def initialize(opts)
+    @stack = opts.stack
+    @cloud = opts.cloud.nil? ? "aws" : opts.cloud
+  end
+
+  def start
+    cfn_delete_stack(stack)
+  end
+
+  private
+
+  def cfn_delete_stack(stack)
+    cfn = Aws::CloudFormation::Client.new(region: lock['aws']['region'])
+
+    resp = cfn.delete_stack({
+      stack_name: stack,
+    })
+    banner("Deleted #{stack}")
+  end
+end
+
+class ListRunner
+
+  include Common
+
+  attr_reader :templates
+
+  def initialize(opts)
+    @templates = opts.templates
+  end
+
+  def start
+    templates.each { |template| puts template }
+  end
+end
+
+class OutputRunner
+
+  include Common
+
+  attr_reader :stack
+
+  def initialize(opts)
+    @stack = opts.stack
+  end
+
+  def start
+    cfn_workstation_ips(stack)
+  end
+
+  private
+
+  def cfn_workstation_ips(stack)
+    ec2 = Aws::EC2::Resource.new
+    instances = cfn_stack_instances(stack)
+    instances.each do |name, id|
+      instance = ec2.instance(id)
+      if /Workstation/.match(name)
+        puts "#{name} (#{id}) => #{instance.public_ip_address}"
+      end
+    end
+  end
+
+  def cfn_stack_instances(stack)
+    cfn = Aws::CloudFormation::Client.new
+    resp = cfn.describe_stack_resources({
+      stack_name: stack,
+      })
+
+    instances = {}
+    resp.stack_resources.map do |resource|
+      if resource.resource_type == 'AWS::EC2::Instance'
+        instances[resource.logical_resource_id] = resource.physical_resource_id
+      end
+    end
+    instances
+  end
+end
+
+class Runner
+
+  attr_reader :options
+
+  def initialize(options)
+    @options = options
+  end
+
+  def start
+    options.klass.new(options).start
+  end
+end
+
+begin
+  Runner.new(Options.parse(ARGV)).start
+rescue => ex
+  $stderr.puts ">>> #{ex.message}"
+  exit(($? && $?.exitstatus) || 99)
+end

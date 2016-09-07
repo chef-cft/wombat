@@ -7,7 +7,7 @@ A combination of packer templates and terraform plan to configure a demo environ
 * Chef Compliance
 * _N_ Automate Build Node(s)
 * _N_ Infrastructure Nodes
-* Windows Workstation
+* _N_ Windows Workstation
 
 
 Usage
@@ -45,6 +45,7 @@ build-nodes: '1'
 workstations: '1'
 workstation-passwd: 'RL9@T40BTmXh'
 version: 0.2.0
+ttl: 8
 products:
   chef: stable-12.13.37
   chef-server: stable-12.8.0
@@ -62,21 +63,22 @@ aws:
 
 *NOTE:* workstation-passwd must meet the minimum Microsoft [Complexity Requirements](https://technet.microsoft.com/en-us/library/hh994562(v=ws.11).aspx)
 
+*NOTE:* The `googlecompute` and `azure` builders exist but not all images will build nor is there deployment support for either at this time.
+
 ##### Build images with Packer
 
 ```
-# build one template
-$ rake build:image[chef-server,aws]
+# build one or more templates
+$ bin/wombat build -o BUILDER TEMPLATE [TEMPLATE2]
 
 # build all templates (sequentially)
-$ rake build:images[aws]
+$ bin/wombat build -o BUILDER
 
 # build all images (parallel)
-$ rake build:images_parallel[aws]
+$ bin/wombat build -o BUILDER --parallel
 ```
 
-*NOTE:* If the builder (aws, gce, ...) is not provided or is any value beside 'gce', it defaults to 'aws'.
-There is currently GCE support but image building but not deployment.
+*NOTE:* If the builder is not provided it defaults to `amazon-ebs`
 
 ##### Deploy CloudFormation template
 
@@ -88,15 +90,20 @@ Upload the created template from the `cloudformation` directory.
 
 ```
 # Deploy CloudFormation template
-$ rake cfn:create_stack
-Creating CFN stack: wombat-TIMESTAMP
+$ bin/wombat deploy --cloud aws STACK
+==> Updating wombat.lock
+==> Generate CloudFormation JSON: STACK.json
+==> Creating CloudFormation stack
+Created: arn:aws:cloudformation:us-east-1:862552916454:stack/STACK/2160c580-713e-11e6-b392-50a686e4bb82
 ```
+
+*NOTE:* If the cloud is not provided it defaults to `aws`
 
 ##### Login to Windows Workstation
 
 ```
 # Get Windows Workstation(s) IP(s)
-$ rake cfn:list_ips[wombat-TIMESTAMP]
+$ bin/wombat outputs STACK
 WindowsWorkstation (i-xxxxxxxx) => XX.XXX.XX.XXX
 ```
 

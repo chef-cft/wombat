@@ -22,6 +22,7 @@ infranodes:
   #   run_list:
   #     - recipe[bacon::crispy]
 version: 0.1.0
+ttl: 6
 products:
   chef: stable-12.13.37
   chef-server: stable-12.8.0
