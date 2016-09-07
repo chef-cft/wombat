@@ -69,13 +69,13 @@ aws:
 
 ```
 # build one or more templates
-$ bin/wombat build -o BUILDER TEMPLATE [TEMPLATE2]
+$ bin/wombat build [-o BUILDER] TEMPLATE [TEMPLATE2]
 
 # build all templates (sequentially)
-$ bin/wombat build -o BUILDER
+$ bin/wombat build [-o BUILDER]
 
 # build all images (parallel)
-$ bin/wombat build -o BUILDER --parallel
+$ bin/wombat build [-o BUILDER] --parallel
 ```
 
 *NOTE:* If the builder is not provided it defaults to `amazon-ebs`
