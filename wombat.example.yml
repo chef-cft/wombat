@@ -24,6 +24,14 @@ infranodes:
   #     - recipe[bacon::crispy]
 version: 0.1.0
 ttl: 6
+# Uncomment conf and subkeys to override the listed defaults.
+# These paths are relative to the directory of this file.
+# conf:
+#   key_dir: 'keys'
+#   cookbook_dir: 'cookbooks'
+#   packer_dir: 'packer'
+#   templates_dir: 'templates'
+#   log_dir: 'logs'
 products:
   chef: stable-12.13.37
   chef-server: stable-12.8.0
