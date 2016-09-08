@@ -4,10 +4,10 @@ require "wombat/version"
 require "English"
 
 Gem::Specification.new do |gem|
-  gem.name          = "wombat"
+  gem.name          = "wombat-cli"
   gem.version       = Wombat::VERSION
   gem.license       = "Apache-2.0"
-  gem.authors       = ["Seth Thomas"]
+  gem.authors       = ["Andre Elizondo", "Seth Thomas"]
   gem.email         = ["sthomas@chef.io"]
   gem.description   = "With a tough barrel-like body, short powerful legs, " \
                       "and long flat claws, the wombat walks with a shuffling " \
