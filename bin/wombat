@@ -218,7 +218,6 @@ module Common
                                            'keyid:always,issuer:always')
 
     cert.sign(rsa_key, OpenSSL::Digest::SHA256.new)
-    key_dir = 'packer/keys'
 
     if File.exist?("#{key_dir}/#{hostname}.crt") && File.exist?("#{key_dir}/#{hostname}.key")
       puts "An x509 certificate already exists for #{hostname}"
@@ -236,7 +235,6 @@ module Common
     data = [rsa_key.to_blob].pack('m0')
 
     openssh_format = "#{type} #{data}"
-    key_dir = 'packer/keys'
 
     if File.exist?("#{key_dir}/public.pub") && File.exist?("#{key_dir}/private.pem")
       puts 'An SSH keypair already exists'
@@ -293,8 +291,8 @@ module Common
     end
   end
 
-  def s3_bucket
-    @s3_bucket ||= ENV['BENTO_S3_BUCKET']
+  def key_dir
+    key_dir = 'keys'
   end
 end
 
@@ -313,7 +311,7 @@ class BuildRunner
 
   def start
     banner("Generating keys (if necessary)")
-    %w(chef automate compliance).each do |hostname|
+    wombat['certs'].each do |hostname|
       gen_x509_cert(hostname)
     end
 

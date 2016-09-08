@@ -10,6 +10,7 @@ vendored-cookbooks
 *.log
 cloudformation/*.json
 wombat.yml
+keys/*
 packer/keys/*
 *.lock
 infranodes-info.json
