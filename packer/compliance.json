@@ -80,7 +80,7 @@
     },
     {
       "type": "file",
-      "source": "{{template_dir}}/keys/",
+      "source": "{{pwd}}/keys/",
       "destination": "/tmp"
     },
     {

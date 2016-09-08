@@ -3,6 +3,7 @@ name: wombat
 # Uncomment domain_prefix if you wish to prepend your generated domain.
 # Ex: The below example would create foo-chef.animals.biz.
 # domain_prefix: foo-
+certs: ['automate', 'chef', 'compliance']
 domain: animals.biz
 enterprise: mammals
 org: marsupials
