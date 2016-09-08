@@ -16,3 +16,4 @@ packer/keys/*
 infranodes-info.json
 output
 bootstrap-aws.txt
+*.gem
