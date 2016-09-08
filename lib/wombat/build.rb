@@ -123,7 +123,7 @@ class BuildRunner
       log_prefix = "gce"
     end
     # TODO: fail if packer isn't found in a graceful way
-    cmd = %W(packer build packer/#{template}.json | tee packer/logs/#{log_prefix}-#{log_name}.log)
+    cmd = %W(packer build #{packer_dir}/#{template}.json | tee #{log_dir}/#{log_prefix}-#{log_name}.log)
     cmd.insert(2, "--only #{builder}")
     cmd.insert(2, "--var org=#{wombat['org']}")
     cmd.insert(2, "--var domain=#{wombat['domain']}")

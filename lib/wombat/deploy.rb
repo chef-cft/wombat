@@ -23,7 +23,7 @@ class DeployRunner
   private
 
   def create_stack(stack)
-    template_file = File.read("cloudformation/#{stack}.json")
+    template_file = File.read("#{stack}.json")
     cfn = Aws::CloudFormation::Client.new(region: lock['aws']['region'])
 
     banner("Creating CloudFormation stack")
@@ -65,8 +65,8 @@ class DeployRunner
     @demo = lock['name']
     @version = lock['version']
     @ttl = lock['ttl']
-    rendered_cfn = ERB.new(File.read('cloudformation/cfn.json.erb'), nil, '-').result(binding)
-    File.open("cloudformation/#{@demo}.json", 'w') { |file| file.puts rendered_cfn }
+    rendered_cfn = ERB.new(File.read('templates/cfn.json.erb'), nil, '-').result(binding)
+    File.open("#{@demo}.json", 'w') { |file| file.puts rendered_cfn }
     banner("Generate CloudFormation JSON: #{@demo}.json")
   end
 
@@ -76,7 +76,7 @@ class DeployRunner
     region = copy[cloud]['region']
     banner('Updating wombat.lock')
     copy['amis'] = { region => {} }
-    Dir.glob("packer/logs/#{cloud}*.log") do |log|
+    Dir.glob("#{log_dir}/#{cloud}*.log") do |log|
       instance = log.match('aws-(.*)\.log')[1]
       if instance =~ /build-node/
         copy['amis'][region].store('build-node', {})

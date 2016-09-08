@@ -42,9 +42,9 @@ module Common
   def bootstrap_aws
     puts 'Generating bootstrap script from template'
     @workstation_passwd = wombat['workstation-passwd']
-    rendered = ERB.new(File.read('packer/scripts/bootstrap-aws.erb'), nil, '-').result(binding)
-    File.open("packer/scripts/bootstrap-aws.txt", 'w') { |file| file.puts rendered }
-    puts "packer/scripts/bootstrap-aws.txt"
+    rendered = ERB.new(File.read('templates/bootstrap-aws.erb'), nil, '-').result(binding)
+    File.open("#{packer_dir}/scripts/bootstrap-aws.txt", 'w') { |file| file.puts rendered }
+    puts "#{packer_dir}/scripts/bootstrap-aws.txt"
   end
 
   def gen_x509_cert(hostname)
@@ -101,7 +101,6 @@ module Common
   end
 
   def parse_log(instance, cloud)
-    log_dir = 'packer/logs'
     case cloud
     when "aws", "amazon", "jeffbezosband", "cfn"
       File.read("#{log_dir}/aws-#{instance}.log").split("\n").grep(/#{wombat['aws']['region']}:/) {|x| x.split[1]}.last
@@ -135,18 +134,30 @@ module Common
   end
 
   def create_infranodes_json
-    if File.exists?('packer/file/infranodes-info.json')
+    if File.exists?("#{packer_dir}/file/infranodes-info.json")
       current_state = JSON(File.read('files/infranodes-info.json'))
     else
       current_state = nil
     end
     return if current_state == infranodes # yay idempotence
-    File.open('packer/files/infranodes-info.json', 'w') do |f|
+    File.open("#{packer_dir}/files/infranodes-info.json", 'w') do |f|
       f.puts JSON.pretty_generate(infranodes)
     end
   end
 
   def key_dir
-    'keys'
+    wombat['conf'].nil? ? 'keys' : wombat['conf']['key_dir']
+  end
+
+  def cookbook_dir
+    wombat['conf'].nil? ? 'cookbooks' : wombat['conf']['cookbook_dir']
+  end
+
+  def packer_dir
+    wombat['conf'].nil? ? 'packer' : wombat['conf']['packer_dir']
+  end
+
+  def log_dir
+    wombat['conf'].nil? ? 'logs' : wombat['conf']['log_dir']
   end
 end
