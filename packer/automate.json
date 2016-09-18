@@ -24,7 +24,8 @@
     "domain_prefix": "",
     "enterprise": "mammals",
     "org": "marsupials",
-    "workstations": "1"
+    "workstations": "1",
+    "ssh_username": "ubuntu"
   },
 
   "builders": [
@@ -37,7 +38,7 @@
       "communicator": "ssh",
       "associate_public_ip_address": true,
       "ssh_private_ip": false,
-      "ssh_username": "ubuntu",
+      "ssh_username": "{{user `ssh_username`}}",
       "ssh_pty" : true,
       "ami_name": "automate-{{timestamp}}"
     },
@@ -68,7 +69,7 @@
       "disk_size": "80",
       "image_name": "automate-{{timestamp}}",
       "machine_type": "n1-standard-2",
-      "ssh_username": "ubuntu",
+      "ssh_username": "{{user `ssh_username`}}",
       "ssh_pty" : true
     }
   ],
@@ -88,9 +89,10 @@
       "type": "chef-solo",
       "install_command": "{{user `chef_install_url`}} | sudo bash -s -- -c {{user `chef_channel`}} -v {{user `chef_ver`}}",
       "cookbook_paths": [ "{{pwd}}/vendored-cookbooks/automate" ],
-      "run_list": [ "apt", "automate" ],
+      "run_list": [ "automate", "wombat::authorized-keys", "wombat::etc-hosts" ],
       "json": {
         "demo": {
+          "admin-user": "{{user `ssh_username`}}",
           "domain_prefix": "{{user `domain_prefix`}}",
           "domain": "{{user `domain`}}",
           "enterprise": "{{user `enterprise`}}",

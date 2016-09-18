@@ -1,7 +1,8 @@
 # build-node tests
 
-describe file('/home/vagrant/.ssh/authorized_keys') do
-  its('content') { file("/tmp/private.pem").content }
+describe file("/home/#{os.name}/.ssh/authorized_keys") do
+  its('content') { should include file("/tmp/public.pub").content }
+  it { should exist }
 end
 
 %w(chef automate compliance).each do |hostname|

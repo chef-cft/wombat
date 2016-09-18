@@ -4,6 +4,11 @@
 #
 # Copyright (c) 2016 The Authors, All Rights Reserved.
 
+apt_update 'packages' do
+  action :update
+  only_if { node['platform_family'] == 'debian' }
+end
+
 chef_ingredient 'chef' do
   channel node['demo']['versions']['chef'].split('-')[0].to_sym
   version node['demo']['versions']['chef'].split('-')[1]
@@ -36,6 +41,4 @@ end
 ###
 node.set['push_jobs']['chef']['chef_server_url'] = node['demo']['chef_server_url']
 node.set['push_jobs']['chef']['node_name'] = node['demo']['node-name']
-include_recipe 'wombat::authorized-keys'
-include_recipe 'wombat::etc-hosts'
 include_recipe 'push-jobs'

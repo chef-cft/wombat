@@ -1,7 +1,7 @@
 Host <%= @server %>
   HostName <%= @server %>
   Port 8989
-  User <%= @user -%>@<%= @ent %>
+  User <%= @automate_user -%>@<%= @ent %>
   IdentityFile <%= @home -%>/.ssh/id_rsa
   IdentitiesOnly yes
   KexAlgorithms +diffie-hellman-group1-sha1
@@ -9,7 +9,7 @@ Host <%= @server %>
 
 Host *
   Port 22
-  User ubuntu
+  User <%= @ssh_user %>
   IdentityFile <%= @home -%>/.ssh/id_rsa
   IdentitiesOnly yes
   KexAlgorithms +diffie-hellman-group1-sha1

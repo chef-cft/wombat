@@ -9,8 +9,9 @@ describe file('/usr/local/bin/jq') do
   it { should be_executable }
 end
 
-describe file('/home/vagrant/.ssh/authorized_keys') do
-  its('content') { file("/tmp/public.pub").content }
+describe file("/home/#{os.name}/.ssh/authorized_keys") do
+  its('content') { should include file("/tmp/public.pub").content }
+  it { should exist }
 end
 
 describe package('delivery') do

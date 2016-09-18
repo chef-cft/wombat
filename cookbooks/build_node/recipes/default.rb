@@ -3,6 +3,10 @@
 # Recipe:: default
 #
 # Copyright (c) 2016 The Authors, All Rights Reserved.
+apt_update 'packages' do
+  action :update
+  only_if { node['platform_family'] == 'debian' }
+end
 
 directory '/etc/chef'
 directory '/etc/chef/trusted_certs'
@@ -30,6 +34,5 @@ end
 
 node.set['push_jobs']['chef']['chef_server_url'] = node['demo']['chef_server_url']
 node.set['push_jobs']['chef']['node_name'] = "build-node-#{node['demo']['node-number']}"
-include_recipe 'wombat::authorized-keys'
-include_recipe 'wombat::etc-hosts'
+
 include_recipe 'delivery_build::default'

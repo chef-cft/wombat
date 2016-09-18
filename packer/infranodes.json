@@ -23,6 +23,7 @@
     "enterprise": "mammals",
     "node-name": "acceptance",
     "org": "marsupials",
+    "ssh_username": "ubuntu",
     "workstations": "1"
   },
 
@@ -35,8 +36,7 @@
       "instance_type": "c3.xlarge",
       "communicator": "ssh",
       "associate_public_ip_address": true,
-      "ssh_private_ip": false,
-      "ssh_username": "ubuntu",
+      "ssh_username": "{{user `ssh_username`}}",
       "ssh_pty" : true,
       "ami_name": "automate-infranode-{{user `node-name`}}-{{timestamp}}"
     },
@@ -68,7 +68,7 @@
       "image_name": "automate-infranode-{{user `node-name`}}-{{timestamp}}",
       "machine_type": "n1-standard-2",
       "image_name": "chef-{{timestamp}}",
-      "ssh_username": "ubuntu",
+      "ssh_username": "{{user `ssh_username`}}",
       "ssh_pty" : true
     }
   ],
@@ -88,9 +88,10 @@
       "type": "chef-solo",
       "install_command": "{{user `chef_install_url`}} | sudo bash -s -- -c {{user `chef_channel`}} -v {{user `chef_ver`}}",
       "cookbook_paths": [ "{{pwd}}/vendored-cookbooks/infranodes" ],
-      "run_list": [ "infranodes" ],
+      "run_list": [ "infranodes", "wombat::authorized-keys", "wombat::etc-hosts" ],
       "json": {
         "demo": {
+          "admin-user": "{{user `ssh_username`}}",
           "domain_prefix": "{{user `domain_prefix`}}",
           "domain": "{{user `domain`}}",
           "enterprise": "{{user `enterprise`}}",

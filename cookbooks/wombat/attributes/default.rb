@@ -12,6 +12,8 @@ default['demo']['versions'].tap do |pkg|
   pkg['chef-server'] = 'stable-latest'
   pkg['automate'] = 'stable-latest'
   pkg['compliance'] = 'stable-latest'
+  pkg['push-jobs-server'] = 'stable-latest'
+  pkg['manage'] = 'stable-latest'
 end
 
 default['demo']['hosts'] = {

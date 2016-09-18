@@ -18,9 +18,17 @@ platforms:
       image_id: ami-8e0b9499
     transport:
       ssh_key: <%= ENV["EC2_SSH_KEY_PATH"] %>
+  - name: centos-7
+    driver:
+      image_id: ami-6d1c2007
+    transport:
+      username: centos
+      ssh_key: <%= ENV["EC2_SSH_KEY_PATH"] %>
 
 suites:
   - name: default
     run_list:
       - recipe[mock_data]
       - recipe[compliance]
+      - recipe[wombat::authorized-keys]
+      - recipe[wombat::etc-hosts]

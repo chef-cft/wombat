@@ -3,6 +3,10 @@
 # Recipe:: default
 #
 # Copyright (c) 2016 The Authors, All Rights Reserved.
+apt_update 'packages' do
+  action :update
+  only_if { node['platform_family'] == 'debian' }
+end
 
 append_if_no_line "Add temporary hostsfile entry: #{node['ipaddress']}" do
   path "/etc/hosts"
@@ -106,6 +110,3 @@ delete_lines "Remove temporary hostfile entry we added earlier" do
   path "/etc/hosts"
   pattern "^#{node['ipaddress']}.*#{node['demo']['automate_fqdn']}.*automate"
 end
-
-include_recipe 'wombat::authorized-keys'
-include_recipe 'wombat::etc-hosts'

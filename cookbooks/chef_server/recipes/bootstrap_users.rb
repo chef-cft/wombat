@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: chef-server
-# Recipe:: default
+# Recipe:: bootstrap_users
 #
 # Copyright (c) 2016 The Authors, All Rights Reserved.
 

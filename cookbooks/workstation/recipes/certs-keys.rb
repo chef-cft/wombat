@@ -14,7 +14,8 @@ template "#{home}/.ssh/config" do
     home: home,
     server: "#{node['demo']['domain_prefix']}automate.#{node['demo']['domain']}",
     ent: node['demo']['enterprise'],
-    user: "workstation-#{node['demo']['workstation-number']}"
+    automate_user: "workstation-#{node['demo']['workstation-number']}",
+    ssh_user:  node['demo']['admin-user']
   )
 end
 
