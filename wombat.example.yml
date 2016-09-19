@@ -9,6 +9,9 @@ enterprise: mammals
 org: marsupials
 build-nodes: '1'
 workstations: '1'
+linux: ubuntu
+# Must meet the minimum Microsoft Complexity Requirements
+# https://technet.microsoft.com/en-us/library/hh994562(v=ws.11).aspx)
 workstation-passwd: 'RL9@T40BTmXh'
 infranodes:
   # Add a list of infrastructure nodes here with their associated run list to have these nodes precreated on the Chef Server
@@ -32,19 +35,23 @@ ttl: 6
 #   packer_dir: 'packer'
 #   templates_dir: 'templates'
 #   log_dir: 'logs'
-products:
-  chef: stable-12.13.37
-  chef-server: stable-12.8.0
-  chefdk: stable-0.17.17
-  compliance: stable-1.3.1
-  automate: stable-0.5.125
+# Products will default to `stable-latest`
+# products:
+#   chef: stable-12.13.37
+#   chef-server: stable-12.8.0
+#   chefdk: stable-0.17.17
+#   compliance: stable-1.3.1
+#   automate: stable-0.5.125
+#   push-jobs-server: stable-1.1.6
+#   manage: stable-2.4.3
 aws:
-  region: ap-southeast-2
-  az: ap-southeast-2c
-  keypair: keypair-ap-southeast-2
+  az: us-east-1e
+  keypair: keypair-us-east
+  region: us-east-1
   source_ami:
-    ubuntu: ami-8c4cb0ec
-    windows: ami-87c037e7
+    ubuntu: ami-8e0b9499
+    windows: ami-bd3ba0aa
+    centos: ami-6d1c2007
 gce:
   zone: us-east1-b
   source_image:

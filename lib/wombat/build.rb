@@ -64,8 +64,8 @@ class BuildRunner
           else
             vendor_cookbooks(template)
             packer_cmd = Mixlib::ShellOut.new(packer_build(template, builder, options), :timeout => 3600, live_stream: STDOUT)
+            puts packer_build(template, builder, options)
             packer_cmd.run_command
-            puts packer_cmd
             puts packer_cmd.stdout
             puts packer_cmd.stderr unless packer_cmd.stderr.empty?
           end
@@ -88,16 +88,17 @@ class BuildRunner
 
   def packer_build(template, builder, options={})
     # TODO: this is gross and feels gross so maybe we should do it more better
+    linux = wombat['linux']
     create_infranodes_json
     case template
     when 'build-node'
-      log_name = "build-node-#{options['node-number']}"
+      log_name = "build-node-#{options['node-number']}-#{linux}"
     when 'workstation'
-      log_name = "workstation-#{options['workstation-number']}"
+      log_name = "workstation-#{options['workstation-number']}-#{linux}"
     when 'infranodes'
-      log_name = "infranodes-#{options['node-name']}"
+      log_name = "infranodes-#{options['node-name']}-#{linux}"
     else
-     log_name = template
+     log_name = "#{template}-#{linux}"
     end
 
     case builder
@@ -105,7 +106,7 @@ class BuildRunner
       if template == 'workstation'
         source_ami = wombat['aws']['source_ami']['windows']
       else
-        source_ami = wombat['aws']['source_ami']['ubuntu']
+        source_ami = wombat['aws']['source_ami'][linux]
       end
       if ENV['AWS_REGION']
         puts "Region set by environment: #{ENV['AWS_REGION']}"
@@ -118,7 +119,7 @@ class BuildRunner
       if template == 'workstation'
         source_image = wombat['gce']['source_image']['windows']
       else
-        source_image = wombat['gce']['source_image']['ubuntu']
+        source_image = wombat['gce']['source_image'][linux]
       end
       log_prefix = "gce"
     end
@@ -135,6 +136,8 @@ class BuildRunner
     cmd.insert(2, "--var automate=#{wombat['products']['automate']}")
     cmd.insert(2, "--var compliance=#{wombat['products']['compliance']}")
     cmd.insert(2, "--var chef-server=#{wombat['products']['chef-server']}")
+    cmd.insert(2, "--var push-jobs-server=#{wombat['products']['push-jobs-server']}")
+    cmd.insert(2, "--var manage=#{wombat['products']['manage']}")
     cmd.insert(2, "--var node-name=#{options['node-name']}") if template =~ /infranodes/
     cmd.insert(2, "--var node-number=#{options['node-number']}") if template =~ /build-node/
     cmd.insert(2, "--var build-nodes=#{wombat['build-nodes']}")
@@ -143,6 +146,7 @@ class BuildRunner
     cmd.insert(2, "--var workstations=#{wombat['workstations']}")
     cmd.insert(2, "--var aws_source_ami=#{source_ami}")
     cmd.insert(2, "--var gce_source_image=#{source_image}")
+    cmd.insert(2, "--var ssh_username=#{linux}")
     cmd.join(' ')
   end
 

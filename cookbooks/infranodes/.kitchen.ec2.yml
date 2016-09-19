@@ -22,6 +22,7 @@ platforms:
 suites:
   - name: default
     run_list:
-      - recipe[apt]
       - recipe[mock_data]
       - recipe[infranodes]
+      - recipe[wombat::authorized-keys]
+      - recipe[wombat::etc-hosts]

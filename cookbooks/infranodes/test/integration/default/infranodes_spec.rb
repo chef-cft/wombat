@@ -1,7 +1,8 @@
 # automate tests
 
-describe file('/home/ubuntu/.ssh/authorized_keys') do
-  its('content') { file("/tmp/public.pub").content }
+describe file("/home/#{os.name}/.ssh/authorized_keys") do
+  its('content') { should include file("/tmp/public.pub").content }
+  it { should exist }
 end
 
 describe package('push-jobs-client') do

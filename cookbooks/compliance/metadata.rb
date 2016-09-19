@@ -6,7 +6,6 @@ description 'Installs/Configures compliance'
 long_description 'Installs/Configures compliance'
 version '0.2.0'
 
-depends 'apt'
 depends 'ccc'
 depends 'wombat'
 depends 'line'

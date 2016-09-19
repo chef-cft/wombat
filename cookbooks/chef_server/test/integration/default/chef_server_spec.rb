@@ -4,8 +4,9 @@ describe command('hostname') do
   its('stdout') { should eq "chef\n" }
 end
 
-describe file('/home/vagrant/.ssh/authorized_keys') do
-  its('content') { file("/tmp/public.pub").content }
+describe file("/home/#{os.name}/.ssh/authorized_keys") do
+  its('content') { should include file("/tmp/public.pub").content }
+  it { should exist }
 end
 
 describe package('chef-server-core') do
@@ -15,12 +16,14 @@ end
 
 describe package('chef-manage') do
   it { should be_installed }
-  its('version') { should match '2.4.2' }
+  its('version') { should match '2.4.3' }
 end
+
+version = os.debian? ? '2.1.0' : '1.1.6'
 
 describe package('opscode-push-jobs-server') do
   it { should be_installed }
-  its('version') { should match '2.1.0' }
+  its('version') { should match version }
 end
 
 describe command('chef-server-ctl org-list') do

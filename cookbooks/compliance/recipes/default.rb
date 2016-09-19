@@ -1,5 +1,10 @@
 # compliance
 
+apt_update 'packages' do
+  action :update
+  only_if { node['platform_family'] == 'debian' }
+end
+
 append_if_no_line "Add temporary hostsfile entry: #{node['ipaddress']}" do
   path "/etc/hosts"
   line "#{node['ipaddress']} #{node['demo']['domain_prefix']}compliance.#{node['demo']['domain']} compliance"
@@ -8,11 +13,6 @@ end
 execute 'set hostname' do
   command 'hostnamectl set-hostname compliance'
   action :run
-end
-
-append_if_no_line "Add certificate to authorized_keys" do
-  path "/home/#{node['demo']['admin-user']}/.ssh/authorized_keys"
-  line lazy { IO.read('/tmp/public.pub') }
 end
 
 directory '/var/opt/chef-compliance'
@@ -55,5 +55,3 @@ delete_lines "Remove temporary hostfile entry we added earlier" do
   path "/etc/hosts"
   pattern "^#{node['ipaddress']}.*#{node['demo']['domain_prefix']}compliance\.#{node['demo']['domain']}.*compliance"
 end
-
-include_recipe 'wombat::etc-hosts'

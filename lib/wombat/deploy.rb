@@ -23,7 +23,7 @@ class DeployRunner
   private
 
   def create_stack(stack)
-    template_file = File.read("#{stack}.json")
+    template_file = File.read("#{stack_dir}/#{stack}.json")
     cfn = Aws::CloudFormation::Client.new(region: lock['aws']['region'])
 
     banner("Creating CloudFormation stack")
@@ -43,6 +43,7 @@ class DeployRunner
   end
 
   def create_template
+    banner('Creating template...')
     region = lock['aws']['region']
     @chef_server_ami = lock['amis'][region]['chef-server']
     @automate_ami = lock['amis'][region]['automate']
@@ -66,35 +67,43 @@ class DeployRunner
     @version = lock['version']
     @ttl = lock['ttl']
     rendered_cfn = ERB.new(File.read('templates/cfn.json.erb'), nil, '-').result(binding)
-    File.open("#{@demo}.json", 'w') { |file| file.puts rendered_cfn }
+    File.open("#{stack_dir}/#{@demo}.json", 'w') { |file| file.puts rendered_cfn }
     banner("Generate CloudFormation JSON: #{@demo}.json")
   end
 
+  def logs
+    Dir.glob("#{log_dir}/#{cloud}*.log").reject { |l| !l.match(wombat['linux']) }
+  end
+
   def update_lock(cloud)
+    banner('Updating wombat.lock')
+
     copy = {}
     copy = wombat
     region = copy[cloud]['region']
-    banner('Updating wombat.lock')
+    linux = copy['linux']
     copy['amis'] = { region => {} }
-    Dir.glob("#{log_dir}/#{cloud}*.log") do |log|
-      instance = log.match('aws-(.*)\.log')[1]
-      if instance =~ /build-node/
+
+    logs.each do |log|
+      case log
+      when /build-node/
         copy['amis'][region].store('build-node', {})
         1.upto(wombat['build-nodes'].to_i) do |i|
-          copy['amis'][region]['build-node'].store(i.to_s, parse_log("build-node-#{i}", "aws"))
+          copy['amis'][region]['build-node'].store(i.to_s, parse_log(log, cloud))
         end
-      elsif instance =~ /workstation/
+      when /workstation/
         copy['amis'][region].store('workstation', {})
         1.upto(wombat['workstations'].to_i) do |i|
-          copy['amis'][region]['workstation'].store(i.to_s, parse_log("workstation-#{i}", "aws"))
+          copy['amis'][region]['workstation'].store(i.to_s, parse_log(log, cloud))
         end
-      elsif instance =~ /infranodes/
+      when /infranodes/
         copy['amis'][region].store('infranodes', {})
         infranodes.each do |name, _rl|
-          copy['amis'][region]['infranodes'].store(name, parse_log("infranodes-#{name}", "aws"))
+          copy['amis'][region]['infranodes'].store(name, parse_log(log, cloud))
         end
       else
-        copy['amis'][region].store(instance, parse_log(instance, "aws"))
+        instance = log.match("#{cloud}-(.*)-(.*)\.log")[1]
+        copy['amis'][region].store(instance, parse_log(log, cloud))
       end
     end
     copy['last_updated'] = Time.now.gmtime.strftime('%Y%m%d%H%M%S')

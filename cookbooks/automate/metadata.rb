@@ -6,8 +6,6 @@ description 'Installs/Configures automate'
 long_description 'Installs/Configures automate'
 version '0.2.0'
 
-depends 'apt'
 depends 'chef-ingredient'
-depends 'hostsfile'
 depends 'line'
 depends 'wombat'

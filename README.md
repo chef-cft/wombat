@@ -1,6 +1,8 @@
 [![Stories in Ready](https://badge.waffle.io/chef-cft/wombat.png?label=ready&title=Ready)](https://waffle.io/chef-cft/wombat)
 # `Project Wombat`
-A combination of packer templates and terraform plan to configure a demo environment which includes:
+`wombat` is a gem that builds and creates demo environments using cloud-specific deployment
+tools like CloudFormation. The demo environments are comprised of instances built
+from the included packer templates:
 
 * Chef Server
 * Chef Automate
@@ -8,7 +10,6 @@ A combination of packer templates and terraform plan to configure a demo environ
 * _N_ Automate Build Node(s)
 * _N_ Infrastructure Nodes
 * _N_ Windows Workstation
-
 
 Usage
 ------------
@@ -23,7 +24,7 @@ directory.
 
 ##### Install and Configure ChefDK
 
-Follow the instructions at https://docs.chef.io/install_dk.html to install and configure ChefDK as your default version of ruby.
+Follow the instructions at https://docs.chef.io/install_dk.html to install and configure ChefDK as your default version of Ruby.
 
 ##### Install Packer
 
@@ -32,34 +33,6 @@ Downloads are here: https://www.packer.io/downloads.html . Place in your path fo
 ##### Create a wombat.yml
 
 Create a wombat.yml - there is an example `wombat.example.yml` for reference and easy copying
-```
----
-name: wombat
-# Uncomment domain_prefix if you wish to prepend your generated domain.
-# Ex: The below example would create foo-chef.animals.biz.
-# domain_prefix: foo-
-domain: animals.biz
-enterprise: mammals
-org: marsupials
-build-nodes: '1'
-workstations: '1'
-workstation-passwd: 'RL9@T40BTmXh'
-version: 0.2.0
-ttl: 8
-products:
-  chef: stable-12.13.37
-  chef-server: stable-12.8.0
-  chefdk: stable-0.16.28
-  compliance: stable-1.3.1
-  automate: stable-0.5.1
-aws:
-  region: ap-southeast-2
-  az: ap-southeast-2c
-  keypair: keypair-ap-southeast-2
-  source_ami:
-    ubuntu: ami-8c4cb0ec
-    windows: ami-87c037e7
-```
 
 *NOTE:* workstation-passwd must meet the minimum Microsoft [Complexity Requirements](https://technet.microsoft.com/en-us/library/hh994562(v=ws.11).aspx)
 

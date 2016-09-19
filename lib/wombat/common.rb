@@ -100,13 +100,9 @@ module Common
     end
   end
 
-  def parse_log(instance, cloud)
-    case cloud
-    when "aws", "amazon", "jeffbezosband", "cfn"
-      File.read("#{log_dir}/aws-#{instance}.log").split("\n").grep(/#{wombat['aws']['region']}:/) {|x| x.split[1]}.last
-    when "gce", "gcp", "google", "gdm"
-      File.read("#{log_dir}/gce-#{instance}.log").split("\n").grep(/A disk image was created:/) {|x| x.split[1]}.last
-    end
+  def parse_log(log, cloud)
+    regex = cloud == 'gcp' ? "A disk image was created:" : "#{wombat['aws']['region']}:"
+    File.read(log).split("\n").grep(/#{regex}/) {|x| x.split[1]}.last
   end
 
   def infranodes
@@ -159,5 +155,9 @@ module Common
 
   def log_dir
     wombat['conf'].nil? ? 'logs' : wombat['conf']['log_dir']
+  end
+
+  def stack_dir
+    wombat['conf'].nil? ? 'stacks' : wombat['conf']['stack_dir']
   end
 end

@@ -6,8 +6,6 @@ description 'Installs/Configures chef-server'
 long_description 'Installs/Configures chef-server'
 version '0.3.0'
 
-depends 'apt'
 depends 'chef-ingredient', '>= 0.18.5'
-depends 'hostsfile'
 depends 'line'
 depends 'wombat'

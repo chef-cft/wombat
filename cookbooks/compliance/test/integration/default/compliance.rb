@@ -4,8 +4,9 @@ describe command('hostname') do
   its('stdout') { should eq "compliance\n" }
 end
 
-describe file('/home/vagrant/.ssh/authorized_keys') do
-  its('content') { file("/tmp/public.pub").content }
+describe file("/home/#{os.name}/.ssh/authorized_keys") do
+  its('content') { should include file("/tmp/public.pub").content }
+  it { should exist }
 end
 
 describe package('chef-compliance') do
