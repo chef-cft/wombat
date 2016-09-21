@@ -187,7 +187,7 @@ class BuildRunner
     cmd.insert(2, "--var node-name=#{options['node-name']}") if template =~ /infranodes/
     cmd.insert(2, "--var node-number=#{options['node-number']}") if template =~ /build-node/
     cmd.insert(2, "--var build-nodes=#{wombat['build-nodes']['count']}")
-    cmd.insert(2, "--var winrm_password=#{wombat['workstation-passwd']}") if template =~ /workstation/
+    cmd.insert(2, "--var winrm_password=#{wombat['workstation']['password']}") if template =~ /workstation/
     cmd.insert(2, "--var workstation-number=#{options['workstation-number']}") if template =~ /workstation/
     cmd.insert(2, "--var workstations=#{wombat['workstations']['count']}")
     cmd.insert(2, "--var aws_source_ami=#{source_ami}")
