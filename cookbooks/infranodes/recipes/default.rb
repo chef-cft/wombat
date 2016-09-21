@@ -4,12 +4,12 @@
 #
 # Copyright (c) 2016 The Authors, All Rights Reserved.
 
-unless nodes['platform'] == 'windows'
-  apt_update 'packages' do
-    action :update
-    only_if { node['platform_family'] == 'debian' }
-  end
-end
+# unless nodes['platform'] == 'windows'
+#   apt_update 'packages' do
+#     action :update
+#     only_if { node['platform_family'] == 'debian' }
+#   end
+# end
   
 chef_ingredient 'chef' do
   channel node['demo']['versions']['chef'].split('-')[0].to_sym
