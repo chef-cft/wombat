@@ -4,7 +4,7 @@
 #
 # Copyright (c) 2016 The Authors, All Rights Reserved.
 
-unless nodes['platform'] == 'windows'
+unless node['platform'] == 'windows'
   apt_update 'packages' do
     action :update
     only_if { node['platform_family'] == 'debian' }
