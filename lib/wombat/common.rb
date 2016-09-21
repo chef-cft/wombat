@@ -115,7 +115,7 @@ module Common
 
   def build_nodes
     build_nodes = {}
-    1.upto(wombat['build-nodes'].to_i) do |i|
+    1.upto(wombat['build-nodes']['count'].to_i) do |i|
       build_nodes["build-node-#{i}"] = i
     end
     build_nodes
@@ -123,7 +123,7 @@ module Common
 
   def workstations
     workstations = {}
-    1.upto(wombat['workstations'].to_i) do |i|
+    1.upto(wombat['workstations']['count'].to_i) do |i|
       workstations["workstation-#{i}"] = i
     end
     workstations
@@ -139,6 +139,10 @@ module Common
     File.open("#{packer_dir}/files/infranodes-info.json", 'w') do |f|
       f.puts JSON.pretty_generate(infranodes)
     end
+  end
+
+  def linux
+    wombat['linux'].nil? ? 'ubuntu' : wombat['linux']
   end
 
   def key_dir

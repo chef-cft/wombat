@@ -17,59 +17,28 @@ class BuildRunner
   end
 
   def start
-    banner("Generating keys (if necessary)")
+    banner("Generating certs (if necessary)")
     wombat['certs'].each do |hostname|
       gen_x509_cert(hostname)
     end
-
+    banner("Generating SSH keypair (if necessary)")
     gen_ssh_key
 
-    if parallel
-      time = Benchmark.measure do
-        banner("Starting parallel build for templates: #{templates}")
-        parallel_pack(templates, builder)
+    time = Benchmark.measure do
+      banner("Starting build for templates: #{templates}")
+      aws_region_check if builder == 'amazon-ebs'
+      templates.each do |t|
+        vendor_cookbooks(t)
       end
-    else
-      time = Benchmark.measure do
-        banner("Starting sequential build for templates: #{templates}")
-        templates.each do |template|
-          options = {}
-          # TODO: this needs to be abstracted badly
-          case template
-          when 'build-node', 'build-nodes'
-            vendor_cookbooks('build-node')
-            build_nodes.each do |name, num|
-              template = 'build-node'
-              options = {'node-number' => num}
-              packer_cmd = Mixlib::ShellOut.new(packer_build(template, builder, options), :timeout => 3600, live_stream: STDOUT)
-              packer_cmd.run_command
-            end
-          when 'workstation', 'workstations'
-            bootstrap_aws
-            vendor_cookbooks('workstation')
-            workstations.each do |name, num|
-              template = 'workstation'
-              options = {'workstation-number' => num}
-              packer_cmd = Mixlib::ShellOut.new(packer_build(template, builder, options), :timeout => 3600, live_stream: STDOUT)
-              packer_cmd.run_command
-            end
-          when 'infranode', 'infranodes'
-            vendor_cookbooks('infranodes')
-            infranodes.each do |name, num|
-              template = 'infranodes'
-              options = {'node-name' => name}
-              packer_cmd = Mixlib::ShellOut.new(packer_build(template, builder, options), :timeout => 3600, live_stream: STDOUT)
-              packer_cmd.run_command
-            end
-          else
-            vendor_cookbooks(template)
-            packer_cmd = Mixlib::ShellOut.new(packer_build(template, builder, options), :timeout => 3600, live_stream: STDOUT)
-            puts packer_build(template, builder, options)
-            packer_cmd.run_command
-            puts packer_cmd.stdout
-            puts packer_cmd.stderr unless packer_cmd.stderr.empty?
-          end
+
+      if parallel.nil?
+        build_hash.each do |k, v|
+          bootstrap_aws if v['template'] == 'workstation'
+          build(v['template'], v['options'])
+          shell_out_command("say -v fred \"Wombat has made an #{k}\" for you") if is_mac?
         end
+      else
+        build_parallel(templates)
       end
     end
     banner("Build finished in #{duration(time.real)}.")
@@ -77,80 +46,7 @@ class BuildRunner
 
   private
 
-  def vendor_cookbooks(template)
-    base = template.split('.json')[0].tr('-', '_')
-    rm = Mixlib::ShellOut.new("rm -rf vendored-cookbooks/#{base} cookbooks/#{base}/Berksfile.lock", live_stream: STDOUT)
-    rm.run_command
-    puts "Vendoring cookbooks for #{template}"
-    vendor = Mixlib::ShellOut.new("berks vendor -q -b cookbooks/#{base}/Berksfile vendored-cookbooks/#{base}", live_stream: STDOUT)
-    vendor.run_command
-  end
-
-  def packer_build(template, builder, options={})
-    # TODO: this is gross and feels gross so maybe we should do it more better
-    linux = wombat['linux']
-    create_infranodes_json
-    case template
-    when 'build-node'
-      log_name = "build-node-#{options['node-number']}-#{linux}"
-    when 'workstation'
-      log_name = "workstation-#{options['workstation-number']}-#{linux}"
-    when 'infranodes'
-      log_name = "infranodes-#{options['node-name']}-#{linux}"
-    else
-     log_name = "#{template}-#{linux}"
-    end
-
-    case builder
-    when 'amazon-ebs'
-      if template == 'workstation'
-        source_ami = wombat['aws']['source_ami']['windows']
-      else
-        source_ami = wombat['aws']['source_ami'][linux]
-      end
-      if ENV['AWS_REGION']
-        puts "Region set by environment: #{ENV['AWS_REGION']}"
-      else
-        banner("$AWS_REGION not set, setting to #{wombat['aws']['region']}")
-        ENV['AWS_REGION'] = wombat['aws']['region']
-      end
-      log_prefix = "aws"
-    when 'googlecompute'
-      if template == 'workstation'
-        source_image = wombat['gce']['source_image']['windows']
-      else
-        source_image = wombat['gce']['source_image'][linux]
-      end
-      log_prefix = "gce"
-    end
-    # TODO: fail if packer isn't found in a graceful way
-    cmd = %W(packer build #{packer_dir}/#{template}.json | tee #{log_dir}/#{log_prefix}-#{log_name}.log)
-    cmd.insert(2, "--only #{builder}")
-    cmd.insert(2, "--var org=#{wombat['org']}")
-    cmd.insert(2, "--var domain=#{wombat['domain']}")
-    cmd.insert(2, "--var domain_prefix=#{wombat['domain_prefix']}")
-    cmd.insert(2, "--var enterprise=#{wombat['enterprise']}")
-    cmd.insert(2, "--var chefdk=#{wombat['products']['chefdk']}")
-    cmd.insert(2, "--var chef_ver=#{wombat['products']['chef'].split('-')[1]}")
-    cmd.insert(2, "--var chef_channel=#{wombat['products']['chef'].split('-')[0]}")
-    cmd.insert(2, "--var automate=#{wombat['products']['automate']}")
-    cmd.insert(2, "--var compliance=#{wombat['products']['compliance']}")
-    cmd.insert(2, "--var chef-server=#{wombat['products']['chef-server']}")
-    cmd.insert(2, "--var push-jobs-server=#{wombat['products']['push-jobs-server']}")
-    cmd.insert(2, "--var manage=#{wombat['products']['manage']}")
-    cmd.insert(2, "--var node-name=#{options['node-name']}") if template =~ /infranodes/
-    cmd.insert(2, "--var node-number=#{options['node-number']}") if template =~ /build-node/
-    cmd.insert(2, "--var build-nodes=#{wombat['build-nodes']}")
-    cmd.insert(2, "--var winrm_password=#{wombat['workstation-passwd']}") if template =~ /workstation/
-    cmd.insert(2, "--var workstation-number=#{options['workstation-number']}") if template =~ /workstation/
-    cmd.insert(2, "--var workstations=#{wombat['workstations']}")
-    cmd.insert(2, "--var aws_source_ami=#{source_ami}")
-    cmd.insert(2, "--var gce_source_image=#{source_image}")
-    cmd.insert(2, "--var ssh_username=#{linux}")
-    cmd.join(' ')
-  end
-
-  def parallel_pack(templates, builder)
+  def build_hash
     proc_hash = {}
     templates.each do |template_name|
       if template_name == 'infranodes'
@@ -187,13 +83,116 @@ class BuildRunner
           'options' => {}
         }
       end
-      vendor_cookbooks(template_name)
     end
-    puts proc_hash
-    Parallel.map(proc_hash.keys, in_threads: proc_hash.count) do |name|
-      cmd = packer_build(proc_hash[name]['template'], builder, proc_hash[name]['options'])
-      packer_cmd = Mixlib::ShellOut.new(cmd, :timeout => 3600, live_stream: STDOUT)
-      packer_cmd.run_command
+    proc_hash
+  end
+
+  def build(template, options)
+    shell_out_command(packer_build_cmd(template, builder, options))
+  end
+
+  def build_parallel(templates)
+    Parallel.map(build_hash.keys, in_threads: build_hash.count) do |name|
+      build_template(build_hash[name]['template'], build_hash[name]['options'])
     end
+  end
+
+  def a_to_s(*args)
+    clean_array(*args).join(" ")
+  end
+
+  def clean_array(*args)
+    args.flatten.reject { |i| i.nil? || i == "" }.map(&:to_s)
+  end
+
+  def b_to_c(builder)
+    case builder
+    when 'amazon-ebs'
+      cloud = 'aws'
+    when 'googlecompute'
+      cloud = 'gce'
+    end
+  end
+
+  def shell_out_command(command)
+    cmd = Mixlib::ShellOut.new(a_to_s(command), :timeout => 3600, live_stream: STDOUT)
+    cmd.run_command
+    cmd
+  end
+
+  def is_mac?
+    (/darwin/ =~ RUBY_PLATFORM) != nil
+  end
+
+  def aws_region_check
+    if ENV['AWS_REGION']
+      banner("Region set by environment: #{ENV['AWS_REGION']}")
+    else
+      banner("$AWS_REGION not set, setting to #{wombat['aws']['region']}")
+      ENV['AWS_REGION'] = wombat['aws']['region']
+    end
+  end
+
+  def vendor_cookbooks(template)
+    banner "Vendoring cookbooks for #{template}"
+
+    base = template.split('.json')[0].tr('-', '_')
+    rm_cmd = "rm -rf #{cookbook_dir}/#{base}/Berksfile.lock vendored-cookbooks/#{base}"
+    shell_out_command(rm_cmd)
+    vendor_cmd = "berks vendor -q -b #{cookbook_dir}/#{base}/Berksfile vendored-cookbooks/#{base}"
+    shell_out_command(vendor_cmd)
+  end
+
+  def log(template, builder, options)
+    cloud = b_to_c(builder)
+    case template
+    when 'build-node'
+      log_name = "#{cloud}-build-node-#{options['node-number']}-#{linux}"
+    when 'workstation'
+      log_name = "#{cloud}-workstation-#{options['workstation-number']}-#{linux}"
+    when 'infranodes'
+      log_name = "#{cloud}-infranodes-#{options['node-name']}-#{linux}"
+    else
+     log_name = "#{cloud}-#{template}-#{linux}"
+    end
+    log_file = "#{log_dir}/#{log_name}.log"
+  end
+
+  def packer_build_cmd(template, builder, options)
+    create_infranodes_json
+
+    if template == 'workstation'
+      source_ami = wombat['aws']['source_ami']['windows']
+      source_image = wombat['gce']['source_image']['windows']
+    else
+      source_ami = wombat['aws']['source_ami'][linux]
+      source_image = wombat['gce']['source_image'][linux]
+    end
+
+    # TODO: fail if packer isn't found in a graceful way
+    cmd = %W(packer build #{packer_dir}/#{template}.json | tee #{log(template, builder, options)})
+    cmd.insert(2, "--only #{builder}")
+    cmd.insert(2, "--var org=#{wombat['org']}")
+    cmd.insert(2, "--var domain=#{wombat['domain']}")
+    cmd.insert(2, "--var domain_prefix=#{wombat['domain_prefix']}")
+    cmd.insert(2, "--var enterprise=#{wombat['enterprise']}")
+    cmd.insert(2, "--var chefdk=#{wombat['products']['chefdk']}")
+    cmd.insert(2, "--var chef_ver=#{wombat['products']['chef'].split('-')[1]}")
+    cmd.insert(2, "--var chef_channel=#{wombat['products']['chef'].split('-')[0]}")
+    cmd.insert(2, "--var automate=#{wombat['products']['automate']}")
+    cmd.insert(2, "--var compliance=#{wombat['products']['compliance']}")
+    cmd.insert(2, "--var chef-server=#{wombat['products']['chef-server']}")
+    cmd.insert(2, "--var push-jobs-server=#{wombat['products']['push-jobs-server']}")
+    cmd.insert(2, "--var manage=#{wombat['products']['manage']}")
+    cmd.insert(2, "--var node-name=#{options['node-name']}") if template =~ /infranodes/
+    cmd.insert(2, "--var node-number=#{options['node-number']}") if template =~ /build-node/
+    cmd.insert(2, "--var build-nodes=#{wombat['build-nodes']['count']}")
+    cmd.insert(2, "--var winrm_password=#{wombat['workstation-passwd']}") if template =~ /workstation/
+    cmd.insert(2, "--var workstation-number=#{options['workstation-number']}") if template =~ /workstation/
+    cmd.insert(2, "--var workstations=#{wombat['workstations']['count']}")
+    cmd.insert(2, "--var aws_source_ami=#{source_ami}")
+    cmd.insert(2, "--var gce_source_image=#{source_image}")
+    cmd.insert(2, "--var ssh_username=#{linux}")
+    cmd.join(' ')
   end
 end
