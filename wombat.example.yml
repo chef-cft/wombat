@@ -3,30 +3,41 @@ name: wombat
 # Uncomment domain_prefix if you wish to prepend your generated domain.
 # Ex: The below example would create foo-chef.animals.biz.
 # domain_prefix: foo-
-certs: ['automate', 'chef', 'compliance']
 domain: animals.biz
 enterprise: mammals
 org: marsupials
-build-nodes: '1'
-workstations: '1'
+certs: ['automate', 'chef', 'compliance']
+ttl: 6
 linux: ubuntu
 # Must meet the minimum Microsoft Complexity Requirements
 # https://technet.microsoft.com/en-us/library/hh994562(v=ws.11).aspx)
-workstation-passwd: 'RL9@T40BTmXh'
+version: 0.2.1
+# Products will default to `stable-latest`
+products:
+  chef: stable-12.13.37
+  chef-server: stable-12.8.0
+  chefdk: stable-0.17.17
+  compliance: stable-1.3.1
+  automate: stable-0.5.125
+  push-jobs-server: stable-1.1.6
+  manage: stable-2.4.3
+build-nodes:
+  count: 3
+workstations:
+  password: 'ZL9@T40BTmXhZ'
+  count: 1
 infranodes:
-  # Add a list of infrastructure nodes here with their associated run list to have these nodes precreated on the Chef Server
-  # Note: the cookbook content won't be automatically uploaded, only the node object will be created with the run list added,
-  #       if the content doesn't exist at the first checkin the chef-client run will fail.
-  # acceptance:
-  #   environment: web-acceptance
-  #   run_list:
-  #     - recipe[bacon::chewy]
-  # delivered:
-  #   environment: web-delivered
-  #   run_list:
-  #     - recipe[bacon::crispy]
-version: 0.1.0
-ttl: 6
+# Add a list of infrastructure nodes here with their associated run list to have these nodes precreated on the Chef Server
+# Note: the cookbook content won't be automatically uploaded, only the node object will be created with the run list added,
+#       if the content doesn't exist at the first checkin the chef-client run will fail.
+# acceptance:
+#   environment: web-acceptance
+#   run_list:
+#     - recipe[bacon::chewy]
+# delivered:
+#   environment: web-delivered
+#   run_list:
+#     - recipe[bacon::crispy]
 # Uncomment conf and subkeys to override the listed defaults.
 # These paths are relative to the directory of this file.
 # conf:
@@ -35,15 +46,6 @@ ttl: 6
 #   packer_dir: 'packer'
 #   templates_dir: 'templates'
 #   log_dir: 'logs'
-# Products will default to `stable-latest`
-# products:
-#   chef: stable-12.13.37
-#   chef-server: stable-12.8.0
-#   chefdk: stable-0.17.17
-#   compliance: stable-1.3.1
-#   automate: stable-0.5.125
-#   push-jobs-server: stable-1.1.6
-#   manage: stable-2.4.3
 aws:
   az: us-east-1e
   keypair: keypair-us-east
