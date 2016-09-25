@@ -51,4 +51,8 @@ end
 ###
 node.set['push_jobs']['chef']['chef_server_url'] = node['demo']['chef_server_url']
 node.set['push_jobs']['chef']['node_name'] = node['demo']['node-name']
+node.default['push_jobs']['allow_unencrypted'] = true
+node.default['push_jobs']['package_url'] = "https://packages.chef.io/stable/windows/2008r2/push-jobs-client-2.1.1-1-x86.msi"
+node.default['push_jobs']['package_checksum'] = "b8e76d54bb931949bcc94a6c764ccebda0e6957820b0c3fe62c96e6c3a184d9f"
+
 include_recipe 'push-jobs'

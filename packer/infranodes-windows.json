@@ -1,0 +1,100 @@
+{
+  "variables": {
+    "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+    "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
+    "aws_region": "{{env `AWS_REGION`}}",
+    "aws_source_ami": "ami-87c037e7",
+    "azure_client_id": "{{env `AZURE_CLIENT_ID`}}",
+    "azure_tenant_id": "{{env `AZURE_TENANT_ID`}}",
+    "azure_client_secret": "{{env `AZURE_CLIENT_SECRET`}}",
+    "azure_subscription_id": "{{env `AZURE_SUBSCRIPTION_ID`}}",
+    "azure_storage_account": "{{env `AZURE_STORAGE_ACCOUNT`}}",
+    "azure_resource_group": "{{env `AZURE_RESOURCE_GROUP`}}",
+    "gce_account_file": "{{env `GCE_ACCOUNT_FILE`}}",
+    "gce_project_id": "{{env `GCE_PROJECT_ID`}}",
+    "gce_zone": "{{env `GCE_ZONE`}}",
+    "gce_source_image": "windows-server-2012-r2-dc-v20160809",
+    "build-nodes": "1",
+    "chef_channel": "stable",
+    "chef_install_url": "curl -L https://omnitruck.chef.io/install.sh",
+    "chef_ver": "latest",
+    "domain": "animals.biz",
+    "domain_prefix": "",
+    "enterprise": "mammals",
+    "node-name": "acceptance",
+    "org": "marsupials",
+    "ssh_username": "ubuntu",
+    "winrm_password": "RL9@T40BTmXh",
+    "winrm_username": "Administrator",
+    "workstations": "1"
+  },
+
+  "builders": [
+    { "type": "amazon-ebs",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "region": "{{user `aws_region`}}",
+      "source_ami": "{{user `aws_source_ami`}}",
+      "instance_type": "m4.large",
+      "communicator": "winrm",
+      "associate_public_ip_address": true,
+      "winrm_port": 5985,
+      "winrm_username": "{{user `winrm_username`}}",
+      "winrm_password": "{{user `winrm_password`}}",
+      "user_data_file": "{{template_dir}}/scripts/bootstrap-aws.txt",
+      "ami_name": "automate-infranode-{{user `node-name`}}-{{timestamp}}"
+    },
+    {
+      "type": "googlecompute",
+      "account_file": "{{user `gce_account_file`}}",
+      "project_id": "{{user `gce_project_id`}}",
+      "source_image": "{{user `gce_source_image`}}",
+      "zone": "{{user `gce_zone`}}",
+      "disk_type": "pd-ssd",
+      "disk_size": "80",
+      "machine_type": "n1-highcpu-8",
+      "image_name": "automate-infranode-{{user `node-name`}}-{{timestamp}}",
+      "communicator": "winrm",
+      "winrm_port": 5985,
+      "winrm_username": "{{user `winrm_username`}}",
+      "winrm_password": "{{user `winrm_password`}}",
+      "metadata": {
+        "windows-startup-script-url": "gs://wombat-bootstrap/win-bootstrap.ps1"
+      }
+    }
+  ],
+
+  "provisioners" : [
+    {
+      "type": "file",
+      "source": "{{pwd}}/keys/",
+      "destination": "C:\\Windows\\Temp"
+    },
+    {
+      "type": "file",
+      "source": "{{template_dir}}/files/",
+      "destination": "C:\\Windows\\Temp"
+    },
+    {
+      "type": "chef-solo",
+      "install_command": "powershell.exe -Command \". { iwr -useb https://omnitruck.chef.io/install.ps1 } | iex; install -channel {{user `chef_channel`}} -version {{user `chef_ver`}}\"",
+      "guest_os_type": "windows",
+      "cookbook_paths": [ "{{pwd}}/vendored-cookbooks/infranodes" ],
+      "run_list": [ "infranodes", "wombat::etc-hosts" ],
+      "json": {
+        "demo": {
+          "admin-user": "{{user `ssh_username`}}",
+          "build-nodes": "{{user `build-nodes`}}",
+          "domain_prefix": "{{user `domain_prefix`}}",
+          "domain": "{{user `domain`}}",
+          "enterprise": "{{user `enterprise`}}",
+          "node-name": "{{user `node-name`}}",
+          "org": "{{user `org`}}",
+          "versions": {
+              "chef": "{{user `chef_channel`}}-{{user `chef_ver`}}"
+          }
+        }
+      }
+    }
+  ]
+}

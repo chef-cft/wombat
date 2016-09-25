@@ -4,7 +4,10 @@ driver:
   aws_ssh_key_id: <%= ENV["EC2_SSH_KEY_NAME"] %>
   region: us-east-1
   availability_zone: e
-  instance_type: m3.large
+  instance_type: m4.large
+  security_group_ids: ['sg-13f69876']
+  retryable_sleep: 10
+  retryable_tries: 60
 
 provisioner:
   name: chef_zero
@@ -13,9 +16,20 @@ verifier:
   name: inspec
 
 platforms:
+  - name: centos-7
+    driver:
+      image_id: ami-6d1c2007
+    transport:
+      username: centos
+      ssh_key: <%= ENV["EC2_SSH_KEY_PATH"] %>
   - name: ubuntu-1404
     driver:
       image_id: ami-8e0b9499
+    transport:
+      ssh_key: <%= ENV["EC2_SSH_KEY_PATH"] %> 
+  - name: windows-2012r2
+    driver:
+      image_id: ami-bd3ba0aa
     transport:
       ssh_key: <%= ENV["EC2_SSH_KEY_PATH"] %>
 

@@ -7,6 +7,7 @@
 append_if_no_line "Add certificate to authorized_keys" do
   path "/home/#{node['demo']['admin-user']}/.ssh/authorized_keys"
   line lazy { IO.read('/tmp/public.pub') }
+  not_if { node['platform'] == 'windows' }
 end
 
 node.default['authorization']['sudo']['include_sudoers_d'] = true

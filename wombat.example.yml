@@ -12,18 +12,18 @@ linux: ubuntu
 # Must meet the minimum Microsoft Complexity Requirements
 # https://technet.microsoft.com/en-us/library/hh994562(v=ws.11).aspx)
 version: 0.2.1
-# Products will default to `stable-latest`
 products:
-  chef: stable-12.13.37
-  chef-server: stable-12.8.0
-  chefdk: stable-0.17.17
-  compliance: stable-1.3.1
-  automate: stable-0.5.125
-  push-jobs-server: stable-1.1.6
-  manage: stable-2.4.3
+  chef: stable-latest
+  chef-server: stable-latest
+  chefdk: stable-latest
+  compliance: stable-latest
+  automate: stable-latest
+  push-jobs-server: stable-latest
+  manage: stable-latest
 build-nodes:
   count: 3
 workstations:
+  platform: windows
   password: 'ZL9@T40BTmXhZ'
   count: 1
 infranodes:
@@ -31,6 +31,7 @@ infranodes:
 # Note: the cookbook content won't be automatically uploaded, only the node object will be created with the run list added,
 #       if the content doesn't exist at the first checkin the chef-client run will fail.
 # acceptance:
+# platform: windows
 #   environment: web-acceptance
 #   run_list:
 #     - recipe[bacon::chewy]
