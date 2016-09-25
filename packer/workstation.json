@@ -33,7 +33,7 @@
       "secret_key": "{{user `aws_secret_key`}}",
       "region": "{{user `aws_region`}}",
       "source_ami": "{{user `aws_source_ami`}}",
-      "instance_type": "m3.large",
+      "instance_type": "m4.large",
       "communicator": "winrm",
       "associate_public_ip_address": true,
       "winrm_port": 5985,
