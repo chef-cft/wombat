@@ -41,7 +41,7 @@ module Common
 
   def bootstrap_aws
     puts 'Generating bootstrap script from template'
-    @workstation_passwd = wombat['workstation']['password']
+    @workstation_passwd = wombat['workstations']['password']
     rendered = ERB.new(File.read('templates/bootstrap-aws.erb'), nil, '-').result(binding)
     File.open("#{packer_dir}/scripts/bootstrap-aws.txt", 'w') { |file| file.puts rendered }
     puts "#{packer_dir}/scripts/bootstrap-aws.txt"
