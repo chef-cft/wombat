@@ -34,7 +34,7 @@
       "secret_key": "{{user `aws_secret_key`}}",
       "region": "{{user `aws_region`}}",
       "source_ami": "{{user `aws_source_ami`}}",
-      "instance_type": "c3.xlarge",
+      "instance_type": "t2.medium",
       "communicator": "ssh",
       "associate_public_ip_address": true,
       "ssh_private_ip": false,
