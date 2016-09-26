@@ -5,7 +5,6 @@ driver:
   region: us-east-1
   availability_zone: e
   instance_type: m4.large
-  security_group_ids: ['sg-13f69876']
   retryable_sleep: 10
   retryable_tries: 60
 
@@ -22,13 +21,20 @@ platforms:
     transport:
       username: centos
       ssh_key: <%= ENV["EC2_SSH_KEY_PATH"] %>
+    attributes:
+      demo:
+        admin-user: 'centos'
   - name: ubuntu-1404
     driver:
       image_id: ami-8e0b9499
     transport:
-      ssh_key: <%= ENV["EC2_SSH_KEY_PATH"] %> 
+      ssh_key: <%= ENV["EC2_SSH_KEY_PATH"] %>
+    attributes:
+      demo:
+        admin-user: 'ubuntu'
   - name: windows-2012r2
     driver:
+      security_group_ids: ['sg-13f69876']
       image_id: ami-bd3ba0aa
     transport:
       ssh_key: <%= ENV["EC2_SSH_KEY_PATH"] %>
