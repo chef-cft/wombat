@@ -33,7 +33,6 @@ class BuildRunner
 
       if parallel.nil?
         build_hash.each do |k, v|
-          bootstrap_aws if v['options']['os'] == 'windows'
           build(v['template'], v['options'])
           shell_out_command("say -v fred \"Wombat has made an #{k}\" for you") if is_mac?
         end
@@ -47,12 +46,13 @@ class BuildRunner
   private
 
   def build(template, options)
+    bootstrap_aws if options['os'] == 'windows'
     shell_out_command(packer_build_cmd(template, builder, options))
   end
 
   def build_parallel(templates)
     Parallel.map(build_hash.keys, in_threads: build_hash.count) do |name|
-      build_template(build_hash[name]['template'], build_hash[name]['options'])
+      build(build_hash[name]['template'], build_hash[name]['options'])
     end
   end
 
