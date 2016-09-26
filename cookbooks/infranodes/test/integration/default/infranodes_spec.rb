@@ -5,9 +5,9 @@ unless os.windows?
     its('content') { should include file("/tmp/public.pub").content }
     it { should exist }
   end
-  
-  describe command('push-jobs-client --version') do
-    its('stdout') { should match (/2.1.1/) }
+
+  describe package('push-jobs-client') do
+    it { should be_installed }
   end
 end
 

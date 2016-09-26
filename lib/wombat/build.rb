@@ -47,8 +47,7 @@ class BuildRunner
   private
 
   def build(template, options)
-    puts packer_build_cmd(template, builder, options)
-    #shell_out_command(packer_build_cmd(template, builder, options))
+    shell_out_command(packer_build_cmd(template, builder, options))
   end
 
   def build_parallel(templates)
