@@ -1,4 +1,4 @@
-## Anatomy of an Wombat
+## Anatomy of a Wombat
 
 ### tl;dr
 
@@ -11,6 +11,7 @@ as CloudFormation or Google Deployment Manager.
 * coordination without coordination
 * principle of least surprise
 * dynamic templates over static files
+* long build times, short deploy times
 
 ### A Stroll Down Architecture Lane
 
