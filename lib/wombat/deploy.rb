@@ -48,7 +48,7 @@ class DeployRunner
     @chef_server_ami = lock['amis'][region]['chef-server']
     @automate_ami = lock['amis'][region]['automate']
     @compliance_ami = lock['amis'][region]['compliance']
-    @build_nodes = lock['build-nodes'].to_i
+    @build_nodes = lock['build-nodes']['count'].to_i
     @build_node_ami = {}
     1.upto(@build_nodes) do |i|
       @build_node_ami[i] = lock['amis'][region]['build-node'][i.to_s]
@@ -57,7 +57,7 @@ class DeployRunner
     infranodes.each do |name, _rl|
       @infra[name] = lock['amis'][region]['infranodes'][name]
     end
-    @workstations = lock['workstations'].to_i
+    @workstations = lock['workstations']['count'].to_i
     @workstation_ami = {}
     1.upto(@workstations) do |i|
       @workstation_ami[i] = lock['amis'][region]['workstation'][i.to_s]
@@ -88,12 +88,12 @@ class DeployRunner
       case log
       when /build-node/
         copy['amis'][region].store('build-node', {})
-        1.upto(wombat['build-nodes'].to_i) do |i|
+        1.upto(wombat['build-nodes']['count'].to_i) do |i|
           copy['amis'][region]['build-node'].store(i.to_s, parse_log(log, cloud))
         end
       when /workstation/
         copy['amis'][region].store('workstation', {})
-        1.upto(wombat['workstations'].to_i) do |i|
+        1.upto(wombat['workstations']['count'].to_i) do |i|
           copy['amis'][region]['workstation'].store(i.to_s, parse_log(log, cloud))
         end
       when /infranodes/
