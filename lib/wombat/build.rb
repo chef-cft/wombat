@@ -34,12 +34,12 @@ class BuildRunner
       if parallel.nil?
         build_hash.each do |k, v|
           build(v['template'], v['options'])
-          shell_out_command("say -v fred \"Wombat has made an #{k}\" for you") if is_mac?
         end
       else
         build_parallel(templates)
       end
     end
+    shell_out_command("say -v fred \"Wombat has made an #{build_hash.keys.to_s}\" for you") if audio?
     banner("Build finished in #{duration(time.real)}.")
   end
 
@@ -117,13 +117,9 @@ class BuildRunner
   end
 
   def shell_out_command(command)
-    cmd = Mixlib::ShellOut.new(a_to_s(command), :timeout => 3600, live_stream: STDOUT)
+    cmd = Mixlib::ShellOut.new(a_to_s(command), :timeout => timeout, live_stream: STDOUT)
     cmd.run_command
     cmd
-  end
-
-  def is_mac?
-    (/darwin/ =~ RUBY_PLATFORM) != nil
   end
 
   def aws_region_check

@@ -43,7 +43,7 @@ module Common
     @workstation_passwd = wombat['workstations']['password']
     rendered = ERB.new(File.read('templates/bootstrap-aws.erb'), nil, '-').result(binding)
     File.open("#{packer_dir}/scripts/bootstrap-aws.txt", 'w') { |file| file.puts rendered }
-    banner("Generated: #{packer_dir}/scripts/bootstrap-aws.txt") 
+    banner("Generated: #{packer_dir}/scripts/bootstrap-aws.txt")
   end
 
   def gen_x509_cert(hostname)
@@ -162,5 +162,17 @@ module Common
 
   def stack_dir
     wombat['conf'].nil? ? 'stacks' : wombat['conf']['stack_dir']
+  end
+
+  def timeout
+    wombat['conf']['timeout'] ||= 7200
+  end
+
+  def is_mac?
+    (/darwin/ =~ RUBY_PLATFORM) != nil
+  end
+
+  def audio?
+    is_mac? && wombat['conf']['audio']
   end
 end
