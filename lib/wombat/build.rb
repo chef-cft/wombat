@@ -84,6 +84,7 @@ class BuildRunner
           proc_hash[name] = {
             'template' => 'workstation',
             'options' => {
+              'os' => wombat['workstations']['platform'],
               'workstation-number' => num
             }
           }
