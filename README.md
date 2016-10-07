@@ -20,7 +20,7 @@ not have a license key, you can request one from your CHEF account
 representative.**
 
 You will need to have the `delivery.license` file present inside `packer/files/`
-directory.
+directory. (You may need to rename from `automate.license`)
 
 ##### Install and Configure ChefDK
 
