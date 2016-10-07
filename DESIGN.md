@@ -4,7 +4,7 @@
 
 Wombat is a collection of code that builds Chef configured golden
 images from packer templates that are then re-consumed by a Cloud service template such
-as CloudFormation or Google Deployment Manager.
+as CloudFormation (CFN) or Google Deployment Manager (GDM).
 
 ### Design Goals
 
@@ -29,8 +29,8 @@ The core of wombat is the binary `bin/wombat`.
 `wombat deploy STACK`
 
 1. Create/update wombat.lock based on most recent Packer logs
-2. Create cfn/gdm configuration from lock data fed through template
-3. Deploy cfn/gdm stack
+2. Create CFN/GDM configuration from lock data fed through template
+3. Deploy CFN/GDM stack
 
 `wombat outputs STACK`
 
