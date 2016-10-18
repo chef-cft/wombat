@@ -44,11 +44,6 @@
       "Default": "<%= @chef_server_ami %>",
       "Description": "AMI ID for the Chef Server"
     },
-    "AutomateAMI": {
-      "Type": "String",
-      "Default": "<%= @automate_ami %>",
-      "Description": "AMI ID for the Automate Server"
-    },
     "ComplianceAMI": {
       "Type": "String",
       "Default": "<%= @compliance_ami %>",
@@ -73,8 +68,13 @@
       "Type": "String",
       "Default": "<%= @workstation_ami[i] %>",
       "Description": "AMI ID for the Windows Workstation"
-    }
+    },
 <% end -%>
+    "AutomateAMI": {
+      "Type": "String",
+      "Default": "<%= @automate_ami %>",
+      "Description": "AMI ID for the Automate Server"
+    }
   },
   "Resources": {
     "VPC": {
@@ -645,17 +645,18 @@
       }
     }
   },
-  "Outputs": {
-<% 1.upto(@workstations) do |i| -%>
-    "WindowsWorkstation<%= i.to_s %>PubDNS": {
-      "Description": "Public IP address of the Windows Workstation",
-      "Value": {
-        "Fn::GetAtt": [
-          "WindowsWorkstation<%= i.to_s %>",
+  "Outputs":
+<% workstations_hash = {} -%>
+<% 1.upto(@workstations) do |i|
+    workstations_hash["WindowsWorkstation#{i.to_s}PubDNS"] = {
+      "Description" => "Public IP address of the Windows Workstation",
+      "Value" => {
+        "Fn::GetAtt" => [
+          "WindowsWorkstation#{i.to_s}",
           "PublicIp"
           ]
       }
     }
-<% end -%>
-  }
+  end -%>
+<%=  workstations_hash.to_json %>
 }
