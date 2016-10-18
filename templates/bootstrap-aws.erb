@@ -17,7 +17,7 @@ write-host "(host) setting up WinRM"
 cmd.exe /c winrm quickconfig -q
 cmd.exe /c winrm quickconfig '-transport:http'
 cmd.exe /c winrm set "winrm/config" '@{MaxTimeoutms="1800000"}'
-cmd.exe /c winrm set "winrm/config/winrs" '@{MaxMemoryPerShellMB="512"}'
+cmd.exe /c winrm set "winrm/config/winrs" '@{MaxMemoryPerShellMB="3072"}'
 cmd.exe /c winrm set "winrm/config/service" '@{AllowUnencrypted="true"}'
 cmd.exe /c winrm set "winrm/config/client" '@{AllowUnencrypted="true"}'
 cmd.exe /c winrm set "winrm/config/service/auth" '@{Basic="true"}'
@@ -31,6 +31,6 @@ cmd.exe /c sc config winrm start= auto
 cmd.exe /c net start winrm
 cmd.exe /c wmic useraccount where "name='Administrator'" set PasswordExpires=FALSE
 
-Set-ExecutionPolicy Unrestricted
+set-executionpolicy -executionpolicy bypass -force
 
 </powershell>
