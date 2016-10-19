@@ -99,6 +99,14 @@ class Options
           opts.on("-c CLOUD", "--cloud CLOUD", "Select cloud") do |opt|
             options.cloud = opt
           end
+
+          opts.on("--update-lock", "Update lockfile") do |opt|
+            options.update_lock = opt
+          end
+
+          opts.on("--create-template", "Create template") do |opt|
+            options.create_template = opt
+          end
         },
         argv: stack_argv_proc
       },
