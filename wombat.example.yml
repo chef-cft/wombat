@@ -39,14 +39,14 @@ infranodes:
 #   environment: web-delivered
 #   run_list:
 #     - recipe[bacon::crispy]
-# Uncomment conf and subkeys to override the listed defaults.
-# These paths are relative to the directory of this file.
-# conf:
-#   key_dir: 'keys'
-#   cookbook_dir: 'cookbooks'
-#   packer_dir: 'packer'
-#   templates_dir: 'templates'
-#   log_dir: 'logs'
+conf:
+  key_dir: 'keys'
+  cookbook_dir: 'cookbooks'
+  packer_dir: 'packer'
+  templates_dir: 'templates'
+  log_dir: 'logs'
+  stack_dir: 'stacks'
+  audio: false
 aws:
   az: us-east-1e
   keypair: keypair-us-east

@@ -4,18 +4,20 @@ require 'aws-sdk'
 class DeployRunner
   include Common
 
-  attr_reader :stack, :cloud
+  attr_reader :stack, :cloud, :lock_opt, :template_opt
 
   def initialize(opts)
     @stack = opts.stack
     @cloud = opts.cloud.nil? ? "aws" : opts.cloud
+    @lock_opt = opts.update_lock
+    @template_opt = opts.create_template
   end
 
   def start
     case cloud
     when 'aws'
-      update_lock(cloud)
-      create_template
+      update_lock(cloud) if lock_opt
+      create_template if template_opt
       create_stack(stack)
     end
   end
