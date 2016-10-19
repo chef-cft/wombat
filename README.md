@@ -63,11 +63,16 @@ Upload the created template from the `cloudformation` directory.
 
 ```
 # Deploy CloudFormation template
-$ bin/wombat deploy --cloud aws STACK
+$ bin/wombat deploy --cloud aws STACK --update-lock --create-template
 ==> Updating wombat.lock
 ==> Generate CloudFormation JSON: STACK.json
 ==> Creating CloudFormation stack
 Created: arn:aws:cloudformation:us-east-1:862552916454:stack/STACK/2160c580-713e-11e6-b392-50a686e4bb82
+```
+
+```
+# Deploy an already generated template (pre-existing template)
+bin/wombat deploy --cloud aws STACK
 ```
 
 *NOTE:* If the cloud is not provided it defaults to `aws`
