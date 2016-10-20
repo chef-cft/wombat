@@ -152,7 +152,7 @@ module Common
     conf['packer_dir'] ||= 'packer'
     conf['log_dir'] ||= 'logs'
     conf['stack_dir'] ||= 'stacks'
-    conf['templates_dir'] ||= 'templates'
+    conf['template_dir'] ||= 'templates'
     conf['timeout'] ||= 7200
     conf['audio'] ||= false
     conf
