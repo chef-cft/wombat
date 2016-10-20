@@ -7,6 +7,7 @@ require 'wombat/build'
 require 'wombat/deploy'
 require 'wombat/output'
 require 'wombat/delete'
+require 'wombat/update'
 
 class Options
 
@@ -22,11 +23,12 @@ class Options
       opts.version = Wombat::VERSION
       opts.separator <<-COMMANDS.gsub(/^ {8}/, "")
         build        :   build one or more templates
+        delete       :   delete a stack
+        deploy       :   deploy a stack
         help         :   prints this help message
         list         :   list all templates in project
-        deploy       :   deploy a stack
         outputs      :   get outputs for a stack
-        delete       :   delete a stack
+        update       :   update lock and/or cloud template
       COMMANDS
     end
 
@@ -34,8 +36,8 @@ class Options
       options.templates = calculate_templates(args) unless args.empty?
 
       options.templates.each do |t|
-        if !File.exists?("packer/#{t}.json")
-          $stderr.puts "File packer/#{t}.json does not exist for template '#{t}'"
+        if !File.exists?("#{conf['packer_dir']}/#{t}.json")
+          $stderr.puts "File #{conf['packer_dir']}/#{t}.json does not exist for template '#{t}'"
           exit(1)
         end
       end
@@ -50,14 +52,11 @@ class Options
       options.stack = ARGV[0]
     }
 
+    file_argv_proc = proc { |options|
+      options.file = ARGV[0]
+    }
+
     subcommand = {
-      help: {
-        parser: OptionParser.new {},
-        argv: proc { |options|
-          puts global
-          exit(0)
-        }
-      },
       build: {
         class: BuildRunner,
         parser: OptionParser.new { |opts|
@@ -77,17 +76,14 @@ class Options
         },
         argv: templates_argv_proc
       },
-      list: {
-        class: ListRunner,
+      delete: {
+        class: DeleteRunner,
         parser: OptionParser.new { |opts|
-          opts.banner = "Usage: #{NAME} list [TEMPLATE ...]"
-        },
-        argv: templates_argv_proc
-      },
-      outputs: {
-        class: OutputRunner,
-        parser: OptionParser.new { |opts|
-          opts.banner = "Usage: #{NAME} outputs [TEMPLATE ...]"
+          opts.banner = "Usage: #{NAME} delete STACK"
+
+          opts.on("-c CLOUD", "--cloud CLOUD", "Select cloud") do |opt|
+            options.cloud = opt
+          end
         },
         argv: stack_argv_proc
       },
@@ -104,23 +100,43 @@ class Options
             options.update_lock = opt
           end
 
-          opts.on("--create-template", "Create template") do |opt|
+          opts.on("--update-template", "Update template") do |opt|
             options.create_template = opt
           end
         },
         argv: stack_argv_proc
       },
-      delete: {
-        class: DeleteRunner,
+      help: {
+        parser: OptionParser.new {},
+        argv: proc { |options|
+          puts global
+          exit(0)
+        }
+      },
+      list: {
+        class: ListRunner,
         parser: OptionParser.new { |opts|
-          opts.banner = "Usage: #{NAME} delete STACK"
+          opts.banner = "Usage: #{NAME} list [TEMPLATE ...]"
+        },
+        argv: templates_argv_proc
+      },
+      outputs: {
+        class: OutputRunner,
+        parser: OptionParser.new { |opts|
+          opts.banner = "Usage: #{NAME} outputs [TEMPLATE ...]"
+        },
+        argv: stack_argv_proc
+      },
+      update: {
+        class: UpdateRunner,
+        parser: OptionParser.new { |opts|
+          opts.banner = "Usage: #{NAME} update [lock || template]"
 
           opts.on("-c CLOUD", "--cloud CLOUD", "Select cloud") do |opt|
             options.cloud = opt
           end
         },
-
-        argv: stack_argv_proc
+        argv: file_argv_proc
       }
     }
 

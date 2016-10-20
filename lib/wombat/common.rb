@@ -28,6 +28,7 @@ module Common
 
   def wombat
     if !File.exists?('wombat.yml')
+      warn('No wombat.yml found, copying example')
       File.open('wombat.yml', 'w') do |f|
         f.puts File.read('wombat.example.yml')
       end
@@ -36,7 +37,12 @@ module Common
   end
 
   def lock
-    JSON.parse(File.read('wombat.lock'))
+    if !File.exists?('wombat.lock')
+      warn('No wombat.lock found')
+      return 1
+    else
+      JSON.parse(File.read('wombat.lock'))
+    end
   end
 
   def bootstrap_aws
@@ -164,5 +170,79 @@ module Common
 
   def audio?
     is_mac? && conf['audio']
+  end
+
+  def logs
+    Dir.glob("#{conf['log_dir']}/#{cloud}*.log").reject { |l| !l.match(wombat['linux']) }
+  end
+
+  def update_lock(cloud)
+    copy = {}
+    copy = wombat
+    region = copy[cloud]['region']
+    linux = copy['linux']
+    copy['amis'] = { region => {} }
+
+    if logs.length == 0
+      warn('No logs found - skipping lock update')
+    else
+      logs.each do |log|
+        case log
+        when /build-node/
+          copy['amis'][region]['build-node'] ||= {}
+          num = log.split('-')[3]
+          copy['amis'][region]['build-node'].store(num, parse_log(log, cloud))
+        when /workstation/
+          copy['amis'][region]['workstation'] ||= {}
+          num = log.split('-')[2]
+          copy['amis'][region]['workstation'].store(num, parse_log(log, cloud))
+        when /infranodes/
+          copy['amis'][region]['infranodes'] ||= {}
+          name = log.split('-')[2]
+          copy['amis'][region]['infranodes'].store(name, parse_log(log, cloud))
+        else
+          instance = log.match("#{cloud}-(.*)-(.*)\.log")[1]
+          copy['amis'][region].store(instance, parse_log(log, cloud))
+        end
+      end
+      copy['last_updated'] = Time.now.gmtime.strftime('%Y%m%d%H%M%S')
+      banner('Updating wombat.lock')
+      File.open('wombat.lock', 'w') do |f|
+        f.write(JSON.pretty_generate(copy))
+      end
+    end
+  end
+
+  def update_template(cloud)
+    if lock == 1
+      warn('No lock - skipping template creation')
+    else
+      region = lock['aws']['region']
+      @chef_server_ami = lock['amis'][region]['chef-server']
+      @automate_ami = lock['amis'][region]['automate']
+      @compliance_ami = lock['amis'][region]['compliance']
+      @build_nodes = lock['build-nodes']['count'].to_i
+      @build_node_ami = {}
+      1.upto(@build_nodes) do |i|
+        @build_node_ami[i] = lock['amis'][region]['build-node'][i.to_s]
+      end
+      @infra = {}
+      infranodes.each do |name, _rl|
+        @infra[name] = lock['amis'][region]['infranodes'][name]
+      end
+      @workstations = lock['workstations']['count'].to_i
+      @workstation_ami = {}
+      1.upto(@workstations) do |i|
+        @workstation_ami[i] = lock['amis'][region]['workstation'][i.to_s]
+      end
+      @availability_zone = lock['aws']['az']
+      @iam_roles = lock['aws']['iam_roles']
+      @demo = lock['name']
+      @version = lock['version']
+      @ttl = lock['ttl']
+      rendered_cfn = ERB.new(File.read("#{conf['template_dir']}/cfn.json.erb"), nil, '-').result(binding)
+      File.open("#{conf['stack_dir']}/#{@demo}.json", 'w') { |file| file.puts rendered_cfn }
+      banner("Generated: #{conf['stack_dir']}/#{@demo}.json")
+    end
   end
 end
