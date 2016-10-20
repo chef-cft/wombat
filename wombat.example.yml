@@ -43,7 +43,7 @@ conf:
   key_dir: 'keys'
   cookbook_dir: 'cookbooks'
   packer_dir: 'packer'
-  templates_dir: 'templates'
+  template_dir: 'templates'
   log_dir: 'logs'
   stack_dir: 'stacks'
   audio: false

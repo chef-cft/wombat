@@ -41,9 +41,9 @@ module Common
 
   def bootstrap_aws
     @workstation_passwd = wombat['workstations']['password']
-    rendered = ERB.new(File.read('templates/bootstrap-aws.erb'), nil, '-').result(binding)
-    File.open("#{packer_dir}/scripts/bootstrap-aws.txt", 'w') { |file| file.puts rendered }
-    banner("Generated: #{packer_dir}/scripts/bootstrap-aws.txt")
+    rendered = ERB.new(File.read("#{conf['template_dir']}/bootstrap-aws.erb"), nil, '-').result(binding)
+    File.open("#{conf['packer_dir']}/scripts/bootstrap-aws.txt", 'w') { |file| file.puts rendered }
+    banner("Generated: #{conf['packer_dir']}/scripts/bootstrap-aws.txt")
   end
 
   def gen_x509_cert(hostname)
@@ -73,11 +73,11 @@ module Common
 
     cert.sign(rsa_key, OpenSSL::Digest::SHA256.new)
 
-    if File.exist?("#{key_dir}/#{hostname}.crt") && File.exist?("#{key_dir}/#{hostname}.key")
+    if File.exist?("#{conf['key_dir']}/#{hostname}.crt") && File.exist?("#{conf['key_dir']}/#{hostname}.key")
       puts "An x509 certificate already exists for #{hostname}"
     else
-      File.open("#{key_dir}/#{hostname}.crt", 'w') { |file| file.puts cert.to_pem }
-      File.open("#{key_dir}/#{hostname}.key", 'w') { |file| file.puts rsa_key.to_pem }
+      File.open("#{conf['key_dir']}/#{hostname}.crt", 'w') { |file| file.puts cert.to_pem }
+      File.open("#{conf['key_dir']}/#{hostname}.key", 'w') { |file| file.puts rsa_key.to_pem }
       puts "Certificate created for #{wombat['domain_prefix']}#{hostname}.#{wombat['domain']}"
     end
   end
@@ -90,11 +90,11 @@ module Common
 
     openssh_format = "#{type} #{data}"
 
-    if File.exist?("#{key_dir}/public.pub") && File.exist?("#{key_dir}/private.pem")
+    if File.exist?("#{conf['key_dir']}/public.pub") && File.exist?("#{conf['key_dir']}/private.pem")
       puts 'An SSH keypair already exists'
     else
-      File.open("#{key_dir}/public.pub", 'w') { |file| file.puts openssh_format }
-      File.open("#{key_dir}/private.pem", 'w') { |file| file.puts rsa_key.to_pem }
+      File.open("#{conf['key_dir']}/public.pub", 'w') { |file| file.puts openssh_format }
+      File.open("#{conf['key_dir']}/private.pem", 'w') { |file| file.puts rsa_key.to_pem }
       puts 'SSH Keypair created'
     end
   end
@@ -129,13 +129,13 @@ module Common
   end
 
   def create_infranodes_json
-    if File.exists?("#{packer_dir}/file/infranodes-info.json")
+    if File.exists?("#{conf['packer_dir']}/file/infranodes-info.json")
       current_state = JSON(File.read('files/infranodes-info.json'))
     else
       current_state = nil
     end
     return if current_state == infranodes # yay idempotence
-    File.open("#{packer_dir}/files/infranodes-info.json", 'w') do |f|
+    File.open("#{conf['packer_dir']}/files/infranodes-info.json", 'w') do |f|
       f.puts JSON.pretty_generate(infranodes)
     end
   end
@@ -144,28 +144,18 @@ module Common
     wombat['linux'].nil? ? 'ubuntu' : wombat['linux']
   end
 
-  def key_dir
-    wombat['conf'].nil? ? 'keys' : wombat['conf']['key_dir']
-  end
-
-  def cookbook_dir
-    wombat['conf'].nil? ? 'cookbooks' : wombat['conf']['cookbook_dir']
-  end
-
-  def packer_dir
-    wombat['conf'].nil? ? 'packer' : wombat['conf']['packer_dir']
-  end
-
-  def log_dir
-    wombat['conf'].nil? ? 'logs' : wombat['conf']['log_dir']
-  end
-
-  def stack_dir
-    wombat['conf'].nil? ? 'stacks' : wombat['conf']['stack_dir']
-  end
-
-  def timeout
-    wombat['conf']['timeout'] ||= 7200
+  def conf
+    conf = wombat['conf']
+    conf ||= {}
+    conf['key_dir'] ||= 'keys'
+    conf['cookbook_dir'] ||= 'cookbooks'
+    conf['packer_dir'] ||= 'packer'
+    conf['log_dir'] ||= 'logs'
+    conf['stack_dir'] ||= 'stacks'
+    conf['template_dir'] ||= 'templates'
+    conf['timeout'] ||= 7200
+    conf['audio'] ||= false
+    conf
   end
 
   def is_mac?
@@ -173,6 +163,6 @@ module Common
   end
 
   def audio?
-    is_mac? && wombat['conf']['audio']
+    is_mac? && conf['audio']
   end
 end

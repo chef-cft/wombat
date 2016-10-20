@@ -26,11 +26,15 @@ The core of wombat is the binary `bin/wombat`.
 
 * If the TEMPLATE argument is not provided it will execute against all templates in `./packer/`
 
-`wombat deploy STACK`
+`wombat deploy STACK --update-lock --create-template`
 
 1. Create/update wombat.lock based on most recent Packer logs
 2. Create cfn/gdm configuration from lock data fed through template
 3. Deploy cfn/gdm stack
+
+`wombat deploy STACK`
+
+1. Deploy cfn/gdm stack
 
 `wombat outputs STACK`
 

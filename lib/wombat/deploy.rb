@@ -25,7 +25,7 @@ class DeployRunner
   private
 
   def create_stack(stack)
-    template_file = File.read("#{stack_dir}/#{@demo}.json")
+    template_file = File.read("#{conf['stack_dir']}/#{@demo}.json")
     cfn = Aws::CloudFormation::Client.new(region: lock['aws']['region'])
 
     banner("Creating CloudFormation stack")
@@ -45,7 +45,6 @@ class DeployRunner
   end
 
   def create_template
-    banner('Creating template...')
     region = lock['aws']['region']
     @chef_server_ami = lock['amis'][region]['chef-server']
     @automate_ami = lock['amis'][region]['automate']
@@ -68,13 +67,13 @@ class DeployRunner
     @demo = lock['name']
     @version = lock['version']
     @ttl = lock['ttl']
-    rendered_cfn = ERB.new(File.read('templates/cfn.json.erb'), nil, '-').result(binding)
-    File.open("#{stack_dir}/#{@demo}.json", 'w') { |file| file.puts rendered_cfn }
-    banner("Generate CloudFormation JSON: #{@demo}.json")
+    rendered_cfn = ERB.new(File.read("#{conf['template_dir']}/cfn.json.erb"), nil, '-').result(binding)
+    File.open("#{conf['stack_dir']}/#{@demo}.json", 'w') { |file| file.puts rendered_cfn }
+    banner("Generated: #{conf['stack_dir']}/#{@demo}.json")
   end
 
   def logs
-    Dir.glob("#{log_dir}/#{cloud}*.log").reject { |l| !l.match(wombat['linux']) }
+    Dir.glob("#{conf['log_dir']}/#{cloud}*.log").reject { |l| !l.match(wombat['linux']) }
   end
 
   def update_lock(cloud)

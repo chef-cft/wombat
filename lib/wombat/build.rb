@@ -117,7 +117,7 @@ class BuildRunner
   end
 
   def shell_out_command(command)
-    cmd = Mixlib::ShellOut.new(a_to_s(command), :timeout => timeout, live_stream: STDOUT)
+    cmd = Mixlib::ShellOut.new(a_to_s(command), :timeout => conf['timeout'], live_stream: STDOUT)
     cmd.run_command
     cmd
   end
@@ -139,9 +139,9 @@ class BuildRunner
     else
       base = template.split('.json')[0].tr('-', '_')
     end
-    rm_cmd = "rm -rf #{cookbook_dir}/#{base}/Berksfile.lock vendored-cookbooks/#{base}"
+    rm_cmd = "rm -rf #{conf['cookbook_dir']}/#{base}/Berksfile.lock vendored-cookbooks/#{base}"
     shell_out_command(rm_cmd)
-    vendor_cmd = "berks vendor -q -b #{cookbook_dir}/#{base}/Berksfile vendored-cookbooks/#{base}"
+    vendor_cmd = "berks vendor -q -b #{conf['cookbook_dir']}/#{base}/Berksfile vendored-cookbooks/#{base}"
     shell_out_command(vendor_cmd)
   end
 
@@ -161,7 +161,7 @@ class BuildRunner
     else
      log_name = "#{cloud}-#{template}-#{linux}"
     end
-    log_file = "#{log_dir}/#{log_name}.log"
+    log_file = "#{conf['log_dir']}/#{log_name}.log"
   end
 
   def packer_build_cmd(template, builder, options)
@@ -184,7 +184,7 @@ class BuildRunner
     end
 
     # TODO: fail if packer isn't found in a graceful way
-    cmd = %W(packer build #{packer_dir}/#{template}.json | tee #{log(template, builder, options)})
+    cmd = %W(packer build #{conf['packer_dir']}/#{template}.json | tee #{log(template, builder, options)})
     cmd.insert(2, "--only #{builder}")
     cmd.insert(2, "--var org=#{wombat['org']}")
     cmd.insert(2, "--var domain=#{wombat['domain']}")
