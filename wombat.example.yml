@@ -51,6 +51,9 @@ aws:
   az: us-east-1e
   keypair: keypair-us-east
   region: us-east-1
+  # This optional key presumes these IAM roles are already created
+  # and are only applied to workstations currently
+  # iam_roles: ['iam_role', 'iam_roles_buddy']
   source_ami:
     ubuntu: ami-8e0b9499
     windows: ami-bd3ba0aa

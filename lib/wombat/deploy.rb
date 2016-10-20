@@ -65,6 +65,7 @@ class DeployRunner
       @workstation_ami[i] = lock['amis'][region]['workstation'][i.to_s]
     end
     @availability_zone = lock['aws']['az']
+    @iam_roles = lock['aws']['iam_roles']
     @demo = lock['name']
     @version = lock['version']
     @ttl = lock['ttl']
