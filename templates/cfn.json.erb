@@ -77,6 +77,15 @@
     }
   },
   "Resources": {
+<% if @iam_roles -%>
+    "InstanceProfile" : {
+      "Type" : "AWS::IAM::InstanceProfile",
+      "Properties" : {
+        "Path" : "/",
+        "Roles" : <%= @iam_roles %>
+      }
+    },
+<% end -%>
     "VPC": {
       "Type": "AWS::EC2::VPC",
       "Properties": {
@@ -341,6 +350,9 @@
       "Type": "AWS::EC2::Instance",
       "Properties": {
         "InstanceType": "m3.large",
+<% if @iam_roles -%>
+        "IamInstanceProfile" : {"Ref" : "InstanceProfile"},
+<% end -%>
         "AvailabilityZone": { "Ref": "AvailabilityZone" },
         "NetworkInterfaces": [
           {
