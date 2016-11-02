@@ -8,6 +8,7 @@ require 'wombat/deploy'
 require 'wombat/output'
 require 'wombat/delete'
 require 'wombat/update'
+require 'wombat/init'
 
 class Options
 
@@ -15,7 +16,6 @@ class Options
 
   def self.parse(args)
     options = OpenStruct.new
-    options.templates = calculate_templates("*.json")
 
     global = OptionParser.new do |opts|
       opts.banner = "Usage: #{NAME} [SUBCOMMAND [options]]"
@@ -26,6 +26,7 @@ class Options
         delete       :   delete a stack
         deploy       :   deploy a stack
         help         :   prints this help message
+        init         :   create wombat skeleton project
         list         :   list all templates in project
         outputs      :   get outputs for a stack
         update       :   update lock and/or cloud template
@@ -33,14 +34,7 @@ class Options
     end
 
     templates_argv_proc = proc { |options|
-      options.templates = calculate_templates(args) unless args.empty?
-
-      options.templates.each do |t|
-        if !File.exists?("#{conf['packer_dir']}/#{t}.json")
-          $stderr.puts "File #{conf['packer_dir']}/#{t}.json does not exist for template '#{t}'"
-          exit(1)
-        end
-      end
+      options.templates = ARGV unless args.empty?
     }
 
     box_version_argv_proc = proc { |options|
@@ -113,6 +107,17 @@ class Options
           exit(0)
         }
       },
+      init: {
+        class: InitRunner,
+        parser: OptionParser.new { |opts|
+          opts.banner = "Usage: #{NAME} init"
+
+          opts.on("-p PATH", "--path PATH", "Path to copy skeleton") do |opt|
+            options.path = opt
+          end
+        },
+        argv: stack_argv_proc
+      },
       list: {
         class: ListRunner,
         parser: OptionParser.new { |opts|
@@ -151,17 +156,6 @@ class Options
 
     options
   end
-
-  def self.calculate_templates(globs)
-    Dir.chdir('packer') do
-      Array(globs).
-        map { |glob| result = Dir.glob("#{glob}"); result.empty? ? glob : result }.
-        flatten.
-        sort.
-        delete_if { |file| file =~ /\.variables\./ }.
-        map { |template| template.sub(/\.json$/, '') }
-    end
-  end
 end
 
 class ListRunner
@@ -171,11 +165,18 @@ class ListRunner
   attr_reader :templates
 
   def initialize(opts)
-    @templates = opts.templates
+    @templates = opts.templates.nil? ? calculate_templates : opts.templates
   end
 
   def start
-    templates.each { |template| puts template }
+    templates.each do |t|
+      if !File.exists?("#{conf['packer_dir']}/#{t}.json")
+        $stderr.puts "File #{conf['packer_dir']}/#{t}.json does not exist for template '#{t}'"
+        exit(1)
+      else
+        puts t
+      end
+    end
   end
 end
 

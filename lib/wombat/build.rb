@@ -10,13 +10,16 @@ class BuildRunner
   attr_reader :templates, :builder, :config, :parallel
 
   def initialize(opts)
-    @templates = opts.templates
+    @templates = opts.templates.nil? ? calculate_templates : opts.templates
     @builder = opts.builder.nil? ? "amazon-ebs" : opts.builder
     @config = opts.config
     @parallel = opts.parallel
   end
 
   def start
+    if which('packer').nil?
+      raise "packer binary not found in path, exiting..."
+    end
     banner("Generating certs (if necessary)")
     wombat['certs'].each do |hostname|
       gen_x509_cert(hostname)
@@ -164,6 +167,17 @@ class BuildRunner
     log_file = "#{conf['log_dir']}/#{log_name}.log"
   end
 
+  def which(cmd)
+    exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
+    ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
+      exts.each { |ext|
+        exe = File.join(path, "#{cmd}#{ext}")
+        return exe if File.executable?(exe) && !File.directory?(exe)
+      }
+    end
+    return nil
+  end
+
   def packer_build_cmd(template, builder, options)
     create_infranodes_json
 
@@ -183,7 +197,8 @@ class BuildRunner
       source_image = wombat['gce']['source_image'][linux]
     end
 
-    # TODO: fail if packer isn't found in a graceful way
+    Dir.mkdir(conf['log_dir'], 0755) unless File.exist?(conf['log_dir'])
+
     cmd = %W(packer build #{conf['packer_dir']}/#{template}.json | tee #{log(template, builder, options)})
     cmd.insert(2, "--only #{builder}")
     cmd.insert(2, "--var org=#{wombat['org']}")

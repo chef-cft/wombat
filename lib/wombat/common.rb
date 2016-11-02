@@ -4,6 +4,7 @@ require 'erb'
 require 'openssl'
 require 'net/ssh'
 require 'benchmark'
+require 'fileutils'
 
 module Common
 
@@ -29,9 +30,8 @@ module Common
   def wombat
     if !File.exists?('wombat.yml')
       warn('No wombat.yml found, copying example')
-      File.open('wombat.yml', 'w') do |f|
-        f.puts File.read('wombat.example.yml')
-      end
+      gen_dir = "#{File.expand_path("../..", File.dirname(__FILE__))}/generator_files"
+      FileUtils.cp_r "#{gen_dir}/wombat.yml", Dir.pwd
     end
     YAML.load(File.read('wombat.yml'))
   end
@@ -48,6 +48,7 @@ module Common
   def bootstrap_aws
     @workstation_passwd = wombat['workstations']['password']
     rendered = ERB.new(File.read("#{conf['template_dir']}/bootstrap-aws.erb"), nil, '-').result(binding)
+    Dir.mkdir("#{conf['packer_dir']}/scripts", 0755) unless File.exist?("#{conf['packer_dir']}/scripts")
     File.open("#{conf['packer_dir']}/scripts/bootstrap-aws.txt", 'w') { |file| file.puts rendered }
     banner("Generated: #{conf['packer_dir']}/scripts/bootstrap-aws.txt")
   end
@@ -78,6 +79,8 @@ module Common
                                            'keyid:always,issuer:always')
 
     cert.sign(rsa_key, OpenSSL::Digest::SHA256.new)
+    
+    Dir.mkdir(conf['key_dir'], 0755) unless File.exist?(conf['key_dir'])
 
     if File.exist?("#{conf['key_dir']}/#{hostname}.crt") && File.exist?("#{conf['key_dir']}/#{hostname}.key")
       puts "An x509 certificate already exists for #{hostname}"
@@ -95,6 +98,8 @@ module Common
     data = [rsa_key.to_blob].pack('m0')
 
     openssh_format = "#{type} #{data}"
+
+    Dir.mkdir(conf['key_dir'], 0755) unless File.exist?(conf['key_dir'])
 
     if File.exist?("#{conf['key_dir']}/public.pub") && File.exist?("#{conf['key_dir']}/private.pem")
       puts 'An SSH keypair already exists'
@@ -176,6 +181,18 @@ module Common
     Dir.glob("#{conf['log_dir']}/#{cloud}*.log").reject { |l| !l.match(wombat['linux']) }
   end
 
+  def calculate_templates
+  globs = "*.json"
+    Dir.chdir(conf['packer_dir']) do
+      Array(globs).
+        map { |glob| result = Dir.glob("#{glob}"); result.empty? ? glob : result }.
+        flatten.
+        sort.
+        delete_if { |file| file =~ /\.variables\./ }.
+        map { |template| template.sub(/\.json$/, '') }
+    end
+  end
+
   def update_lock(cloud)
     copy = {}
     copy = wombat
@@ -241,6 +258,7 @@ module Common
       @version = lock['version']
       @ttl = lock['ttl']
       rendered_cfn = ERB.new(File.read("#{conf['template_dir']}/cfn.json.erb"), nil, '-').result(binding)
+      Dir.mkdir(conf['stack_dir'], 0755) unless File.exist?(conf['stack_dir'])
       File.open("#{conf['stack_dir']}/#{@demo}.json", 'w') { |file| file.puts rendered_cfn }
       banner("Generated: #{conf['stack_dir']}/#{@demo}.json")
     end
