@@ -73,19 +73,19 @@ class BuildRunner
             }
           }
         end
-      elsif template_name == 'build-node'
+      elsif template_name =~ /build-node/
         build_nodes.each do |name, num|
           proc_hash[name] = {
-            'template' => 'build-node',
+            'template' => template_name,
             'options' => {
               'node-number' => num
             }
           }
         end
-      elsif template_name == 'workstation'
+      elsif template_name =~ /workstation/
         workstations.each do |name, num|
           proc_hash[name] = {
-            'template' => 'workstation',
+            'template' => template_name,
             'options' => {
               'os' => wombat['workstations']['platform'],
               'workstation-number' => num
@@ -151,9 +151,9 @@ class BuildRunner
   def log(template, builder, options)
     cloud = b_to_c(builder)
     case template
-    when 'build-node'
+    when /build-node/
       log_name = "#{cloud}-build-node-#{options['node-number']}-#{linux}"
-    when 'workstation'
+    when /workstation/
       log_name = "#{cloud}-workstation-#{options['workstation-number']}-#{linux}"
     when /infranodes/
       if options['os'] =~ /windows/
@@ -181,7 +181,7 @@ class BuildRunner
   def packer_build_cmd(template, builder, options)
     create_infranodes_json
 
-    if template == 'workstation'
+    if template =~ /workstation/
       source_ami = wombat['aws']['source_ami']['windows']
       source_image = wombat['gce']['source_image']['windows']
     elsif template =~ /infranodes/
