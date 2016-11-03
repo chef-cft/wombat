@@ -25,7 +25,7 @@ class DeployRunner
   private
 
   def create_stack(stack)
-    template_file = File.read("#{conf['stack_dir']}/#{@demo}.json")
+    template_file = File.read("#{conf['stack_dir']}/#{stack}.json")
     cfn = Aws::CloudFormation::Client.new(region: lock['aws']['region'])
 
     banner("Creating CloudFormation stack")
