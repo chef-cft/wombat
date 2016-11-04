@@ -56,10 +56,6 @@ class Options
         parser: OptionParser.new { |opts|
           opts.banner = "Usage: #{NAME} build [options] TEMPLATE[ TEMPLATE ...]"
 
-          opts.on("-c CONFIG", "--config CONFIG", "Use config file") do |opt|
-            options.config = opt
-          end
-
           opts.on("-o BUILDER", "--only BUILDER", "Use config file") do |opt|
             options.builder = opt
           end

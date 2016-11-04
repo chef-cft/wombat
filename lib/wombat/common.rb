@@ -218,7 +218,7 @@ module Common
           name = log.split('-')[2]
           copy['amis'][region]['infranodes'].store(name, parse_log(log, cloud))
         else
-          instance = log.match("#{cloud}-(.*)-(.*)\.log")[1]
+          instance = log.match("#{cloud}-(.*)-#{linux}\.log")[1]
           copy['amis'][region].store(instance, parse_log(log, cloud))
         end
       end
