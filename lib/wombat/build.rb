@@ -7,12 +7,11 @@ class BuildRunner
 
   include Common
 
-  attr_reader :templates, :builder, :config, :parallel
+  attr_reader :templates, :builder, :parallel
 
   def initialize(opts)
     @templates = opts.templates.nil? ? calculate_templates : opts.templates
     @builder = opts.builder.nil? ? "amazon-ebs" : opts.builder
-    @config = opts.config
     @parallel = opts.parallel
   end
 
@@ -151,6 +150,12 @@ class BuildRunner
   def log(template, builder, options)
     cloud = b_to_c(builder)
     case template
+    when /automate/
+      log_name = "#{cloud}-automate-#{linux}"
+    when /chef-server/
+      log_name = "#{cloud}-chef-server-#{linux}"
+    when /compliance/
+      log_name = "#{cloud}-compliance-#{linux}"
     when /build-node/
       log_name = "#{cloud}-build-node-#{options['node-number']}-#{linux}"
     when /workstation/
@@ -161,8 +166,6 @@ class BuildRunner
       else
         log_name = "#{cloud}-infranodes-#{options['node-name']}-#{linux}"
       end
-    else
-     log_name = "#{cloud}-#{template}-#{linux}"
     end
     log_file = "#{conf['log_dir']}/#{log_name}.log"
   end
