@@ -10,7 +10,7 @@ class DeployRunner
     @stack = opts.stack
     @cloud = opts.cloud.nil? ? "aws" : opts.cloud
     @lock_opt = opts.update_lock
-    @template_opt = opts.create_template
+    @template_opt = opts.update_template
   end
 
   def start

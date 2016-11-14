@@ -91,7 +91,7 @@ class Options
           end
 
           opts.on("--update-template", "Update template") do |opt|
-            options.create_template = opt
+            options.update_template = opt
           end
         },
         argv: stack_argv_proc
