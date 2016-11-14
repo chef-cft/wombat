@@ -1,4 +1,4 @@
-[![Gem Version](https://img.shields.io/gem/v/wombat-cli.svg)][gem]
+[![Gem Version](https://badge.fury.io/rb/wombat-cli.svg)](http://badge.fury.io/rb/wombat-cli)
 
 [![Stories in Ready](https://badge.waffle.io/chef-cft/wombat.png?label=ready&title=Ready)](https://waffle.io/chef-cft/wombat)
 
