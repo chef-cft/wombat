@@ -94,7 +94,7 @@ Upload the created template from the `cloudformation` directory.
 
 ```
 # Deploy CloudFormation template
-$ bin/wombat deploy --cloud aws STACK --update-lock --create-template
+$ wombat deploy --update-lock --update-template
 ==> Updating wombat.lock
 ==> Generate CloudFormation JSON: STACK.json
 ==> Creating CloudFormation stack
@@ -103,18 +103,23 @@ Created: arn:aws:cloudformation:us-east-1:862552916454:stack/STACK/2160c580-713e
 
 ```
 # Deploy an already generated template (pre-existing template)
-bin/wombat deploy --cloud aws STACK
+# where STACK is the name of the template (w/o file extention) in the `stack_dir`
+wombat deploy STACK
 ```
-
-*NOTE:* If the cloud is not provided it defaults to `aws`
 
 ##### Login to Windows Workstation
 
 ```
 # Get Windows Workstation(s) IP(s)
-$ bin/wombat outputs STACK
+# where STACK is the name of the running CloudFormation stack
+$ wombat outputs STACK
 WindowsWorkstation (i-xxxxxxxx) => XX.XXX.XX.XXX
 ```
+
+## TODO
+
+* Complete support for Azure
+* Complete support for Google Cloud Engine
 
 From the AWS CloudFormation UI, select the Outputs tab for the desired stack.
 Use an RDP compatible client to login to the workstation with the embedded credentials.
