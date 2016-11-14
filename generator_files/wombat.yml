@@ -1,0 +1,67 @@
+---
+name: wombat
+# Uncomment domain_prefix if you wish to prepend your generated domain.
+# Ex: The below example would create foo-chef.animals.biz.
+# domain_prefix: foo-
+domain: animals.biz
+enterprise: mammals
+org: marsupials
+certs: ['automate', 'chef', 'compliance']
+ttl: 6
+linux: ubuntu
+version: 0.2.1
+products:
+  chef: stable-latest
+  chef-server: stable-latest
+  chefdk: stable-latest
+  compliance: stable-latest
+  automate: stable-latest
+  push-jobs-server: stable-latest
+  manage: stable-latest
+build-nodes:
+  count: 1
+workstations:
+  platform: windows
+  # Must meet the minimum Microsoft Complexity Requirements
+  # https://technet.microsoft.com/en-us/library/hh994562(v=ws.11).aspx)
+  password: 'ZL9@T40BTmXhZ'
+  count: 1
+infranodes:
+# Add a list of infrastructure nodes here with their associated run list to have these nodes precreated on the Chef Server
+# Note: the cookbook content won't be automatically uploaded, only the node object will be created with the run list added,
+# if the content doesn't exist at the first checkin the chef-client run will fail.
+# acceptance:
+# platform: windows
+#   environment: web-acceptance
+#   run_list:
+#     - recipe[bacon::chewy]
+# delivered:
+#   environment: web-delivered
+#   run_list:
+#     - recipe[bacon::crispy]
+conf:
+  key_dir: 'keys'
+  cookbook_dir: 'cookbooks'
+  packer_dir: 'packer'
+  template_dir: 'templates'
+  log_dir: 'logs'
+  stack_dir: 'stacks'
+  audio: false
+aws:
+  az: us-east-1e
+  keypair: keypair-us-east
+  region: us-east-1
+  # This optional key presumes these IAM roles are already created
+  # and are only applied to workstations currently
+  # iam_roles: ['iam_role', 'iam_roles_buddy']
+  source_ami:
+    ubuntu: ami-8e0b9499
+    windows: ami-bd3ba0aa
+    centos: ami-6d1c2007
+gce:
+  zone: us-east1-b
+  project: wombat-gce
+  account_file: wombat-gce.json
+  source_image:
+    ubuntu: ubuntu-1404-trusty-v20160809a
+    windows: windows-server-2012-r2-dc-v20160809

@@ -1,6 +1,9 @@
+[![Gem Version](https://img.shields.io/gem/v/wombat-cli.svg)][gem]
+
 [![Stories in Ready](https://badge.waffle.io/chef-cft/wombat.png?label=ready&title=Ready)](https://waffle.io/chef-cft/wombat)
-# `Project Wombat`
-`wombat` is a gem that builds and creates demo environments using cloud-specific deployment
+
+# Wombat
+Wombat (`wombat-cli`) is a gem that builds and creates demo environments using cloud-specific deployment
 tools like CloudFormation. The demo environments are comprised of instances built
 from the included packer templates:
 
@@ -11,28 +14,56 @@ from the included packer templates:
 * _N_ Infrastructure Nodes
 * _N_ Windows Workstation
 
-Usage
-------------
+## Pre-requisites
+
+We'll need a few things before we can get started with Wombat.
+
+##### Install and Configure ChefDK
+
+Follow the instructions at https://docs.chef.io/install_dk.html to install and configure ChefDK (0.19.6+) as your default version of Ruby.
+
+*Note:* If not using ChefDK, Ruby 2.3+ is required.
+
+##### Install Packer
+
+Downloads are here: https://www.packer.io/downloads.html. The binary must be in $PATH for `wombat build` 
 
 ##### Download your Automate license key
 Automate requires a valid license to activate successfully. **If you do
 not have a license key, you can request one from your CHEF account
 representative.**
 
-You will need to have the `delivery.license` file present inside `packer/files/`
-directory.
+You will need to have the `delivery.license` file present inside  the `files/`
+directory of your wombat project.
 
-##### Install and Configure ChefDK
+## Usage
 
-Follow the instructions at https://docs.chef.io/install_dk.html to install and configure ChefDK as your default version of Ruby.
+### From Rubygems
 
-##### Install Packer
+If you are a developer or you prefer to install from Rubygems, we've got you covered.
 
-Downloads are here: https://www.packer.io/downloads.html . Place in your path for direct execution.
+Add Wombat to your repository's `Gemfile`:
 
-##### Create a wombat.yml
+```ruby
+gem 'wombat-cli'
+```
 
-Create a wombat.yml - there is an example `wombat.example.yml` for reference and easy copying
+*Note:* if using Bundler, make sure to `bundle install` and prefix commands as appropriate, ex `bundle exec wombat`
+
+
+Or run it as a standalone:
+
+```shell
+$ gem install wombat-cli
+```
+
+##### Get Started with Wombat
+
+```
+$ wombat init
+```
+
+This will generate a wombat skeleton project and example configuration file `wombat.yml`
 
 *NOTE:* workstation-passwd must meet the minimum Microsoft [Complexity Requirements](https://technet.microsoft.com/en-us/library/hh994562(v=ws.11).aspx)
 
@@ -42,13 +73,13 @@ Create a wombat.yml - there is an example `wombat.example.yml` for reference and
 
 ```
 # build one or more templates
-$ bin/wombat build [-o BUILDER] TEMPLATE [TEMPLATE2]
+$ wombat build [-o BUILDER] TEMPLATE [TEMPLATE2]
 
 # build all templates (sequentially)
-$ bin/wombat build [-o BUILDER]
+$ wombat build [-o BUILDER]
 
 # build all images (parallel)
-$ bin/wombat build [-o BUILDER] --parallel
+$ wombat build [-o BUILDER] --parallel
 ```
 
 *NOTE:* If the builder is not provided it defaults to `amazon-ebs`
