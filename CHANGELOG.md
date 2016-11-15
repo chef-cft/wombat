@@ -1,10 +1,18 @@
 # Change Log
 
-## [0.3.2](https://github.com/chef-cft/wombat/tree/0.3.2) (2016-11-14)
-[Full Changelog](https://github.com/chef-cft/wombat/compare/v0.3.1...0.3.2)
+## [v0.3.3](https://github.com/chef-cft/wombat/tree/v0.3.3) (2016-11-15)
+[Full Changelog](https://github.com/chef-cft/wombat/compare/v0.3.2...v0.3.3)
 
 **Merged pull requests:**
 
+- The dotnet opimizations are breaking builds, disabling recipe [\#253](https://github.com/chef-cft/wombat/pull/253) ([cheeseplus](https://github.com/cheeseplus))
+
+## [v0.3.2](https://github.com/chef-cft/wombat/tree/v0.3.2) (2016-11-14)
+[Full Changelog](https://github.com/chef-cft/wombat/compare/v0.3.1...v0.3.2)
+
+**Merged pull requests:**
+
+- Prep 0.3.2 for release and add changelog [\#252](https://github.com/chef-cft/wombat/pull/252) ([cheeseplus](https://github.com/cheeseplus))
 - Readme badge hotfix [\#251](https://github.com/chef-cft/wombat/pull/251) ([cheeseplus](https://github.com/cheeseplus))
 - Fix examples, update readme [\#247](https://github.com/chef-cft/wombat/pull/247) ([cheeseplus](https://github.com/cheeseplus))
 
