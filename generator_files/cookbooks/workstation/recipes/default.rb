@@ -6,6 +6,10 @@ node['demo']['pkgs'].each do |pkg|
   end
 end
 
+chocolatey 'cmder' do
+  version '1.3.0'
+end
+
 include_recipe 'workstation::certs-keys'
 include_recipe 'workstation::terminal'
 include_recipe 'workstation::browser'
