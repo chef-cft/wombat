@@ -41,7 +41,12 @@ end
 
 chef_ingredient 'chef-server' do
   action :reconfigure
-  config "api_fqdn 'chef.#{node['demo']['domain']}'"
+  config <<-EOH
+  api_fqdn 'chef.#{node['demo']['domain']}'
+  data_collector['root_url'] = 'https://#{node['demo']['domain_prefix']}automate.#{node['demo']['domain']}/data-collector/v0/'
+  data_collector['token'] = '93a49a4f2482c64126f7b6015e6b0f30284287ee4054ff8807fb63d9cbd1c506'
+  profiles["root_url"] = "https://#{node['demo']['domain_prefix']}automate.#{node['demo']['domain']}"
+  EOH
 end
 
 if node['platform'] == 'centos'
