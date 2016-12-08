@@ -1,5 +1,14 @@
 # Change Log
 
+## [v0.3.4](https://github.com/chef-cft/wombat/tree/v0.3.4) (2016-12-07)
+[Full Changelog](https://github.com/chef-cft/wombat/compare/v0.3.3...v0.3.4)
+
+**Merged pull requests:**
+
+- Cmder workaround workstation build [\#257](https://github.com/chef-cft/wombat/pull/257) ([andrewelizondo](https://github.com/andrewelizondo))
+- Configure compliance profile asset store for chef-server [\#256](https://github.com/chef-cft/wombat/pull/256) ([andrewelizondo](https://github.com/andrewelizondo))
+
+
 ## [v0.3.3](https://github.com/chef-cft/wombat/tree/v0.3.3) (2016-11-15)
 [Full Changelog](https://github.com/chef-cft/wombat/compare/v0.3.2...v0.3.3)
 
