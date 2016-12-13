@@ -76,7 +76,7 @@
   "provisioners" : [
     {
       "type": "file",
-      "source": "{{template_dir}}/files/",
+      "source": "{{pwd}}/files/",
       "destination": "/tmp"
     },
     {

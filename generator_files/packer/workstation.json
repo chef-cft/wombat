@@ -70,7 +70,7 @@
     },
     {
       "type": "file",
-      "source": "{{template_dir}}/files/",
+      "source": "{{pwd}}/files/",
       "destination": "C:\\Windows\\Temp"
     },
     {
