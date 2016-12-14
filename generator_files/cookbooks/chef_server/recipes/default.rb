@@ -45,9 +45,14 @@ chef_ingredient 'chef-server' do
   api_fqdn 'chef.#{node['demo']['domain']}'
   data_collector['root_url'] = 'https://#{node['demo']['domain_prefix']}automate.#{node['demo']['domain']}/data-collector/v0/'
   data_collector['token'] = "#{node['demo']['data_collector_token']}"
-  data_collector['timeout'] = '1'
   profiles["root_url"] = "https://#{node['demo']['domain_prefix']}automate.#{node['demo']['domain']}"
   EOH
+end
+
+# Temporarily reduced timeout to speed up the build.
+append_if_no_line "Add temporary hostsfile entry: #{node['ipaddress']}" do
+  path "/etc/opscode/chef-server.rb"
+  line "data_collector['timeout'] = '1'"
 end
 
 if node['platform'] == 'centos'
@@ -100,7 +105,7 @@ delete_lines "Remove temporary hostfile entry we added earlier" do
   pattern "^#{node['ipaddress']}.*#{node['demo']['domain_prefix']}chef\.#{node['demo']['domain']}.*chef"
 end
 
-# Temporary timeout was implemented to speed up builds. We can return to defaults now.
+# Temporary timeout no longer required. We can return to defaults now.
 delete_lines "Remove the data_collector timeout before we finish." do
   path "/etc/opscode/chef-server.rb"
   pattern "^.*data_collector.*timeout.*"
