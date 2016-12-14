@@ -35,12 +35,9 @@ end
 end
 
 chef_ingredient 'chef-server' do
+  action [ :install, :reconfigure ]
   channel node['demo']['versions']['chef-server'].split('-')[0].to_sym
   version node['demo']['versions']['chef-server'].split('-')[1]
-end
-
-chef_ingredient 'chef-server' do
-  action :reconfigure
   config <<-EOH
   api_fqdn 'chef.#{node['demo']['domain']}'
   data_collector['root_url'] = 'https://#{node['demo']['domain_prefix']}automate.#{node['demo']['domain']}/data-collector/v0/'
@@ -50,10 +47,13 @@ chef_ingredient 'chef-server' do
 end
 
 # Temporarily reduced timeout to speed up the build.
-append_if_no_line "Add temporary hostsfile entry: #{node['ipaddress']}" do
+append_if_no_line "Append a 1ms timeout for the data collector" do
   path "/etc/opscode/chef-server.rb"
   line "data_collector['timeout'] = '1'"
 end
+
+# Use an execute block so we don't revert the config.
+execute 'chef-server-ctl reconfigure'
 
 if node['platform'] == 'centos'
   # hardcoding this one as other permutations are known broken
@@ -89,9 +89,8 @@ chef_ingredient 'manage' do
   action  :install
 end
 
-chef_ingredient 'chef-server' do
-  action :reconfigure
-end
+# Another execute block. Keep our temp config until we finish.
+execute 'chef-server-ctl reconfigure'
 
 chef_ingredient 'manage' do
   accept_license true
