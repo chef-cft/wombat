@@ -39,11 +39,11 @@ chef_ingredient 'chef-server' do
   channel node['demo']['versions']['chef-server'].split('-')[0].to_sym
   version node['demo']['versions']['chef-server'].split('-')[1]
   config <<-EOH
-  api_fqdn 'chef.#{node['demo']['domain']}'
-  data_collector['root_url'] = 'https://#{node['demo']['domain_prefix']}automate.#{node['demo']['domain']}/data-collector/v0/'
-  data_collector['token'] = "#{node['demo']['data_collector_token']}"
-  profiles["root_url"] = "https://#{node['demo']['domain_prefix']}automate.#{node['demo']['domain']}"
-  EOH
+api_fqdn 'chef.#{node['demo']['domain']}'
+data_collector['root_url'] = 'https://#{node['demo']['domain_prefix']}automate.#{node['demo']['domain']}/data-collector/v0/'
+data_collector['token'] = "#{node['demo']['data_collector_token']}"
+profiles["root_url"] = "https://#{node['demo']['domain_prefix']}automate.#{node['demo']['domain']}"
+EOH
 end
 
 # Temporarily reduced timeout to speed up the build.
