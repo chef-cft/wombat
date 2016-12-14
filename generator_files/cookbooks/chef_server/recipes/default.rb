@@ -99,14 +99,15 @@ end
 
 include_recipe 'chef_server::bootstrap_users'
 
-delete_lines "Remove temporary hostfile entry we added earlier" do
-  path "/etc/hosts"
-  pattern "^#{node['ipaddress']}.*#{node['demo']['domain_prefix']}chef\.#{node['demo']['domain']}.*chef"
-end
-
 # Temporary timeout no longer required. We can return to defaults now.
 delete_lines "Remove the data_collector timeout before we finish." do
   path "/etc/opscode/chef-server.rb"
   pattern "^.*data_collector.*timeout.*"
   notifies :reconfigure, 'chef_ingredient[chef-server]', :immediately
 end
+
+delete_lines "Remove temporary hostfile entry we added earlier" do
+  path "/etc/hosts"
+  pattern "^#{node['ipaddress']}.*#{node['demo']['domain_prefix']}chef\.#{node['demo']['domain']}.*chef"
+end
+
