@@ -35,19 +35,25 @@ end
 end
 
 chef_ingredient 'chef-server' do
+  action [ :install, :reconfigure ]
   channel node['demo']['versions']['chef-server'].split('-')[0].to_sym
   version node['demo']['versions']['chef-server'].split('-')[1]
+  config <<-EOH
+api_fqdn 'chef.#{node['demo']['domain']}'
+data_collector['root_url'] = 'https://#{node['demo']['domain_prefix']}automate.#{node['demo']['domain']}/data-collector/v0/'
+data_collector['token'] = "#{node['demo']['data_collector_token']}"
+profiles["root_url"] = "https://#{node['demo']['domain_prefix']}automate.#{node['demo']['domain']}"
+EOH
 end
 
-chef_ingredient 'chef-server' do
-  action :reconfigure
-  config <<-EOH
-  api_fqdn 'chef.#{node['demo']['domain']}'
-  data_collector['root_url'] = 'https://#{node['demo']['domain_prefix']}automate.#{node['demo']['domain']}/data-collector/v0/'
-  data_collector['token'] = "#{node['demo']['data_collector_token']}"
-  profiles["root_url"] = "https://#{node['demo']['domain_prefix']}automate.#{node['demo']['domain']}"
-  EOH
+# Temporarily reduced timeout to speed up the build.
+append_if_no_line "Append a 1ms timeout for the data collector" do
+  path "/etc/opscode/chef-server.rb"
+  line "data_collector['timeout'] = '1'"
 end
+
+# Use an execute block so we don't revert the config.
+execute 'chef-server-ctl reconfigure'
 
 if node['platform'] == 'centos'
   # hardcoding this one as other permutations are known broken
@@ -83,9 +89,8 @@ chef_ingredient 'manage' do
   action  :install
 end
 
-chef_ingredient 'chef-server' do
-  action :reconfigure
-end
+# Another execute block. Keep our temp config until we finish.
+execute 'chef-server-ctl reconfigure'
 
 chef_ingredient 'manage' do
   accept_license true
@@ -94,7 +99,15 @@ end
 
 include_recipe 'chef_server::bootstrap_users'
 
+# Temporary timeout no longer required. We can return to defaults now.
+delete_lines "Remove the data_collector timeout before we finish." do
+  path "/etc/opscode/chef-server.rb"
+  pattern "^.*data_collector.*timeout.*"
+  notifies :reconfigure, 'chef_ingredient[chef-server]', :immediately
+end
+
 delete_lines "Remove temporary hostfile entry we added earlier" do
   path "/etc/hosts"
   pattern "^#{node['ipaddress']}.*#{node['demo']['domain_prefix']}chef\.#{node['demo']['domain']}.*chef"
 end
+
