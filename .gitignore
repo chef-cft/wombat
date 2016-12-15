@@ -11,6 +11,7 @@ vendored-cookbooks
 cloudformation/*.json
 keys/*
 packer/keys/*
+generator_files/keys/*
 *.lock
 infranodes-info.json
 output
