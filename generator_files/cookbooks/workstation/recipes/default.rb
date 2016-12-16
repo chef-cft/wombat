@@ -17,5 +17,4 @@ include_recipe 'workstation::editor'
 include_recipe 'workstation::chef'
 include_recipe 'workstation::profile'
 include_recipe 'wombat::etc-hosts'
-# disable while we figure out why this broke
 include_recipe 'workstation::dotnet'
