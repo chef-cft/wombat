@@ -16,13 +16,14 @@ provisioner:
 platforms:
   - name: windows-2012r2
     driver:
-      image_id: ami-1719f677
+      image_id: ami-1c7ad77c
     transport:
       ssh_key: <%= ENV["EC2_SSH_KEY_PATH"] %>
 
 suites:
   - name: default
     run_list:
+      - recipe[mock_data]
       - recipe[workstation]
 
 verifier:

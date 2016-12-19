@@ -56,7 +56,7 @@ aws:
   # iam_roles: ['iam_role', 'iam_roles_buddy']
   source_ami:
     ubuntu: ami-8e0b9499
-    windows: ami-bd3ba0aa
+    windows: ami-1c7ad77c
     centos: ami-6d1c2007
 gce:
   zone: us-east1-b
