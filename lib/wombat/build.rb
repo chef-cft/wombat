@@ -13,6 +13,7 @@ class BuildRunner
     @templates = opts.templates.nil? ? calculate_templates : opts.templates
     @builder = opts.builder.nil? ? "amazon-ebs" : opts.builder
     @parallel = opts.parallel
+    @wombat_yml = opts.wombat_yml unless opts.wombat_yml.nil?
   end
 
   def start

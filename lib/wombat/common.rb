@@ -28,12 +28,14 @@ module Common
   end
 
   def wombat
-    if !File.exists?('wombat.yml')
+    @wombat_yml ||= ENV['WOMBAT_YML'] unless ENV['WOMBAT_YML'].nil?
+    @wombat_yml ||= 'wombat.yml'
+    if !File.exists?(@wombat_yml)
       warn('No wombat.yml found, copying example')
       gen_dir = "#{File.expand_path("../..", File.dirname(__FILE__))}/generator_files"
       FileUtils.cp_r "#{gen_dir}/wombat.yml", Dir.pwd
     end
-    YAML.load(File.read('wombat.yml'))
+    YAML.load(File.read(@wombat_yml))
   end
 
   def lock
