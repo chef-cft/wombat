@@ -63,6 +63,10 @@ class Options
           opts.on("--parallel", "Build in parallel") do |opt|
             options.parallel = opt
           end
+
+          opts.on("-c CONFIG", "--config CONFIG", "Specify a different yaml config (default is wombat.yml)") do |opt|
+            options.wombat_yaml = opt
+          end
         },
         argv: templates_argv_proc
       },
