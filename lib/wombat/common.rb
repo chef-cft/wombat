@@ -142,13 +142,14 @@ module Common
   end
 
   def create_infranodes_json
-    if File.exists?("file/infranodes-info.json")
-      current_state = JSON(File.read('files/infranodes-info.json'))
+    infranodes_file_path = File.join(conf['packer_dir'], 'files/infranodes-info.json')
+    if File.exists?(infranodes_file_path)
+      current_state = JSON(File.read(infranodes_file_path))
     else
       current_state = nil
     end
     return if current_state == infranodes # yay idempotence
-    File.open("files/infranodes-info.json", 'w') do |f|
+    File.open(infranodes_file_path, 'w') do |f|
       f.puts JSON.pretty_generate(infranodes)
     end
   end
