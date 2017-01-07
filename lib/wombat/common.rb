@@ -122,6 +122,7 @@ module Common
       wombat['infranodes'].sort
     else
       puts 'No infranodes listed in wombat.yml'
+      {}
     end
   end
 
@@ -143,7 +144,7 @@ module Common
 
   def create_infranodes_json
     infranodes_file_path = File.join(conf['packer_dir'], 'files/infranodes-info.json')
-    if File.exists?(infranodes_file_path)
+    if File.exists?(infranodes_file_path) && is_valid_json?(infranodes_file_path)
       current_state = JSON(File.read(infranodes_file_path))
     else
       current_state = nil
@@ -264,6 +265,15 @@ module Common
       Dir.mkdir(conf['stack_dir'], 0755) unless File.exist?(conf['stack_dir'])
       File.open("#{conf['stack_dir']}/#{@demo}.json", 'w') { |file| file.puts rendered_cfn }
       banner("Generated: #{conf['stack_dir']}/#{@demo}.json")
+    end
+  end
+  
+  def is_valid_json?(file)
+    begin
+      JSON.parse(file)
+      true
+    rescue JSON::ParserError => e
+      false
     end
   end
 end
