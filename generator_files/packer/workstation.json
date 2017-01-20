@@ -42,6 +42,23 @@
       "user_data_file": "{{template_dir}}/scripts/bootstrap-aws.txt",
       "ami_name": "workstation-{{user `workstation-number`}}-{{timestamp}}"
     },
+        {
+      "type": "azure-arm",
+      "client_id": "{{user `azure_client_id`}}",
+      "client_secret": "{{user `azure_client_secret`}}",
+      "resource_group_name": "{{user `azure_resource_group`}}",
+      "storage_account": "{{user `azure_storage_account`}}",
+      "subscription_id": "{{user `azure_subscription_id`}}",
+      "tenant_id": "{{user `azure_tenant_id`}}",
+      "capture_container_name": "images",
+      "capture_name_prefix": "build-node",
+      "image_publisher": "MicrosoftWindowsServer",
+      "image_offer": "WindowsServer",
+      "image_sku": "2012-R2-Datacenter",
+      "location": "West US",
+      "vm_size": "Standard_D3_V2",
+      "os_type": "Linux"
+    },
     {
       "type": "googlecompute",
       "account_file": "{{user `gce_account_file`}}",
