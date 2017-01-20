@@ -58,6 +58,8 @@ aws:
     ubuntu: ami-8e0b9499
     windows: ami-1c7ad77c
     centos: ami-6d1c2007
+azure:
+  location: eastus
 gce:
   zone: us-east1-b
   project: wombat-gce
