@@ -43,7 +43,7 @@ class BuildRunner
         build_parallel(templates)
       end
     end
-    shell_out_command("say -v fred \"Wombat has made an #{build_hash.keys}\" for you") if audio?
+    shell_out_command("say -v fred \"Wombat has made an #{build_hash.keys.to_s}\" for you") if audio?
     banner("Build finished in #{duration(time.real)}.")
   end
 
@@ -51,7 +51,9 @@ class BuildRunner
 
   def build(template, options)
     bootstrap_aws if options['os'] == 'windows'
-    shell_out_command(packer_build_cmd(template, builder, options))
+    cmd = packer_build_cmd(template, builder, options)
+    puts cmd
+    shell_out_command(cmd)
   end
 
   def build_parallel(templates)
@@ -114,11 +116,11 @@ class BuildRunner
   def b_to_c(builder)
     case builder
     when 'amazon-ebs'
-      'aws'
+      cloud = 'aws'
     when 'googlecompute'
-      'gce'
+      cloud = 'gce'
     when 'azure-arm'
-      'azure'
+      cloud = 'azure'
     end
   end
 
@@ -207,6 +209,7 @@ class BuildRunner
     Dir.mkdir(conf['log_dir'], 0755) unless File.exist?(conf['log_dir'])
 
     cmd = %W(packer build #{conf['packer_dir']}/#{template}.json | tee #{log(template, builder, options)})
+
     cmd.insert(2, "--only #{builder}")
     cmd.insert(2, "--var org=#{wombat['org']}")
     cmd.insert(2, "--var domain=#{wombat['domain']}")
@@ -229,9 +232,10 @@ class BuildRunner
     cmd.insert(2, "--var workstations=#{wombat['workstations']['count']}")
     cmd.insert(2, "--var aws_source_ami=#{source_ami}")
     cmd.insert(2, "--var gce_source_image=#{source_image}")
-    cmd.insert(2, "--var azure_location=#{wombat['azure']['location']}")
     cmd.insert(2, "--var ssh_username=#{linux}")
+    cmd.insert(2, "--var azure_location=#{wombat['azure']['location']}")
     cmd.insert(2, "--debug") if @debug
     cmd.join(' ')
+
   end
 end
