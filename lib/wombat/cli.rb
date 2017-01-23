@@ -56,7 +56,7 @@ class Options
         parser: OptionParser.new { |opts|
           opts.banner = "Usage: #{NAME} build [options] TEMPLATE[ TEMPLATE ...]"
 
-          opts.on("-o BUILDER", "--only BUILDER", 'Only build the builds with the given comma-separated names') do |opt|
+          opts.on("-o BUILDER", "--only BUILDER", "State which builder should be used for generating images, e.g. amazon-ebs, azure-arm or googlecompute") do |opt|
             options.builder = opt
           end
 

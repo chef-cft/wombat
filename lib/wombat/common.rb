@@ -39,7 +39,7 @@ module Common
   end
 
   def lock
-    if !File.exist?('wombat.lock')
+    if !File.exists?('wombat.lock')
       warn('No wombat.lock found')
       return 1
     else
@@ -81,7 +81,7 @@ module Common
                                            'keyid:always,issuer:always')
 
     cert.sign(rsa_key, OpenSSL::Digest::SHA256.new)
-
+    
     Dir.mkdir(conf['key_dir'], 0755) unless File.exist?(conf['key_dir'])
 
     if File.exist?("#{conf['key_dir']}/#{hostname}.crt") && File.exist?("#{conf['key_dir']}/#{hostname}.key")
@@ -113,15 +113,17 @@ module Common
   end
 
   def parse_log(log, cloud)
-    regex = case cloud
-            when 'gcp'
-              'A disk image was created:'
-            when 'azure'
-              'OSDiskUri:'
-            else
-              "#{wombat['aws']['region']}:"
-            end
 
+    case cloud
+    when 'gcp'
+      regex = 'A disk image was created:'
+    when 'azure'
+      regex = 'OSDiskUri:'
+    else
+      regex = "#{wombat['aws']['region']}:"
+    end
+
+    # regex = cloud == 'gcp' ? "A disk image was created:" : "#{wombat['aws']['region']}:"
     File.read(log).split("\n").grep(/#{regex}/) {|x| x.split[1]}.last
   end
 
@@ -151,15 +153,18 @@ module Common
   end
 
   def create_infranodes_json
-    infranodes_file_path = File.join(conf['files_dir'], 'infranodes-info.json')
+    infranodes_file_path = File.join(conf['packer_dir'], 'files/infranodes-info.json')
     if File.exists?(infranodes_file_path) && is_valid_json?(infranodes_file_path)
       current_state = JSON(File.read(infranodes_file_path))
     else
       current_state = nil
     end
     return if current_state == infranodes # yay idempotence
-    File.open(infranodes_file_path, 'w') do |f|
-      f.puts JSON.pretty_generate(infranodes)
+
+    unless current_state.nil?
+      File.open(infranodes_file_path, 'w') do |f|
+        f.puts JSON.pretty_generate(infranodes)
+      end
     end
   end
 
@@ -170,7 +175,6 @@ module Common
   def conf
     conf = wombat['conf']
     conf ||= {}
-    conf['files_dir'] ||= 'files'
     conf['key_dir'] ||= 'keys'
     conf['cookbook_dir'] ||= 'cookbooks'
     conf['packer_dir'] ||= 'packer'
