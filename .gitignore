@@ -18,3 +18,6 @@ output
 bootstrap-aws.txt
 *.gem
 stacks/*
+.envrc
+.direnv
+.ruby-version
