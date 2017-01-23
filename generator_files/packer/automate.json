@@ -12,7 +12,7 @@
     "azure_storage_account": "{{env `AZURE_STORAGE_ACCOUNT`}}",
     "azure_resource_group": "{{env `AZURE_RESOURCE_GROUP`}}",
     "azure_object_id": "{{env `AZURE_OBJECT_ID`}}",
-    "azure_location": "eastus",
+    "azure_location": "",
 
     "gce_account_file": "{{env `GCE_ACCOUNT_FILE`}}",
     "gce_project_id": "{{env `GCE_PROJECT_ID`}}",

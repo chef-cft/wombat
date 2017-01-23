@@ -4,16 +4,21 @@
     "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
     "aws_region": "{{env `AWS_REGION`}}",
     "aws_source_ami": "ami-87c037e7",
+
     "azure_client_id": "{{env `AZURE_CLIENT_ID`}}",
     "azure_tenant_id": "{{env `AZURE_TENANT_ID`}}",
     "azure_client_secret": "{{env `AZURE_CLIENT_SECRET`}}",
     "azure_subscription_id": "{{env `AZURE_SUBSCRIPTION_ID`}}",
     "azure_storage_account": "{{env `AZURE_STORAGE_ACCOUNT`}}",
     "azure_resource_group": "{{env `AZURE_RESOURCE_GROUP`}}",
+    "azure_object_id": "{{env `AZURE_OBJECT_ID`}}",
+    "azure_location": "",
+
     "gce_account_file": "{{env `GCE_ACCOUNT_FILE`}}",
     "gce_project_id": "{{env `GCE_PROJECT_ID`}}",
     "gce_zone": "{{env `GCE_ZONE`}}",
     "gce_source_image": "windows-server-2012-r2-dc-v20160809",
+
     "build-nodes": "1",
     "chefdk": "stable-latest",
     "domain_prefix": "",
@@ -42,22 +47,28 @@
       "user_data_file": "{{template_dir}}/scripts/bootstrap-aws.txt",
       "ami_name": "workstation-{{user `workstation-number`}}-{{timestamp}}"
     },
-        {
+    {
       "type": "azure-arm",
+
+      "subscription_id": "{{user `azure_subscription_id`}}",
       "client_id": "{{user `azure_client_id`}}",
       "client_secret": "{{user `azure_client_secret`}}",
+      "tenant_id": "{{user `azure_tenant_id`}}",
       "resource_group_name": "{{user `azure_resource_group`}}",
       "storage_account": "{{user `azure_storage_account`}}",
-      "subscription_id": "{{user `azure_subscription_id`}}",
-      "tenant_id": "{{user `azure_tenant_id`}}",
+      "object_id": "{{user `azure_object_id`}}",
+
       "capture_container_name": "images",
-      "capture_name_prefix": "build-node",
+      "capture_name_prefix": "infranode-{{user `node-name`}}",
+
+      "os_type": "Windows",
       "image_publisher": "MicrosoftWindowsServer",
       "image_offer": "WindowsServer",
       "image_sku": "2012-R2-Datacenter",
-      "location": "West US",
-      "vm_size": "Standard_D3_V2",
-      "os_type": "Linux"
+
+      "location": "{{user `azure_location`}}",
+      "vm_size": "Standard_DS3_v2"
+
     },
     {
       "type": "googlecompute",
