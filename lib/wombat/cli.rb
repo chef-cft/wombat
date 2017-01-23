@@ -56,7 +56,7 @@ class Options
         parser: OptionParser.new { |opts|
           opts.banner = "Usage: #{NAME} build [options] TEMPLATE[ TEMPLATE ...]"
 
-          opts.on("-o BUILDER", "--only BUILDER", "Use config file") do |opt|
+          opts.on("-o BUILDER", "--only BUILDER", "State which builder should be used for generating images, e.g. amazon-ebs, azure-arm or googlecompute") do |opt|
             options.builder = opt
           end
 
@@ -66,6 +66,10 @@ class Options
 
           opts.on("-c CONFIG", "--config CONFIG", "Specify a different yaml config (default is wombat.yml)") do |opt|
             options.wombat_yaml = opt
+          end
+
+          opts.on("--debug", "Run in debug mode.") do |opt|
+            options.debug = opt
           end
         },
         argv: templates_argv_proc

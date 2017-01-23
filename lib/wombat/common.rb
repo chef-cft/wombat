@@ -160,8 +160,11 @@ module Common
       current_state = nil
     end
     return if current_state == infranodes # yay idempotence
-    File.open(infranodes_file_path, 'w') do |f|
-      f.puts JSON.pretty_generate(infranodes)
+
+    unless current_state.nil?
+      File.open(infranodes_file_path, 'w') do |f|
+        f.puts JSON.pretty_generate(infranodes)
+      end
     end
   end
 

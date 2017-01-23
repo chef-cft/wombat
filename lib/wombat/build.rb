@@ -14,6 +14,7 @@ class BuildRunner
     @builder = opts.builder.nil? ? "amazon-ebs" : opts.builder
     @parallel = opts.parallel
     @wombat_yml = opts.wombat_yml unless opts.wombat_yml.nil?
+    @debug = opts.debug
   end
 
   def start
@@ -50,7 +51,9 @@ class BuildRunner
 
   def build(template, options)
     bootstrap_aws if options['os'] == 'windows'
-    shell_out_command(packer_build_cmd(template, builder, options))
+    cmd = packer_build_cmd(template, builder, options)
+    puts cmd
+    shell_out_command(cmd)
   end
 
   def build_parallel(templates)
@@ -116,6 +119,8 @@ class BuildRunner
       cloud = 'aws'
     when 'googlecompute'
       cloud = 'gce'
+    when 'azure-arm'
+      cloud = 'azure'
     end
   end
 
@@ -204,6 +209,7 @@ class BuildRunner
     Dir.mkdir(conf['log_dir'], 0755) unless File.exist?(conf['log_dir'])
 
     cmd = %W(packer build #{conf['packer_dir']}/#{template}.json | tee #{log(template, builder, options)})
+
     cmd.insert(2, "--only #{builder}")
     cmd.insert(2, "--var org=#{wombat['org']}")
     cmd.insert(2, "--var domain=#{wombat['domain']}")
@@ -227,6 +233,9 @@ class BuildRunner
     cmd.insert(2, "--var aws_source_ami=#{source_ami}")
     cmd.insert(2, "--var gce_source_image=#{source_image}")
     cmd.insert(2, "--var ssh_username=#{linux}")
+    cmd.insert(2, "--var azure_location=#{wombat['azure']['location']}")
+    cmd.insert(2, "--debug") if @debug
     cmd.join(' ')
+
   end
 end
