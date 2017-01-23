@@ -39,7 +39,7 @@ module Common
   end
 
   def lock
-    if !File.exists?('wombat.lock')
+    if !File.exist?('wombat.lock')
       warn('No wombat.lock found')
       return 1
     else
@@ -81,7 +81,7 @@ module Common
                                            'keyid:always,issuer:always')
 
     cert.sign(rsa_key, OpenSSL::Digest::SHA256.new)
-    
+
     Dir.mkdir(conf['key_dir'], 0755) unless File.exist?(conf['key_dir'])
 
     if File.exist?("#{conf['key_dir']}/#{hostname}.crt") && File.exist?("#{conf['key_dir']}/#{hostname}.key")
@@ -143,7 +143,7 @@ module Common
   end
 
   def create_infranodes_json
-    infranodes_file_path = File.join(conf['packer_dir'], 'files/infranodes-info.json')
+    infranodes_file_path = File.join(conf['files_dir'], 'infranodes-info.json')
     if File.exists?(infranodes_file_path) && is_valid_json?(infranodes_file_path)
       current_state = JSON(File.read(infranodes_file_path))
     else
@@ -162,6 +162,7 @@ module Common
   def conf
     conf = wombat['conf']
     conf ||= {}
+    conf['files_dir'] ||= 'files'
     conf['key_dir'] ||= 'keys'
     conf['cookbook_dir'] ||= 'cookbooks'
     conf['packer_dir'] ||= 'packer'

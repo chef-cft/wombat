@@ -42,7 +42,7 @@ class BuildRunner
         build_parallel(templates)
       end
     end
-    shell_out_command("say -v fred \"Wombat has made an #{build_hash.keys.to_s}\" for you") if audio?
+    shell_out_command("say -v fred \"Wombat has made an #{build_hash.keys}\" for you") if audio?
     banner("Build finished in #{duration(time.real)}.")
   end
 
@@ -113,9 +113,11 @@ class BuildRunner
   def b_to_c(builder)
     case builder
     when 'amazon-ebs'
-      cloud = 'aws'
+      'aws'
     when 'googlecompute'
-      cloud = 'gce'
+      'gce'
+    when 'azure-arm'
+      'azure'
     end
   end
 
