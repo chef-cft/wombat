@@ -14,6 +14,7 @@ class BuildRunner
     @builder = opts.builder.nil? ? "amazon-ebs" : opts.builder
     @parallel = opts.parallel
     @wombat_yml = opts.wombat_yml unless opts.wombat_yml.nil?
+    @debug = opts.debug
   end
 
   def start
@@ -228,7 +229,9 @@ class BuildRunner
     cmd.insert(2, "--var workstations=#{wombat['workstations']['count']}")
     cmd.insert(2, "--var aws_source_ami=#{source_ami}")
     cmd.insert(2, "--var gce_source_image=#{source_image}")
+    cmd.insert(2, "--var azure_location=#{wombat['azure']['location']}")
     cmd.insert(2, "--var ssh_username=#{linux}")
+    cmd.insert(2, "--debug") if @debug
     cmd.join(' ')
   end
 end

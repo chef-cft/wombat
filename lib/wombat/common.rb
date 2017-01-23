@@ -113,7 +113,15 @@ module Common
   end
 
   def parse_log(log, cloud)
-    regex = cloud == 'gcp' ? "A disk image was created:" : "#{wombat['aws']['region']}:"
+    regex = case cloud
+            when 'gcp'
+              'A disk image was created:'
+            when 'azure'
+              'OSDiskUri:'
+            else
+              "#{wombat['aws']['region']}:"
+            end
+
     File.read(log).split("\n").grep(/#{regex}/) {|x| x.split[1]}.last
   end
 
@@ -183,7 +191,8 @@ module Common
   end
 
   def logs
-    Dir.glob("#{conf['log_dir']}/#{cloud}*.log").reject { |l| !l.match(wombat['linux']) }
+    path = "#{conf['log_dir']}/#{cloud}*.log"
+    Dir.glob(path).reject { |l| !l.match(wombat['linux']) }
   end
 
   def calculate_templates
@@ -201,7 +210,22 @@ module Common
   def update_lock(cloud)
     copy = {}
     copy = wombat
-    region = copy[cloud]['region']
+
+    # Check that the copy contains a key for the named cloud
+    unless copy.key?(cloud)
+      throw "The Cloud '#{cloud}' is not specified in Wombat"
+    end
+
+    # Determine the region/location/zone for the specific cloud
+    case cloud
+    when 'aws'
+      region = copy['aws']['region']
+    when 'azure'
+      region = copy['azure']['location']
+    when 'gce'
+      region = copy['gce']['zone']
+    end
+
     linux = copy['linux']
     copy['amis'] = { region => {} }
 
@@ -239,30 +263,53 @@ module Common
     if lock == 1
       warn('No lock - skipping template creation')
     else
-      region = lock['aws']['region']
-      @chef_server_ami = lock['amis'][region]['chef-server']
-      @automate_ami = lock['amis'][region]['automate']
-      @compliance_ami = lock['amis'][region]['compliance']
-      @build_nodes = lock['build-nodes']['count'].to_i
-      @build_node_ami = {}
-      1.upto(@build_nodes) do |i|
-        @build_node_ami[i] = lock['amis'][region]['build-node'][i.to_s]
+
+      # Determine the region/location/zone for the specific cloud
+      case cloud
+      when 'aws'
+        region = lock['aws']['region']
+        template_file = "cfn.json.erb"
+        @chef_server_ami = lock['amis'][region]['chef-server']
+        @automate_ami = lock['amis'][region]['automate']
+        @compliance_ami = lock['amis'][region]['compliance']
+        @availability_zone = lock['aws']['az']
+        @iam_roles = lock['aws']['iam_roles']
+      when 'azure'
+        region = lock['azure']['location']
+        template_file = "arm.json.erb"
+        @chefServerImageURI = lock['amis'][region]['chef-server']
+        @automateServerImageUri = lock['amis'][region]['automate']
+        @complianceServerImageUri = lock['amis'][region]['compliance']
+      when 'gce'
+        region = lock['gce']['zone']
       end
+
+      if lock['amis'][region].key?('build-node')
+        @build_nodes = lock['build-nodes']['count'].to_i
+        @build_node_ami = {}
+        1.upto(@build_nodes) do |i|
+          @build_node_ami[i] = lock['amis'][region]['build-node'][i.to_s]
+        end
+      end
+
       @infra = {}
       infranodes.each do |name, _rl|
         @infra[name] = lock['amis'][region]['infranodes'][name]
       end
-      @workstations = lock['workstations']['count'].to_i
-      @workstation_ami = {}
-      1.upto(@workstations) do |i|
-        @workstation_ami[i] = lock['amis'][region]['workstation'][i.to_s]
+
+      if lock['amis'][region].key?('workstation')
+        @workstations = lock['workstations']['count'].to_i
+        @workstation_ami = {}
+        1.upto(@workstations) do |i|
+          @workstation_ami[i] = lock['amis'][region]['workstation'][i.to_s]
+        end
       end
-      @availability_zone = lock['aws']['az']
-      @iam_roles = lock['aws']['iam_roles']
+
       @demo = lock['name']
       @version = lock['version']
       @ttl = lock['ttl']
-      rendered_cfn = ERB.new(File.read("#{conf['template_dir']}/cfn.json.erb"), nil, '-').result(binding)
+
+      rendered_cfn = ERB.new(File.read("#{conf['template_dir']}/#{template_file}"), nil, '-').result(binding)
       Dir.mkdir(conf['stack_dir'], 0755) unless File.exist?(conf['stack_dir'])
       File.open("#{conf['stack_dir']}/#{@demo}.json", 'w') { |file| file.puts rendered_cfn }
       banner("Generated: #{conf['stack_dir']}/#{@demo}.json")
