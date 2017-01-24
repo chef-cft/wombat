@@ -30,7 +30,7 @@ module Common
   def wombat
     @wombat_yml ||= ENV['WOMBAT_YML'] unless ENV['WOMBAT_YML'].nil?
     @wombat_yml ||= 'wombat.yml'
-    if !File.exists?(@wombat_yml)
+    if !File.exist?(@wombat_yml)
       warn('No wombat.yml found, copying example')
       gen_dir = "#{File.expand_path("../..", File.dirname(__FILE__))}/generator_files"
       FileUtils.cp_r "#{gen_dir}/wombat.yml", Dir.pwd
@@ -277,9 +277,9 @@ module Common
       when 'azure'
         region = lock['azure']['location']
         template_file = "arm.json.erb"
-        @chefServerImageURI = lock['amis'][region]['chef-server']
-        @automateServerImageUri = lock['amis'][region]['automate']
-        @complianceServerImageUri = lock['amis'][region]['compliance']
+        @chef_server_uri = lock['amis'][region]['chef-server']
+        @automate_uri = lock['amis'][region]['automate']
+        @compliance_uri = lock['amis'][region]['compliance']
       when 'gce'
         region = lock['gce']['zone']
       end
@@ -315,7 +315,7 @@ module Common
       banner("Generated: #{conf['stack_dir']}/#{@demo}.json")
     end
   end
-  
+
   def is_valid_json?(file)
     begin
       JSON.parse(file)
