@@ -56,13 +56,16 @@
       "storage_account": "{{user `azure_storage_account`}}",
       "object_id": "{{user `azure_object_id`}}",
       "capture_container_name": "images",
-      "capture_name_prefix": "infranode-{{user `node-name`}}",
+      "capture_name_prefix": "automate-infranode-{{user `node-name`}}-{{timestamp}}",
       "os_type": "Windows",
       "image_publisher": "MicrosoftWindowsServer",
       "image_offer": "WindowsServer",
       "image_sku": "2012-R2-Datacenter",
       "location": "{{user `azure_location`}}",
-      "vm_size": "Standard_DS3_v2"
+      "vm_size": "Standard_DS3_v2",
+      "winrm_port": 5985,
+      "winrm_username": "{{user `winrm_username`}}",
+      "winrm_password": "{{user `winrm_password`}}",
     },
     {
       "type": "googlecompute",

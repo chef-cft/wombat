@@ -25,7 +25,8 @@
     "enterprise": "mammals",
     "node-name": "acceptance",
     "org": "marsupials",
-    "ssh_username": "ubuntu",
+    "ssh_username": "{{user `ssh_username`}}",
+    "ssh_pty": true,
     "workstations": "1"
   },
 
