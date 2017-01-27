@@ -61,7 +61,6 @@
       "image_sku": "2012-R2-Datacenter",
       "location": "{{user `azure_location`}}",
       "vm_size": "Standard_DS3_v2",
-
       "communicator": "winrm",
       "winrm_use_ssl": "true",
       "winrm_insecure": "true",
