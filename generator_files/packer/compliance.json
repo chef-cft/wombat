@@ -122,7 +122,8 @@
                 "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"
             ],
             "inline_shebang": "/bin/sh -x",
-            "type": "shell"
+            "type": "shell",
+            "skip_clean": true
         }
     ]
 }
