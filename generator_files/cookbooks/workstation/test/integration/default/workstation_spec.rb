@@ -28,12 +28,8 @@ describe command('choco list -l git-credential-manager-for-windows') do
   its(:stdout) { should match(/1 packages installed\./) }
 end
 
-describe command('choco list -l visualstudiocode') do
-  its(:stdout) { should match(/1 packages installed\./) }
-end
-
-describe command('choco list -l poshgit') do
-  its(:stdout) { should match(/1 packages installed\./) }
+describe command('Get-Module -ListAvailable -Name posh-git') do
+  its(:stdout) { should match(/Script     0.7.0      posh-git/) }
 end
 
 describe file('C:\Users\Administrator\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1') do
