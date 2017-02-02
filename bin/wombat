@@ -17,7 +17,7 @@ $LOAD_PATH.unshift File.join(File.dirname(__FILE__), %w[.. lib])
 require "wombat/cli"
 
 begin
-  Runner.new(Options.parse(ARGV)).start
+  Wombat::Runner.new(Wombat::Options.parse(ARGV)).start
 rescue => ex
   $stderr.puts ">>> #{ex.message}"
   exit(($? && $?.exitstatus) || 99)

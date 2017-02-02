@@ -3,27 +3,28 @@ require 'aws-sdk'
 require 'ms_rest_azure'
 require 'azure_mgmt_resources'
 
-class DeployRunner
-  include Common
+module Wombat
+  class DeployRunner
+    include Wombat::Common
 
-  attr_reader :stack, :cloud, :lock_opt, :template_opt
+    attr_reader :stack, :cloud, :lock_opt, :template_opt
 
-  def initialize(opts)
-    @stack = opts.stack
-    @cloud = opts.cloud.nil? ? "aws" : opts.cloud
-    @lock_opt = opts.update_lock
-    @template_opt = opts.update_template
-  end
+    def initialize(opts)
+      @stack = opts.stack
+      @cloud = opts.cloud.nil? ? "aws" : opts.cloud
+      @lock_opt = opts.update_lock
+      @template_opt = opts.update_template
+    end
 
-  def start
-    update_lock(cloud) if lock_opt
-    update_template(cloud) if template_opt
-    create_stack(stack)
-  end
+    def start
+      update_lock(cloud) if lock_opt
+      update_template(cloud) if template_opt
+      create_stack(stack)
+    end
 
-  private
+    private
 
-  def create_stack(stack)
+    def create_stack(stack)
 
     # Deploy the template to the correct stack
     case @cloud
@@ -80,6 +81,7 @@ class DeployRunner
       response = resource_management_client.deployments.create_or_update(resource_group, deployment_name, deployment)
 
     end
-  end
+    end
 
+  end
 end
