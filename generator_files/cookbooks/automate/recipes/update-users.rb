@@ -34,7 +34,7 @@ ruby_block "Create Delivery Users" do
 
       # Set Password
       if info['password']
-        delivery_api.post("/internal-users/#{username}/reset-password", { "password" => info['password'] })
+        delivery_api.post("/internal-users/#{username}/change-password", { "password" => info['password'] })
       end
     end
   end
