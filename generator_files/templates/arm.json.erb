@@ -52,34 +52,34 @@
     "network": {
       "virtual": {
         "name": "ChefAutomate-VNET",
-        "addressPrefix": "10.0.0.0/24"
+        "addressPrefix": "172.31.54.0/24"
       },
       "subnet": {
         "name": "ChefAutomate-Subnet",
-        "addressPrefix": "10.0.0.0/24"
+        "addressPrefix": "172.31.54.0/24"
       },
       "ipAddresses": {
         "chef": {
           "internal": {
-            "address": "10.0.0.4",
+            "address": "172.31.54.10",
             "allocationMethod": "static"
           }
         },
         "automate": {
           "internal": {
-            "address": "10.0.0.5",
+            "address": "172.31.54.11",
             "allocationMethod": "static"
           }
         },
         "compliance": {
           "internal": {
-            "address": "10.0.0.6",
+            "address": "172.31.54.12",
             "allocationMethod": "static"
           }
         },
         "workstation": {
           "internal": {
-            "addressPrefix": "10.0.0.",
+            "addressPrefix": "172.31.54.",
             "allocationMethod": "static"
           },
           "external": {
@@ -89,13 +89,13 @@
         },
         "buildnode": {
           "internal": {
-            "addressPrefix": "10.0.0.",
+            "addressPrefix": "172.31.54.",
             "allocationMethod": "static"
           }
         },
         "infranode": {
           "internal": {
-            "addressPrefix": "10.0.0.",
+            "addressPrefix": "172.31.54.",
             "allocationMethod": "static"
           }
         }
