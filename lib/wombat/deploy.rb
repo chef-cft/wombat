@@ -62,7 +62,6 @@ module Wombat
       tenant_id = ENV['AZURE_TENANT_ID']
       client_id = ENV['AZURE_CLIENT_ID']
       client_secret = ENV['AZURE_CLIENT_SECRET']
-      resource_group = ENV['AZURE_RESOURCE_GROUP']
 
       token_provider = MsRestAzure::ApplicationTokenProvider.new(tenant_id, client_id, client_secret)
       azure_conn = MsRest::TokenCredentials.new(token_provider)
@@ -78,7 +77,7 @@ module Wombat
       deployment.properties.template = JSON.parse(template_file)
 
       # Perform the deployment to the named resource group
-      response = resource_management_client.deployments.create_or_update(resource_group, deployment_name, deployment)
+      response = resource_management_client.deployments.create_or_update(stack, deployment_name, deployment)
 
     end
     end

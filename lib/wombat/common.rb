@@ -218,6 +218,7 @@ module Wombat
           @iam_roles = lock['aws']['iam_roles']
         when 'azure'
           region = lock['azure']['location']
+          @storage_account = lock['azure']['storage_account']
           template_file = "arm.json.erb"
           @chef_server_uri = lock['amis'][region]['chef-server']
           @automate_uri = lock['amis'][region]['automate']
