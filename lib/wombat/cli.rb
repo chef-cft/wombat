@@ -72,6 +72,10 @@ module Wombat
             opts.on("--debug", "Run in debug mode.") do |opt|
               options.debug = opt
             end
+
+            opts.on("--novendorcookbooks", "Do not vendor cookbooks") do |opt|
+              options.vendor = opt
+            end
           },
           argv: templates_argv_proc
         },

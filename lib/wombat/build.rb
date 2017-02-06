@@ -3,6 +3,9 @@ require 'wombat/common'
 require 'wombat/crypto'
 require 'mixlib/shellout'
 require 'parallel'
+require 'ms_rest_azure'
+require 'azure_mgmt_resources'
+require 'azure_mgmt_storage'
 
 module Wombat
   class BuildRunner
@@ -17,6 +20,7 @@ module Wombat
       @parallel = opts.parallel
       @wombat_yml = opts.wombat_yml unless opts.wombat_yml.nil?
       @debug = opts.debug
+      @no_vendor = opts.vendor
     end
 
     def start
@@ -30,11 +34,14 @@ module Wombat
       banner("Generating SSH keypair (if necessary)")
       gen_ssh_key
 
+      # If running on azure ensure that the resource group and storage account exist
+      prepare_azure if builder == "azure-arm"
+
       time = Benchmark.measure do
         banner("Starting build for templates: #{templates}")
         aws_region_check if builder == 'amazon-ebs'
         templates.each do |t|
-          vendor_cookbooks(t)
+          vendor_cookbooks(t) unless @no_vendor
         end
 
         if parallel.nil?
@@ -51,10 +58,68 @@ module Wombat
 
     private
 
+    def prepare_azure()
+
+      # Ensure that a storage acocunt has been specified, if it has not error
+      if wombat['azure']['storage_account'].nil?
+        puts "\nA storage account name must be specified in wombat.yml, e.g.\n  openssl rand -base64 12\nEnsure all lowercase and no special characters"
+        exit
+      end
+
+      # Using environment variables connect to azure
+      subscription_id = ENV['AZURE_SUBSCRIPTION_ID']
+      tenant_id = ENV['AZURE_TENANT_ID']
+      client_id = ENV['AZURE_CLIENT_ID']
+      client_secret = ENV['AZURE_CLIENT_SECRET']
+
+      token_provider = MsRestAzure::ApplicationTokenProvider.new(tenant_id, client_id, client_secret)
+      azure_conn = MsRest::TokenCredentials.new(token_provider)
+
+      # Create a resource to create the resource group if it does not exist
+      resource_management_client = Azure::ARM::Resources::ResourceManagementClient.new(azure_conn)
+      resource_management_client.subscription_id = subscription_id
+
+      # Create a storage account client to create the stoarge account if it does not exist
+      storage_management_client = Azure::ARM::Storage::StorageManagementClient.new(azure_conn)
+      storage_management_client.subscription_id = subscription_id
+
+      # Check that the resource group exists
+      banner(format("Checking for resource group: %s", wombat['name']))
+      status = resource_management_client.resource_groups.check_existence(wombat['name'])
+      if status
+        puts "resource group already exists"
+      else
+        puts format("creating new resource group in '%s'", wombat['azure']['location'])
+
+        # Set the parameters for the resource group
+        resource_group = Azure::ARM::Resources::Models::ResourceGroup.new
+        resource_group.location = wombat['azure']['location']
+
+        # Create the resource group
+        resource_management_client.resource_groups.create_or_update(wombat['name'], resource_group)
+      end
+
+      # Check to see if the storage account already exists
+      banner(format("Checking for storage account: %s", wombat['azure']['storage_account']))
+
+      # Create the storage account in the resource group
+      # NOTE:  This should have a test to see if the storage account exists and it available however the
+      # Azure Ruby SDK has an issue with the check_name_availability method and comes back with an error
+      # This would normally be done through an ARM template, but in this case needs to exist before Packer can run
+      storage_account = Azure::ARM::Storage::Models::StorageAccountCreateParameters.new
+      storage_account.location = wombat['azure']['location']
+      sku = Azure::ARM::Storage::Models::Sku.new
+      sku.name = 'Standard_LRS'
+      storage_account.sku = sku
+      storage_account.kind = Azure::ARM::Storage::Models::Kind::Storage
+
+      storage_management_client.storage_accounts.create(wombat['name'], wombat['azure']['storage_account'], storage_account)
+
+    end
+
     def build(template, options)
       bootstrap_aws if options['os'] == 'windows'
-      #shell_out_command(packer_build_cmd(template, builder, options))
-      puts packer_build_cmd(template, builder, options)
+      shell_out_command(packer_build_cmd(template, builder, options))
     end
 
     def build_parallel(templates)
@@ -234,6 +299,8 @@ module Wombat
       cmd.insert(2, "--var gce_source_image=#{source_image}")
       cmd.insert(2, "--var azure_location=#{wombat['azure']['location']}")
       cmd.insert(2, "--var ssh_username=#{linux}")
+      cmd.insert(2, "--var azure_resource_group=#{wombat['name']}")
+      cmd.insert(2, "--var azure_storage_account=#{wombat['azure']['storage_account']}")
       cmd.insert(2, "--debug") if @debug
       cmd.join(' ')
     end

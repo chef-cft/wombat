@@ -59,7 +59,8 @@ aws:
     windows: ami-1c7ad77c
     centos: ami-6d1c2007
 azure:
-  location: westus
+  location: eastus
+  storage_account: 
 gce:
   zone: us-east1-b
   project: wombat-gce
