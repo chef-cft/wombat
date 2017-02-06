@@ -17,6 +17,7 @@ module Wombat
       @parallel = opts.parallel
       @wombat_yml = opts.wombat_yml unless opts.wombat_yml.nil?
       @debug = opts.debug
+      @no_vendor = opts.vendor
     end
 
     def start
@@ -34,7 +35,7 @@ module Wombat
         banner("Starting build for templates: #{templates}")
         aws_region_check if builder == 'amazon-ebs'
         templates.each do |t|
-          vendor_cookbooks(t)
+          vendor_cookbooks(t) unless @no_vendor
         end
 
         if parallel.nil?
@@ -53,8 +54,7 @@ module Wombat
 
     def build(template, options)
       bootstrap_aws if options['os'] == 'windows'
-      #shell_out_command(packer_build_cmd(template, builder, options))
-      puts packer_build_cmd(template, builder, options)
+      shell_out_command(packer_build_cmd(template, builder, options))
     end
 
     def build_parallel(templates)
@@ -234,6 +234,8 @@ module Wombat
       cmd.insert(2, "--var gce_source_image=#{source_image}")
       cmd.insert(2, "--var azure_location=#{wombat['azure']['location']}")
       cmd.insert(2, "--var ssh_username=#{linux}")
+      cmd.insert(2, "--var azure_resource_group=#{wombat['name']}")
+      cmd.insert(2, "--var azure_storage_account=#{wombat['azure']['storage_account']}")
       cmd.insert(2, "--debug") if @debug
       cmd.join(' ')
     end
