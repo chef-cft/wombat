@@ -66,7 +66,7 @@ module Wombat
             end
 
             opts.on("-c CONFIG", "--config CONFIG", "Specify a different yaml config (default is wombat.yml)") do |opt|
-              options.wombat_yaml = opt
+              options.wombat_yml = opt
             end
 
             opts.on("--debug", "Run in debug mode.") do |opt|
