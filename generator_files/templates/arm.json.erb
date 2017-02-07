@@ -344,7 +344,7 @@
             "createOption": "FromImage",
             "caching": "ReadWrite",
             "image": {
-              "uri": "<%= name %>"
+              "uri": "<%= _uri %>"
             },
             "vhd": {
               "uri": "[concat('https://', variables('sa').name, '.blob.core.windows.net/', variables('sa').container, '/infranode-<%= name %>-osdisk.vhd')]"
