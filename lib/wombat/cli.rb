@@ -66,7 +66,7 @@ module Wombat
             end
 
             opts.on("-c CONFIG", "--config CONFIG", "Specify a different yaml config (default is wombat.yml)") do |opt|
-              options.wombat_yaml = opt
+              options.wombat_yml = opt
             end
 
             opts.on("--debug", "Run in debug mode.") do |opt|
@@ -105,6 +105,10 @@ module Wombat
 
             opts.on("--update-template", "Update template") do |opt|
               options.update_template = opt
+            end
+
+            opts.on("--async", "Deploy stack asynchronously, e.g. do not block command line.  Only applies to Azure deployments.") do |opt|
+              options.azure_async = opt
             end
           },
           argv: stack_argv_proc
@@ -148,6 +152,10 @@ module Wombat
 
             opts.on("-c CLOUD", "--cloud CLOUD", "Select cloud") do |opt|
               options.cloud = opt
+            end
+
+            opts.on("--config CONFIG", "Specify a different yaml config (default is wombat.yml)") do |opt|
+              options.wombat_yml = opt
             end
           },
           argv: file_argv_proc

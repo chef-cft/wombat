@@ -26,7 +26,6 @@
         "node-name": "acceptance",
         "org": "marsupials",
         "ssh_username": "{{user `ssh_username`}}",
-        "ssh_pty": true,
         "workstations": "1"
     },
     "builders": [
@@ -59,7 +58,9 @@
             "image_offer": "UbuntuServer",
             "image_sku": "14.04.5-LTS",
             "location": "{{user `azure_location`}}",
-            "vm_size": "Standard_DS3_v2"
+            "vm_size": "Standard_DS3_v2",
+            "ssh_username": "{{user `ssh_username`}}",
+            "ssh_pty": true
         },
         {
             "type": "googlecompute",

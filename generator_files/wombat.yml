@@ -10,6 +10,7 @@ certs: ['automate', 'chef', 'compliance']
 ttl: 6
 linux: ubuntu
 version: 0.2.1
+owner:
 products:
   chef: stable-latest
   chef-server: stable-latest

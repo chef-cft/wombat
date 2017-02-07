@@ -95,6 +95,19 @@ module Wombat
         resource_group = Azure::ARM::Resources::Models::ResourceGroup.new
         resource_group.location = wombat['azure']['location']
 
+        # Create hash to be used as tags on the resource group
+        tags = {
+          InUse: "true"
+        }
+
+        # If an owner has been sepcified in the wombat file then add this as a tag
+        if wombat.key?('owner') && !wombat['owner'].nil?
+          tags[:owner] = wombat['owner']
+        end
+
+        # add the tags hash to the parameters
+        resource_group.tags = tags
+
         # Create the resource group
         resource_management_client.resource_groups.create_or_update(wombat['name'], resource_group)
       end

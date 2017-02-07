@@ -307,7 +307,7 @@
             "name": "ipconfig1",
             "properties": {
               "privateIPAllocationMethod": "[variables('network').ipAddresses.infranode.internal.allocationMethod]",
-              "privateIPAddress": "[concat(variables('network').ipAddresses.infranode.internal.addressPrefix, '<%= 101 + @infra.keys.find_index(name) %>']",
+              "privateIPAddress": "[concat(variables('network').ipAddresses.infranode.internal.addressPrefix, '<%= 101 + @infra.keys.find_index(name) %>')]",
               "subnet": {
                 "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('network').virtual.name), '/subnets/', variables('network').subnet.name)]"
               }
@@ -344,7 +344,7 @@
             "createOption": "FromImage",
             "caching": "ReadWrite",
             "image": {
-              "uri": "<%= name %>"
+              "uri": "<%= _uri %>"
             },
             "vhd": {
               "uri": "[concat('https://', variables('sa').name, '.blob.core.windows.net/', variables('sa').container, '/infranode-<%= name %>-osdisk.vhd')]"
