@@ -131,7 +131,8 @@
             ],
             "type": "windows-shell",
             "inline": [
-                "C:\\Windows\\System32\\sysprep\\sysprep.exe /quiet /generalize /oobe /shutdown"
+                "cd C:\\Windows\\System32\\sysprep",
+                "sysprep.exe /quiet /generalize /oobe /shutdown"
             ]
         }
     ]
