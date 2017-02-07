@@ -149,6 +149,10 @@ module Wombat
             opts.on("-c CLOUD", "--cloud CLOUD", "Select cloud") do |opt|
               options.cloud = opt
             end
+
+            opts.on("--config CONFIG", "Specify a different yaml config (default is wombat.yml)") do |opt|
+              options.wombat_yml = opt
+            end
           },
           argv: file_argv_proc
         }
