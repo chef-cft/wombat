@@ -9,6 +9,7 @@ module Wombat
     def initialize(opts)
       @cloud = opts.cloud.nil? ? "aws" : opts.cloud
       @update_file = opts.file.nil? ? "all" : opts.file
+      @wombat_yml = opts.wombat_yml
     end
 
     def start

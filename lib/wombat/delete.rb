@@ -51,7 +51,7 @@ module Wombat
 
         resource_management_client.resource_groups.begin_delete(stack)
 
-
+        info "Destroy operation accepted and will continue in the background."
       end
     end
   end
