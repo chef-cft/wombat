@@ -97,10 +97,11 @@ module Wombat
 
         # Create hash to be used as tags on the resource group
         tags = {
-          InUse: "true"
+          InUse: "true",
+          owner: ENV['USER']
         }
 
-        # If an owner has been sepcified in the wombat file then add this as a tag
+        # If an owner has been specified in the wombat file override the owner value
         if wombat.key?('owner') && !wombat['owner'].nil?
           tags[:owner] = wombat['owner']
         end
