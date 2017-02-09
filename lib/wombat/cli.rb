@@ -9,6 +9,7 @@ require 'wombat/output'
 require 'wombat/delete'
 require 'wombat/update'
 require 'wombat/init'
+require 'wombat/latest'
 
 module Wombat
   class Options
@@ -30,6 +31,7 @@ module Wombat
           init         :   create wombat skeleton project
           list         :   list all templates in project
           outputs      :   get outputs for a stack
+          latest       :   search for latest images
           update       :   update lock and/or cloud template
         COMMANDS
       end
@@ -142,6 +144,17 @@ module Wombat
           class: OutputRunner,
           parser: OptionParser.new { |opts|
             opts.banner = "Usage: #{NAME} outputs [TEMPLATE ...]"
+          },
+          argv: stack_argv_proc
+        },
+        latest: {
+          class: LatestRunner,
+          parser: OptionParser.new { |opts|
+            opts.banner = "Usage: #{NAME} search"
+
+            opts.on("-c CLOUD", "--cloud CLOUD", "Select cloud") do |opt|
+              options.cloud = opt
+            end
           },
           argv: stack_argv_proc
         },
