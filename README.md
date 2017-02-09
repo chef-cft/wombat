@@ -1,5 +1,5 @@
 [![Gem Version](https://badge.fury.io/rb/wombat-cli.svg)](http://badge.fury.io/rb/wombat-cli)
-
+[![Build Status](https://travis-ci.org/chef-cft/wombat-cli.svg?branch=master)](https://travis-ci.org/chef-cft/wombat-cli)
 [![Stories in Ready](https://badge.waffle.io/chef-cft/wombat.png?label=ready&title=Ready)](https://waffle.io/chef-cft/wombat)
 
 # Wombat
@@ -26,7 +26,7 @@ Follow the instructions at https://docs.chef.io/install_dk.html to install and c
 
 ##### Install Packer
 
-Downloads are here: https://www.packer.io/downloads.html. The binary must be in $PATH for `wombat build` 
+Downloads are here: https://www.packer.io/downloads.html. The binary must be in $PATH for `wombat build`
 
 ##### Download your Automate license key
 Automate requires a valid license to activate successfully. **If you do
