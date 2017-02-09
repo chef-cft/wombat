@@ -267,25 +267,23 @@ module Wombat
       return nil
     end
 
-    def packer_build_cmd(template, builder, options)
-      create_infranodes_json
-
+    def base_image(template, builder)
+      cloud = b_to_c(builder)
       if template =~ /workstation/
-        source_ami = wombat['aws']['source_ami']['windows']
-        source_image = wombat['gce']['source_image']['windows']
+        wombat[cloud]['source_image']['windows']
       elsif template =~ /infranodes/
         if options['os'] == 'windows'
-          source_ami = wombat['aws']['source_ami']['windows']
-          source_image = wombat['gce']['source_image']['windows']
+          wombat[cloud]['source_image']['windows']
         else
-          source_ami = wombat['aws']['source_ami'][linux]
-          source_image = wombat['gce']['source_image'][linux]
+          wombat[cloud]['source_image'][linux]
         end
       else
-        source_ami = wombat['aws']['source_ami'][linux]
-        source_image = wombat['gce']['source_image'][linux]
+        wombat[cloud]['source_image'][linux]
       end
+    end
 
+    def packer_build_cmd(template, builder, options)
+      create_infranodes_json
       Dir.mkdir(conf['log_dir'], 0755) unless File.exist?(conf['log_dir'])
 
       cmd = %W(packer build #{conf['packer_dir']}/#{template}.json | tee #{log(template, builder, options)})
@@ -309,8 +307,8 @@ module Wombat
       cmd.insert(2, "--var winrm_username=Administrator")
       cmd.insert(2, "--var workstation-number=#{options['workstation-number']}") if template =~ /workstation/
       cmd.insert(2, "--var workstations=#{wombat['workstations']['count']}")
-      cmd.insert(2, "--var aws_source_ami=#{source_ami}")
-      cmd.insert(2, "--var gce_source_image=#{source_image}")
+      cmd.insert(2, "--var aws_source_ami=#{base_image(template, builder)}") if builder =~ /amazon-ebs/
+      cmd.insert(2, "--var gce_source_image=#{base_image(template, builder)}") if builder =~ /googlecompute/
       cmd.insert(2, "--var azure_location=#{wombat['azure']['location']}")
       cmd.insert(2, "--var ssh_username=#{linux}")
       cmd.insert(2, "--var azure_resource_group=#{wombat['name']}")

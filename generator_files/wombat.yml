@@ -55,13 +55,13 @@ aws:
   # This optional key presumes these IAM roles are already created
   # and are only applied to workstations currently
   # iam_roles: ['iam_role', 'iam_roles_buddy']
-  source_ami:
+  source_image:
     ubuntu: ami-8e0b9499
     windows: ami-1c7ad77c
     centos: ami-6d1c2007
 azure:
   location: eastus
-  storage_account: 
+  storage_account:
 gce:
   zone: us-east1-b
   project: wombat-gce
