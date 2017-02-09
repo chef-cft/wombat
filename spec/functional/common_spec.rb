@@ -2,8 +2,8 @@ require "wombat/common"
 require "yaml"
 
 describe "Common" do
-  let(:common) do 
-    klass = Class.new { include Common }
+  let(:common) do
+    klass = Class.new { include Wombat::Common }
 
     return klass.new
   end
