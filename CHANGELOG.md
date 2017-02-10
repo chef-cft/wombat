@@ -1,5 +1,19 @@
 # Change Log
 
+## [v0.4.0](https://github.com/chef-cft/wombat/tree/v0.4.0) (2017-02-10)
+[Full Changelog](https://github.com/chef-cft/wombat/compare/v0.3.4...v0.4.0)
+
+**Implemented enhancements:**
+- Decrease data\_collector timeout during build [\#262](https://github.com/chef-cft/wombat/issues/262)
+- Add new command`latest` for getting latest cloud images [\#289](https://github.com/chef-cft/wombat/pull/289) ([cheeseplus](https://github.com/cheeseplus))
+- add cli option, env variable, and default wombat.yml [\#266](https://github.com/chef-cft/wombat/pull/266) ([andrewelizondo](https://github.com/andrewelizondo))
+- Fixes for changed automate api [\#283](https://github.com/chef-cft/wombat/pull/283) ([binamov](https://github.com/binamov))
+- Re-enable .NET speed optimizations [\#264](https://github.com/chef-cft/wombat/pull/264) ([nweddle](https://github.com/nweddle))
+- Namespacing and spec tests [\#281](https://github.com/chef-cft/wombat/pull/281) ([cheeseplus](https://github.com/cheeseplus))
+- Implement TravisCI [\#290](https://github.com/chef-cft/wombat/pull/290) ([cheeseplus](https://github.com/cheeseplus))
+- Refactor how source\_ami/image work [\#288](https://github.com/chef-cft/wombat/pull/288) ([cheeseplus](https://github.com/cheeseplus))
+- Lots of Azure support work by ([russellseymour](https://github.com/russellseymour))
+
 ## [v0.3.4](https://github.com/chef-cft/wombat/tree/v0.3.4) (2016-12-07)
 [Full Changelog](https://github.com/chef-cft/wombat/compare/v0.3.3...v0.3.4)
 
