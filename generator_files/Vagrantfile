@@ -18,13 +18,11 @@ Vagrant.configure(2) do |config|
 
   # Provision a Chef server with push jobs installed
   config.vm.define "chef-server" do |cs|
-
     cs.vm.hostname = "chef"
     cs.vm.network "private_network", ip: "172.31.54.10"
-
     cs.vm.provider "virtualbox" do |v|
-      v.memory = 2048
-      v.cpus = 2
+      v.memory = 1024
+      v.cpus = 1
     end
 
     cs.vm.provision "chef_solo" do |chef|
@@ -37,21 +35,19 @@ Vagrant.configure(2) do |config|
         }
       }
     end
-
   end
 
   config.vm.define "automate" do |d|
-
-    d.vm.network "private_network", ip: "172.31.54.11"
     d.vm.hostname = "automate"
+    d.vm.network "private_network", ip: "172.31.54.11"
     d.vm.provider "virtualbox" do |v|
-      v.memory = 2048
-      v.cpus = 2
+      v.memory = 1024
+      v.cpus = 1
     end
 
     d.vm.provision "chef_solo" do |chef|
       chef.cookbooks_path = "vendored-cookbooks/automate"
-      chef.add_recipe "mock-data"
+      chef.add_recipe "mock_data"
       chef.add_recipe "automate"
       chef.json = {
         "demo" => {
@@ -59,13 +55,11 @@ Vagrant.configure(2) do |config|
         }
       }
     end
-
   end
 
   config.vm.define "compliance" do |cc|
     cc.vm.hostname = "compliance"
     cc.vm.network "private_network", ip: "172.31.54.12"
-
     cc.vm.provider "virtualbox" do |v|
       v.memory = 1024
       v.cpus = 1
@@ -73,7 +67,7 @@ Vagrant.configure(2) do |config|
 
     cc.vm.provision "chef_solo" do |chef|
       chef.cookbooks_path = "vendored-cookbooks/compliance"
-      chef.add_recipe "mock-data"
+      chef.add_recipe "mock_data"
       chef.add_recipe "compliance"
       chef.json = {
         "demo" => {
@@ -81,17 +75,20 @@ Vagrant.configure(2) do |config|
         }
       }
     end
-
   end
 
   config.vm.define "build-node-1" do |bn|
-    bn.vm.network "private_network", ip: "172.31.54.101"
     bn.vm.hostname = "build-node-1"
+    bn.vm.network "private_network", ip: "172.31.54.101"
+    bn.vm.provider "virtualbox" do |v|
+      v.memory = 768
+      v.cpus = 1
+    end
 
     bn.vm.provision "chef_solo" do |chef|
-      chef.cookbooks_path = "vendored-cookbooks/build-node"
-      chef.add_recipe "mock-data"
-      chef.add_recipe "build-node"
+      chef.cookbooks_path = "vendored-cookbooks/build_node"
+      chef.add_recipe "mock_data"
+      chef.add_recipe "build_node"
       chef.json = {
         "demo" => {
           "admin-user" => "vagrant"
@@ -101,14 +98,17 @@ Vagrant.configure(2) do |config|
   end
 
   config.vm.define "workstation", primary: true do |wk|
-    wk.vm.network "private_network", ip: "172.31.54.99"
-    wk.vm.hostname = "workstation"
-
     wk.vm.box = "mwrock/Windows2012R2"
+    wk.vm.hostname = "workstation"
+    wk.vm.network "private_network", ip: "172.31.54.99"
+    wk.vm.provider "virtualbox" do |v|
+      v.memory = 4096
+      v.cpus = 2
+    end
 
     wk.vm.provision "chef_solo" do |chef|
       chef.cookbooks_path = "vendored-cookbooks/workstation"
-      chef.add_recipe "mock-data"
+      chef.add_recipe "mock_data"
       chef.add_recipe "workstation"
       chef.json = {
         "demo" => {
@@ -117,5 +117,4 @@ Vagrant.configure(2) do |config|
       }
     end
   end
-
 end
