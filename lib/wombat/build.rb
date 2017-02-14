@@ -109,7 +109,7 @@ module Wombat
         if wombat['azure'].key?('tags') && wombat['azure']['tags'].length > 0
 
           # Check to see if there are more than 15 tags in which case output a warning
-          if wombat['azure']['tags'].length > 15
+          if wombat['azure']['tags'].length > 14
             warn ('More than 15 tags have been specified, only the first 15 will be added.  This is a restriction in Azure.')
           end
 
@@ -117,7 +117,7 @@ module Wombat
           wombat['azure']['tags'].each_with_index do |(key, value), index|
             tags[key] = value
 
-            if index == 14
+            if index == 13
               break
             end
           end
