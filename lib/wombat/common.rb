@@ -223,9 +223,7 @@ module Wombat
           @chef_server_uri = lock['amis'][region]['chef-server']
           @automate_uri = lock['amis'][region]['automate']
           @compliance_uri = lock['amis'][region]['compliance']
-
-        # set an admin password for the machines that are created
-        @password = "aAan0orxevCma4gG"
+          @password = lock['workstations']['password']
         when 'gce'
           region = lock['gce']['zone']
         end

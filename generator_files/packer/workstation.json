@@ -62,7 +62,7 @@
             "location": "{{user `azure_location`}}",
             "vm_size": "Standard_DS3_v2",
             "communicator": "winrm",
-            "winrm_username": "packer",
+            "winrm_username": "azure",
             "winrm_use_ssl": "true",
             "winrm_insecure": "true",
             "winrm_port": 5986,
@@ -130,7 +130,7 @@
             ],
             "type": "windows-shell",
             "inline": [
-                "C:\\Windows\\System32\\sysprep\\sysprep.exe /quiet /generalize /oobe /shutdown"
+                "C:\\Windows\\System32\\sysprep\\sysprep.exe /quiet /generalize /shutdown"
             ]
         }
     ]
