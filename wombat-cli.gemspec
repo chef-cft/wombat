@@ -28,6 +28,6 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'net-ssh', '~> 3.2'
   gem.add_dependency 'parallel', '~> 1.9'
   gem.add_dependency 'aws-sdk', '~> 2.5'
-  gem.add_dependency 'azure_mgmt_resources', '~> 0.8'
-  gem.add_dependency 'azure_mgmt_storage', '~> 0.8'
+  gem.add_dependency 'azure_mgmt_resources', '~> 0.9'
+  gem.add_dependency 'azure_mgmt_storage', '~> 0.9'
 end

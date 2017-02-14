@@ -45,7 +45,7 @@
 
     "sa": {
       "name": "[parameters('storageAccountName')]",
-      "container": "vhds",
+      "container": "[concat('vhds-', variables('unique'))]",
       "type": "Standard_LRS"
     },
 
