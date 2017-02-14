@@ -97,13 +97,31 @@ module Wombat
 
         # Create hash to be used as tags on the resource group
         tags = {
-          InUse: "true",
           owner: ENV['USER']
         }
 
         # If an owner has been specified in the wombat file override the owner value
         if wombat.key?('owner') && !wombat['owner'].nil?
           tags[:owner] = wombat['owner']
+        end
+
+        # Determine if there are any tags specified in the azure wmbat section that need to be added
+        if wombat['azure'].key?('tags') && wombat['azure']['tags'].length > 0
+
+          # Check to see if there are more than 15 tags in which case output a warning
+          if wombat['azure']['tags'].length > 15
+            warn ('More than 15 tags have been specified, only the first 15 will be added.  This is a restriction in Azure.')
+          end
+
+          # Iterate around the tags and add each one to the tags array, up to 15
+          wombat['azure']['tags'].each_with_index do |(key, value), index|
+            tags[key] = value
+
+            if index == 14
+              break
+            end
+          end
+
         end
 
         # add the tags hash to the parameters
