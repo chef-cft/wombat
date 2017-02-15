@@ -89,6 +89,15 @@ module Wombat
             opts.on("-c CLOUD", "--cloud CLOUD", "Select cloud") do |opt|
               options.cloud = opt
             end
+
+            opts.on("--all", "Remove entire Resource Group which includes images (Azure Only)") do |opt|
+              options.remove_all = opt
+            end
+
+            opts.on("--async", "Delete resources asynchronously when not removing all, e.g. do not block command line.  (Azure Only)") do |opt|
+              options.azure_async = opt
+            end
+
           },
           argv: stack_argv_proc
         },

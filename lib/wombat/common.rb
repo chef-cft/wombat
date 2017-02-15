@@ -206,11 +206,17 @@ module Wombat
         warn('No lock - skipping template creation')
       else
 
+        @demo = lock['name']
+        @version = lock['version']
+        @ttl = lock['ttl']
+
         # Determine the region/location/zone for the specific cloud
         case cloud
         when 'aws'
           region = lock['aws']['region']
-          template_file = "cfn.json.erb"
+          template_files = {
+            "cfn.json.erb": "#{conf['stack_dir']}/#{@demo}.json"
+          }
           @chef_server_ami = lock['amis'][region]['chef-server']
           @automate_ami = lock['amis'][region]['automate']
           @compliance_ami = lock['amis'][region]['compliance']
@@ -219,7 +225,10 @@ module Wombat
         when 'azure'
           region = lock['azure']['location']
           @storage_account = lock['azure']['storage_account']
-          template_file = "arm.json.erb"
+          template_files = {
+            "arm.json.erb": "#{conf['stack_dir']}/#{@demo}.json",
+            "arm.tidy.json.erb": "#{conf['stack_dir']}/#{@demo}.tidy.json"
+          }
           @chef_server_uri = lock['amis'][region]['chef-server']
           @automate_uri = lock['amis'][region]['automate']
           @compliance_uri = lock['amis'][region]['compliance']
@@ -249,14 +258,13 @@ module Wombat
           end
         end
 
-        @demo = lock['name']
-        @version = lock['version']
-        @ttl = lock['ttl']
-
-        rendered_cfn = ERB.new(File.read("#{conf['template_dir']}/#{template_file}"), nil, '-').result(binding)
-        Dir.mkdir(conf['stack_dir'], 0755) unless File.exist?(conf['stack_dir'])
-        File.open("#{conf['stack_dir']}/#{@demo}.json", 'w') { |file| file.puts rendered_cfn }
-        banner("Generated: #{conf['stack_dir']}/#{@demo}.json")
+        # Iterate around each of the template files that have been defined and render it
+        template_files.each do |template_file, destination|
+          rendered_cfn = ERB.new(File.read("#{conf['template_dir']}/#{template_file}"), nil, '-').result(binding)
+          Dir.mkdir(conf['stack_dir'], 0755) unless File.exist?(conf['stack_dir'])
+          File.open("#{destination}", 'w') { |file| file.puts rendered_cfn }
+          banner("Generated: #{destination}")
+        end
       end
     end
 
@@ -268,5 +276,58 @@ module Wombat
         false
       end
     end
+
+    # Track the progress of the deployment in Azure
+    #
+    # ===== Attributes
+    #
+    # * +rg_name+ - Name of the resource group being deployed to
+    # * +deployment_name+ - Name of the deployment that is currently being processed
+    def follow_azure_deployment(rg_name, deployment_name)
+
+      end_provisioning_states = 'Canceled,Failed,Deleted,Succeeded'
+      end_provisioning_state_reached = false
+
+      until end_provisioning_state_reached
+        list_outstanding_deployment_operations(rg_name, deployment_name)
+        sleep 10
+        deployment_provisioning_state = deployment_state(rg_name, deployment_name)
+        end_provisioning_state_reached = end_provisioning_states.split(',').include?(deployment_provisioning_state)
+      end
+      info format("Resource Template deployment reached end state of %s", deployment_provisioning_state)
+    end
+
+    # Get a list of the outstanding deployment operations
+    #
+    # ===== Attributes
+    #
+    # * +rg_name+ - Name of the resource group being deployed to
+    # * +deployment_name+ - Name of the deployment that is currently being processed    
+    def list_outstanding_deployment_operations(rg_name, deployment_name)
+      end_operation_states = 'Failed,Succeeded'
+      deployment_operations = resource_management_client.deployment_operations.list(rg_name, deployment_name)
+      deployment_operations.each do |val|
+        resource_provisioning_state = val.properties.provisioning_state
+        unless val.properties.target_resource.nil?
+          resource_name = val.properties.target_resource.resource_name
+          resource_type = val.properties.target_resource.resource_type
+        end
+        end_operation_state_reached = end_operation_states.split(',').include?(resource_provisioning_state)
+        unless end_operation_state_reached
+          info format("resource %s '%s' provisioning status is %s", resource_type, resource_name, resource_provisioning_state)
+        end
+      end
+    end
+
+    # Get the state of the specified deployment
+    #
+    # ===== Attributes
+    #
+    # * +rg_name+ - Name of the resource group being deployed to
+    # * +deployment_name+ - Name of the deployment that is currently being processed     
+    def deployment_state(rg_name, deployment_name)
+      deployments = resource_management_client.deployments.get(rg_name, deployment_name)
+      deployments.properties.provisioning_state
+    end    
   end
 end

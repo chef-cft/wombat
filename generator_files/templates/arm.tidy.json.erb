@@ -1,0 +1,32 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.1",
+    "parameters": {
+        "storageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the storage account that should be used to store the machine disks"
+            },
+            "defaultValue": "<%= @storage_account %>"
+        }
+    },
+    "variables": {
+        "sa": {
+            "name": "[parameters('storageAccountName')]",
+            "type": "Standard_LRS"
+        },
+        "location": "[resourceGroup().location]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[variables('sa').name]",
+            "apiVersion": "2015-06-15",
+            "location": "[variables('location')]",
+            "properties": {
+                "accountType": "[variables('sa').type]"
+            }
+        }
+    ],
+    "outputs": {}
+}

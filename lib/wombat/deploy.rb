@@ -102,59 +102,7 @@ module Wombat
       end
     end
 
-    # Track the progress of the deployment in Azure
-    #
-    # ===== Attributes
-    #
-    # * +rg_name+ - Name of the resource group being deployed to
-    # * +deployment_name+ - Name of the deployment that is currently being processed
-    def follow_azure_deployment(rg_name, deployment_name)
 
-      end_provisioning_states = 'Canceled,Failed,Deleted,Succeeded'
-      end_provisioning_state_reached = false
-
-      until end_provisioning_state_reached
-        list_outstanding_deployment_operations(rg_name, deployment_name)
-        info ""
-        sleep 10
-        deployment_provisioning_state = deployment_state(rg_name, deployment_name)
-        end_provisioning_state_reached = end_provisioning_states.split(',').include?(deployment_provisioning_state)
-      end
-      info format("Resource Template deployment reached end state of %s", deployment_provisioning_state)
-    end
-
-    # Get a list of the outstanding deployment operations
-    #
-    # ===== Attributes
-    #
-    # * +rg_name+ - Name of the resource group being deployed to
-    # * +deployment_name+ - Name of the deployment that is currently being processed    
-    def list_outstanding_deployment_operations(rg_name, deployment_name)
-      end_operation_states = 'Failed,Succeeded'
-      deployment_operations = resource_management_client.deployment_operations.list(rg_name, deployment_name)
-      deployment_operations.each do |val|
-        resource_provisioning_state = val.properties.provisioning_state
-        unless val.properties.target_resource.nil?
-          resource_name = val.properties.target_resource.resource_name
-          resource_type = val.properties.target_resource.resource_type
-        end
-        end_operation_state_reached = end_operation_states.split(',').include?(resource_provisioning_state)
-        unless end_operation_state_reached
-          info format("resource %s '%s' provisioning status is %s", resource_type, resource_name, resource_provisioning_state)
-        end
-      end
-    end
-
-    # Get the state of the specified deployment
-    #
-    # ===== Attributes
-    #
-    # * +rg_name+ - Name of the resource group being deployed to
-    # * +deployment_name+ - Name of the deployment that is currently being processed     
-    def deployment_state(rg_name, deployment_name)
-      deployments = resource_management_client.deployments.get(rg_name, deployment_name)
-      deployments.properties.provisioning_state
-    end
 
   end
 end
