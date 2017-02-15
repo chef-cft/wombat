@@ -542,7 +542,7 @@
         },
         "osProfile": {
           "computerName": "[concat('chef-', variables('uniqueShort'))]",
-          "customData": "[base64(concat(variables('customData'), '\n\nruncmd:\n - hostnamectl set-hostname compliance\n - chef-server-ctl reconfigure'))]",
+          "customData": "[base64(concat(variables('customData'), '\n\nruncmd:\n - hostnamectl set-hostname compliance\n - compliance-ctl reconfigure'))]",
           "adminUsername": "ubuntu",
           "adminPassword": "[parameters('adminPassword')]"
         },
