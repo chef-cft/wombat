@@ -67,6 +67,7 @@ module Wombat
 
       banner(format("Public IP Addresses in '%s'", stack))
 
+      # Check that there are IP addresses in the stack
       if public_ip_addresses.length == 0
 
         warn('No public IP addresses')
