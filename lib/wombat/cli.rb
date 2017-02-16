@@ -152,7 +152,11 @@ module Wombat
         outputs: {
           class: OutputRunner,
           parser: OptionParser.new { |opts|
-            opts.banner = "Usage: #{NAME} outputs [TEMPLATE ...]"
+            opts.banner = "Usage: #{NAME} outputs STACK"
+
+            opts.on("-c CLOUD", "--cloud CLOUD", "Select cloud") do |opt|
+              options.cloud = opt
+            end
           },
           argv: stack_argv_proc
         },

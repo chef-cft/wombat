@@ -1,18 +1,28 @@
 require 'wombat/common'
 require 'aws-sdk'
+require 'azure_mgmt_network'
 
 module Wombat
   class OutputRunner
     include Wombat::Common
 
-    attr_reader :stack
+    attr_reader :stack, :cloud
+    attr_accessor :network_management_client
 
     def initialize(opts)
       @stack = opts.stack
+      @cloud = opts.cloud.nil? ? "aws" : opts.cloud
     end
 
     def start
-      cfn_workstation_ips(stack)
+
+      # Get the IP addresses for the workstations
+      case cloud
+      when "aws"
+        cfn_workstation_ips(stack)
+      when "azure"
+        azure_workstation_ips(stack)
+      end
     end
 
     private
@@ -41,6 +51,36 @@ module Wombat
         end
       end
       instances
+    end
+
+    def azure_workstation_ips(stack)
+
+      # Connect to Azure
+      azure_conn = connect_azure()
+
+      # Create a resource client so that the template can be deployed
+      @network_management_client = Azure::ARM::Network::NetworkManagementClient.new(azure_conn)
+      network_management_client.subscription_id = ENV['AZURE_SUBSCRIPTION_ID']
+
+      # Obtain a list of all the Public IP addresses in the stack
+      public_ip_addresses = network_management_client.public_ipaddresses.list(stack)
+
+      banner(format("Public IP Addresses in '%s'", stack))
+
+      # Check that there are IP addresses in the stack
+      if public_ip_addresses.length == 0
+
+        warn('No public IP addresses')
+
+      else
+
+        # Iterate around the public IP addresses and output each one
+        public_ip_addresses.each do |public_ip_address|
+
+          # Output the details about the IP address
+          puts format("%s:\t%s (%s)", public_ip_address.name, public_ip_address.ip_address, public_ip_address.dns_settings.fqdn)
+        end
+      end
     end
   end
 end

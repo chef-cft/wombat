@@ -3,6 +3,7 @@ require 'json'
 require 'erb'
 require 'benchmark'
 require 'fileutils'
+require 'ms_rest_azure'
 
 module Wombat
   module Common
@@ -275,6 +276,20 @@ module Wombat
       rescue JSON::ParserError => e
         false
       end
+    end
+
+    # Connect to Azure using environment variables
+    #
+    # 
+    def connect_azure
+
+        # Create the connection to Azure using the information in the environment variables
+        tenant_id = ENV['AZURE_TENANT_ID']
+        client_id = ENV['AZURE_CLIENT_ID']
+        client_secret = ENV['AZURE_CLIENT_SECRET']
+
+        token_provider = MsRestAzure::ApplicationTokenProvider.new(tenant_id, client_id, client_secret)
+        MsRest::TokenCredentials.new(token_provider)
     end
 
     # Track the progress of the deployment in Azure
