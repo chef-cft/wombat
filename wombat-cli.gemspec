@@ -30,4 +30,5 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'aws-sdk', '~> 2.5'
   gem.add_dependency 'azure_mgmt_resources', '~> 0.9'
   gem.add_dependency 'azure_mgmt_storage', '~> 0.9'
+  gem.add_dependency 'azure_mgmt_network', '~> 0.9'
 end
