@@ -28,7 +28,7 @@ module Wombat
     private
 
     def cfn_workstation_ips(stack)
-      ec2 = Aws::EC2::Resource.new
+      ec2 = ::Aws::EC2::Resource.new
       instances = cfn_stack_instances(stack)
       instances.each do |name, id|
         instance = ec2.instance(id)
@@ -39,9 +39,9 @@ module Wombat
     end
 
     def cfn_stack_instances(stack)
-      cfn = Aws::CloudFormation::Client.new
+      cfn = ::Aws::CloudFormation::Client.new
       resp = cfn.describe_stack_resources({
-        stack_name: stack,
+        stack_name: stack
         })
 
       instances = {}
