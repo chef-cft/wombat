@@ -285,7 +285,7 @@ module Wombat
       return nil
     end
 
-    def base_image(template, builder)
+    def base_image(template, builder, options)
       cloud = b_to_c(builder)
       if template =~ /workstation/
         wombat[cloud]['source_image']['windows']
@@ -325,8 +325,8 @@ module Wombat
       cmd.insert(2, "--var winrm_username=Administrator")
       cmd.insert(2, "--var workstation-number=#{options['workstation-number']}") if template =~ /workstation/
       cmd.insert(2, "--var workstations=#{wombat['workstations']['count']}")
-      cmd.insert(2, "--var aws_source_ami=#{base_image(template, builder)}") if builder =~ /amazon-ebs/
-      cmd.insert(2, "--var gce_source_image=#{base_image(template, builder)}") if builder =~ /googlecompute/
+      cmd.insert(2, "--var aws_source_ami=#{base_image(template, builder, options)}") if builder =~ /amazon-ebs/
+      cmd.insert(2, "--var gce_source_image=#{base_image(template, builder, options)}") if builder =~ /googlecompute/
       cmd.insert(2, "--var azure_location=#{wombat['azure']['location']}")
       cmd.insert(2, "--var ssh_username=#{linux}")
       cmd.insert(2, "--var azure_resource_group=#{wombat['name']}")
