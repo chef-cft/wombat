@@ -1,5 +1,23 @@
 # Change Log
 
+## [v0.4.1](https://github.com/chef-cft/wombat/tree/v0.4.1) (2017-02-23)
+[Full Changelog](https://github.com/chef-cft/wombat/compare/v0.4.0...v0.4.1)
+
+**Closed issues:**
+
+- can't build infranodes [\#299](https://github.com/chef-cft/wombat/issues/299)
+- `wombat outputs` and azure [\#293](https://github.com/chef-cft/wombat/issues/293)
+
+**Merged pull requests:**
+
+- Options not being seen by `base\_image` fixes \#299 [\#300](https://github.com/chef-cft/wombat/pull/300) ([russellseymour](https://github.com/russellseymour))
+- Enabled outputs for Azure deployments [\#298](https://github.com/chef-cft/wombat/pull/298) ([russellseymour](https://github.com/russellseymour))
+- chef-server-ctl don't work on compliance [\#297](https://github.com/chef-cft/wombat/pull/297) ([binamov](https://github.com/binamov))
+- Added support to selectively delete items in the RG [\#296](https://github.com/chef-cft/wombat/pull/296) ([russellseymour](https://github.com/russellseymour))
+- uses the password from wombat [\#295](https://github.com/chef-cft/wombat/pull/295) ([binamov](https://github.com/binamov))
+- Modified the way in which Azure tags can be set [\#294](https://github.com/chef-cft/wombat/pull/294) ([russellseymour](https://github.com/russellseymour))
+- Updating vagrantfile, lower resources and fixed cookbook names [\#292](https://github.com/chef-cft/wombat/pull/292) ([cheeseplus](https://github.com/cheeseplus))
+
 ## [v0.4.0](https://github.com/chef-cft/wombat/tree/v0.4.0) (2017-02-10)
 [Full Changelog](https://github.com/chef-cft/wombat/compare/v0.3.4...v0.4.0)
 
