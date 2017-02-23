@@ -32,7 +32,7 @@ module Wombat
       when "aws"
 
         template_file = File.read("#{conf['stack_dir']}/#{stack}.json")
-        cfn = Aws::CloudFormation::Client.new(region: lock['aws']['region'])
+        cfn = ::Aws::CloudFormation::Client.new(region: lock['aws']['region'])
 
         banner("Creating CloudFormation stack")
         resp = cfn.create_stack({
