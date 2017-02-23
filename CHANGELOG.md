@@ -1,5 +1,12 @@
 # Change Log
 
+## [v0.4.2](https://github.com/chef-cft/wombat/tree/v0.4.2) (2017-02-23)
+[Full Changelog](https://github.com/chef-cft/wombat/compare/v0.4.1...v0.4.2)
+
+**Merged pull requests:**
+
+- Fixed aws namespace, unblocked bjc deploys [\#302](https://github.com/chef-cft/wombat/pull/302) [binamov](https://github.com/binamov)
+
 ## [v0.4.1](https://github.com/chef-cft/wombat/tree/v0.4.1) (2017-02-23)
 [Full Changelog](https://github.com/chef-cft/wombat/compare/v0.4.0...v0.4.1)
 
