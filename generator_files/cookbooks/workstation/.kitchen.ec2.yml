@@ -16,7 +16,7 @@ provisioner:
 platforms:
   - name: windows-2012r2
     driver:
-      image_id: ami-1c7ad77c
+      image_id: ami-1562d075
     transport:
       ssh_key: <%= ENV["EC2_SSH_KEY_PATH"] %>
 

@@ -1,13 +1,13 @@
-include_recipe 'chocolatey'
+include_recipe 'chocolatey::default'
 
 node['demo']['pkgs'].each do |pkg|
-  chocolatey pkg do
-    options ({ '-allow-empty-checksums' => '' })
+  chocolatey_package pkg do
+    options '--allow-empty-checksums'
   end
 end
 
-chocolatey 'cmder' do
-  version '1.3.0'
+chocolatey_package 'GoogleChrome' do
+  options '--ignorechecksum'
 end
 
 include_recipe 'workstation::certs-keys'

@@ -28,12 +28,12 @@ default['demo']['chef_server_url'] = "https://#{node['demo']['chef_fqdn']}/organ
 default['demo']['compliance_fqdn'] = "#{node['demo']['domain_prefix']}compliance.#{node['demo']['domain']}"
 
 default['demo']['pkgs'] = %w(
-  googlechrome
   atom
   git
   hub
   gitextensions
   git-credential-manager-for-windows
+  cmder
 )
 
 default['demo']['data_collector_token'] = '93a49a4f2482c64126f7b6015e6b0f30284287ee4054ff8807fb63d9cbd1c506'
