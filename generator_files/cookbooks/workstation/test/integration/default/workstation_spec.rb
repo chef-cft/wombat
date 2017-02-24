@@ -29,7 +29,7 @@ describe command('choco list -l git-credential-manager-for-windows') do
 end
 
 describe command('Get-Module -ListAvailable -Name posh-git') do
-  its(:stdout) { should match(/Script     0.7.0      posh-git/) }
+  its(:stdout) { should match(/Script     0.7.1.0    posh-git/) }
 end
 
 describe file('C:\Users\Administrator\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1') do
