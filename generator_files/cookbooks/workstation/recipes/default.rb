@@ -6,10 +6,6 @@ node['demo']['pkgs'].each do |pkg|
   end
 end
 
-chocolatey_package 'cmder' do
-  version '1.3.0'
-end
-
 chocolatey_package 'GoogleChrome' do
   options '--ignorechecksum'
 end
