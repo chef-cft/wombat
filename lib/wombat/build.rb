@@ -329,9 +329,28 @@ module Wombat
       cmd.insert(2, "--var gce_source_image=#{base_image(template, builder, options)}") if builder =~ /googlecompute/
       cmd.insert(2, "--var azure_location=#{wombat['azure']['location']}")
       cmd.insert(2, "--var ssh_username=#{linux}")
-      cmd.insert(2, "--var azure_resource_group=#{wombat['name']}")
-      cmd.insert(2, "--var azure_storage_account=#{wombat['azure']['storage_account']}")
       cmd.insert(2, "--debug") if @debug
+
+      # If running with the azure-arm builder add the necessary arguments
+      if builder =~ /azure-arm/
+
+        # Get the information about the base image to use
+        base_image = base_image(template, builder, options)
+
+        if !base_image.nil?
+          # This is a URN so it needs to be split out using : as delimiters
+          base_image_parts = base_image.split(/:/)
+
+          cmd.insert(2, "--var azure_image_publisher=#{base_image_parts[0]}")
+          cmd.insert(2, "--var azure_image_offer=#{base_image_parts[1]}")
+          cmd.insert(2, "--var azure_image_sku=#{base_image_parts[2]}")
+          cmd.insert(2, "--var azure_image_version=#{base_image_parts[3]}") if base_image_parts.length == 4
+        end
+      
+        cmd.insert(2, "--var azure_resource_group=#{wombat['name']}")
+        cmd.insert(2, "--var azure_storage_account=#{wombat['azure']['storage_account']}")
+      end
+
       cmd.join(' ')
     end
   end
