@@ -174,12 +174,31 @@
     },
 
     {
+      "type": "Microsoft.Compute/images",
+      "apiVersion": "2016-04-30-preview",
+      "name": "Workstation-<%= i.to_s %>-VM-Image",
+      "location": "[variables('location')]",
+      "properties": {
+        "storageProfile": {
+          "osDisk": {
+            "osType": "Linux",
+            "blobUri": "<%= @workstation_ami[i] %>",
+            "caching": "ReadWrite",
+            "storageAccountType": "Standard_LRS"
+          },
+          "dataDisks": []
+        }
+      }
+    },   
+
+    {
       "type": "Microsoft.Compute/virtualMachines",
       "name": "Workstation-<%= i.to_s %>-VM",
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2016-04-30-preview",
       "location": "[variables('location')]",
       "dependsOn": [
-        "Microsoft.Network/networkInterfaces/Workstation-<%= i.to_s %>-NIC"
+        "Microsoft.Network/networkInterfaces/Workstation-<%= i.to_s %>-NIC",
+        "Microsoft.Compute/images/Workstation-<%= i.to_s %>-VM-Image"
       ],
       "tags": {
         "name": "[concat(parameters('demoName'), ' Workstation <%= i.to_s %>')]"
@@ -194,17 +213,8 @@
           "adminPassword": "[parameters('adminPassword')]"
         },
         "storageProfile": {
-          "osDisk": {
-            "name": "workstation-<%= i.to_s %>-osdisk",
-            "osType": "windows",
-            "createOption": "FromImage",
-            "caching": "ReadWrite",
-            "image": {
-              "uri": "<%= @workstation_ami[i] %>"
-            },
-            "vhd": {
-              "uri": "[concat('https://', variables('sa').name, '.blob.core.windows.net/', variables('sa').container, '/workstation-<%= i.to_s %>-osdisk.vhd')]"
-            }
+          "imageReference": {
+            "id": "[resourceId('Microsoft.Compute/images', 'Workstation-<%= i.to_s %>-VM-Image')]"
           }
         },
         "networkProfile": {
@@ -246,12 +256,31 @@
     },
 
     {
+      "type": "Microsoft.Compute/images",
+      "apiVersion": "2016-04-30-preview",
+      "name": "BuildNode-<%= i.to_s %>-VM-Image",
+      "location": "[variables('location')]",
+      "properties": {
+        "storageProfile": {
+          "osDisk": {
+            "osType": "Linux",
+            "blobUri": "<%= @build_node_ami[i] %>",
+            "caching": "ReadWrite",
+            "storageAccountType": "Standard_LRS"
+          },
+          "dataDisks": []
+        }
+      }
+    },    
+
+    {
       "type": "Microsoft.Compute/virtualMachines",
       "name": "BuildNode-<%= i.to_s %>-VM",
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2016-04-30-preview",
       "location": "[variables('location')]",
       "dependsOn": [
-        "Microsoft.Network/networkInterfaces/BuildNode-<%= i.to_s %>-NIC"
+        "Microsoft.Network/networkInterfaces/BuildNode-<%= i.to_s %>-NIC",
+        "Microsoft.Compute/images/BuildNode-<%= i.to_s %>-VM-Image"
       ],
       "tags": {
         "name": "[concat(parameters('demoName'), ' Build Node <%= i.to_s %>')]"
@@ -266,17 +295,8 @@
           "adminPassword": "[parameters('adminPassword')]"
         },
         "storageProfile": {
-          "osDisk": {
-            "name": "buildnode-<%= i.to_s %>-osdisk",
-            "osType": "linux",
-            "createOption": "FromImage",
-            "caching": "ReadWrite",
-            "image": {
-              "uri": "<%= @build_node_ami[i] %>"
-            },
-            "vhd": {
-              "uri": "[concat('https://', variables('sa').name, '.blob.core.windows.net/', variables('sa').container, '/buildnode-<%= i.to_s %>-osdisk.vhd')]"
-            }
+          "imageReference": {
+            "id": "[resourceId('Microsoft.Compute/images', 'BuildNode-<%= i.to_s %>-VM-Image')]"
           }
         },
         "networkProfile": {
@@ -318,12 +338,31 @@
     },
 
     {
+      "type": "Microsoft.Compute/images",
+      "apiVersion": "2016-04-30-preview",
+      "name": "InfraNode-<%= name %>-VM-Image",
+      "location": "[variables('location')]",
+      "properties": {
+        "storageProfile": {
+          "osDisk": {
+            "osType": "Linux",
+            "blobUri": "<%= _uri %>",
+            "caching": "ReadWrite",
+            "storageAccountType": "Standard_LRS"
+          },
+          "dataDisks": []
+        }
+      }
+    },
+
+    {
       "type": "Microsoft.Compute/virtualMachines",
       "name": "InfraNode-<%= name %>-VM",
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2016-04-30-preview",
       "location": "[variables('location')]",
       "dependsOn": [
-        "Microsoft.Network/networkInterfaces/InfraNode-<%= name %>-NIC"
+        "Microsoft.Network/networkInterfaces/InfraNode-<%= name %>-NIC",
+        "Microsoft.Compute/images/InfraNode-<%= name %>-VM-Image"
       ],
       "tags": {
         "name": "[concat(parameters('demoName'), ' Infra Node - <%= name %>')]"
@@ -338,17 +377,8 @@
           "adminPassword": "[parameters('adminPassword')]"
         },
         "storageProfile": {
-          "osDisk": {
-            "name": "infranode-<%= name %>-osdisk",
-            "osType": "linux",
-            "createOption": "FromImage",
-            "caching": "ReadWrite",
-            "image": {
-              "uri": "<%= _uri %>"
-            },
-            "vhd": {
-              "uri": "[concat('https://', variables('sa').name, '.blob.core.windows.net/', variables('sa').container, '/infranode-<%= name %>-osdisk.vhd')]"
-            }
+          "imageReference": {
+            "id": "[resourceId('Microsoft.Compute/images', 'InfraNode-<%= name %>-VM-Image')]"
           }
         },
         "networkProfile": {
@@ -388,12 +418,31 @@
     },
 
     {
+      "type": "Microsoft.Compute/images",
+      "apiVersion": "2016-04-30-preview",
+      "name": "ChefServer-VM-Image",
+      "location": "[variables('location')]",
+      "properties": {
+        "storageProfile": {
+          "osDisk": {
+            "osType": "Linux",
+            "blobUri": "<%= @chef_server_uri %>",
+            "caching": "ReadWrite",
+            "storageAccountType": "Standard_LRS"
+          },
+          "dataDisks": []
+        }
+      }
+    },
+
+    {
       "type": "Microsoft.Compute/virtualMachines",
       "name": "ChefServer-VM",
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2016-04-30-preview",
       "location": "[variables('location')]",
       "dependsOn": [
-        "Microsoft.Network/networkInterfaces/ChefServer-NIC"
+        "Microsoft.Network/networkInterfaces/ChefServer-NIC",
+        "Microsoft.Compute/images/ChefServer-VM-Image"
       ],
       "tags": {
         "name": "[concat(parameters('demoName'), ' Chef Server')]"
@@ -409,17 +458,8 @@
           "adminPassword": "[parameters('adminPassword')]"
         },
         "storageProfile": {
-          "osDisk": {
-            "name": "chefserver-osdisk",
-            "osType": "linux",
-            "createOption": "FromImage",
-            "caching": "ReadWrite",
-            "image": {
-              "uri": "<%= @chef_server_uri %>"
-            },
-            "vhd": {
-              "uri": "[concat('https://', variables('sa').name, '.blob.core.windows.net/', variables('sa').container, '/chefserver-osdisk.vhd')]"
-            }
+          "imageReference": {
+            "id": "[resourceId('Microsoft.Compute/images', 'ChefServer-VM-Image')]"
           }
         },
         "networkProfile": {
@@ -457,12 +497,31 @@
     },
 
     {
+      "type": "Microsoft.Compute/images",
+      "apiVersion": "2016-04-30-preview",
+      "name": "AutomateServer-VM-Image",
+      "location": "[variables('location')]",
+      "properties": {
+        "storageProfile": {
+          "osDisk": {
+            "osType": "Linux",
+            "blobUri": "<%= @automate_uri %>",
+            "caching": "ReadWrite",
+            "storageAccountType": "Standard_LRS"
+          },
+          "dataDisks": []
+        }
+      }
+    },
+
+    {
       "type": "Microsoft.Compute/virtualMachines",
       "name": "AutomateServer-VM",
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2016-04-30-preview",
       "location": "[variables('location')]",
       "dependsOn": [
-        "Microsoft.Network/networkInterfaces/AutomateServer-NIC"
+        "Microsoft.Network/networkInterfaces/AutomateServer-NIC",
+        "Microsoft.Compute/images/AutomateServer-VM-Image"
       ],
       "tags": {
         "name": "[concat(parameters('demoName'), ' Automate Server')]"
@@ -478,17 +537,8 @@
           "adminPassword": "[parameters('adminPassword')]"
         },
         "storageProfile": {
-          "osDisk": {
-            "name": "automateserver-osdisk",
-            "osType": "linux",
-            "createOption": "FromImage",
-            "caching": "ReadWrite",
-            "image": {
-              "uri": "<%= @automate_uri %>"
-            },
-            "vhd": {
-              "uri": "[concat('https://', variables('sa').name, '.blob.core.windows.net/', variables('sa').container, '/automate-osdisk.vhd')]"
-            }
+          "imageReference": {
+            "id": "[resourceId('Microsoft.Compute/images', 'AutomateServer-VM-Image')]"
           }
         },
         "networkProfile": {
@@ -526,12 +576,31 @@
     },
 
     {
+      "type": "Microsoft.Compute/images",
+      "apiVersion": "2016-04-30-preview",
+      "name": "ComplianceServer-VM-Image",
+      "location": "[variables('location')]",
+      "properties": {
+        "storageProfile": {
+          "osDisk": {
+            "osType": "Linux",
+            "blobUri": "<%= @compliance_uri %>",
+            "caching": "ReadWrite",
+            "storageAccountType": "Standard_LRS"
+          },
+          "dataDisks": []
+        }
+      }
+    },
+
+    {
       "type": "Microsoft.Compute/virtualMachines",
       "name": "ComplianceServer-VM",
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2016-04-30-preview",
       "location": "[variables('location')]",
       "dependsOn": [
-        "Microsoft.Network/networkInterfaces/ComplianceServer-NIC"
+        "Microsoft.Network/networkInterfaces/ComplianceServer-NIC",
+        "Microsoft.Compute/images/ComplianceServer-VM-Image"
       ],
       "tags": {
         "name": "[concat(parameters('demoName'), ' Compliance Server')]"
@@ -547,17 +616,8 @@
           "adminPassword": "[parameters('adminPassword')]"
         },
         "storageProfile": {
-          "osDisk": {
-            "name": "complianceserver-osdisk",
-            "osType": "linux",
-            "createOption": "FromImage",
-            "caching": "ReadWrite",
-            "image": {
-              "uri": "<%= @compliance_uri %>"
-            },
-            "vhd": {
-              "uri": "[concat('https://', variables('sa').name, '.blob.core.windows.net/', variables('sa').container, '/compliance-osdisk.vhd')]"
-            }
+          "imageReference": {
+            "id": "[resourceId('Microsoft.Compute/images', 'ComplianceServer-VM-Image')]"
           }
         },
         "networkProfile": {

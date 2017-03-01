@@ -6,13 +6,15 @@ require 'parallel'
 require 'ms_rest_azure'
 require 'azure_mgmt_resources'
 require 'azure_mgmt_storage'
+require 'azure/storage'
+require 'uri'
 
 module Wombat
   class BuildRunner
     include Wombat::Common
     include Wombat::Crypto
 
-    attr_reader :templates, :builder, :parallel
+    attr_reader :templates, :builder, :parallel, :storage_access_key
 
     def initialize(opts)
       @templates = opts.templates.nil? ? calculate_templates : opts.templates
@@ -52,6 +54,10 @@ module Wombat
           build_parallel(templates)
         end
       end
+
+      # Copy the images to the correct location if running Azure builder
+      azure_copy_images if builder == "azure-arm"
+
       shell_out_command("say -v fred \"Wombat has made an #{build_hash.keys}\" for you") if audio?
       banner("Build finished in #{duration(time.real)}.")
     end
@@ -146,6 +152,76 @@ module Wombat
       storage_account.kind = Azure::ARM::Storage::Models::Kind::Storage
 
       storage_management_client.storage_accounts.create(wombat['name'], wombat['azure']['storage_account'], storage_account)
+
+      # Get the keys from the storage management client so that the container that the images will be moved into
+      # can be checked for and created if required
+      # Once Packer uses the MD features in the GO library this can be removed
+      # ------------------------------------------------------------------------
+      keys = storage_management_client.storage_accounts.list_keys(wombat['name'], wombat['azure']['storage_account'])
+      @storage_access_key = keys.keys[0].value
+
+      # Use the key to configure the storage library
+      Azure::Storage.setup(:storage_account_name => wombat['azure']['storage_account'], :storage_access_key => storage_access_key)
+      blobs = Azure::Storage::Blob::BlobService.new
+
+      # Get all the containers to determine if the one that is required already exists
+      container_names = []
+      blobs.list_containers().each do |container|
+        container_names.push(container.name)
+      end
+
+      # create the container if it does not exist
+      container_name = "mdimages"
+      if !container_names.include?(container_name)
+        info("Creating storage container")
+        container = blobs.create_container(container_name)
+      end
+      # ------------------------------------------------------------------------
+
+    end
+
+    # Packer does not put custom images into a location that is supported by Managed Disks
+    # So to be able to use the MD feature of Azure, the images have to be copied to a location that
+    # does work.  This method is responsible for doing this work.
+    #
+    # @author Russell Seymour
+    def azure_copy_images()
+
+      container_name = "mdimages"
+
+      Azure::Storage.setup(:storage_account_name => wombat['azure']['storage_account'], :storage_access_key => storage_access_key)
+      blobs = Azure::Storage::Blob::BlobService.new
+
+      # Read the logs for azure
+      path = "#{wombat['conf']['log_dir']}/azure*.log"
+      logs = Dir.glob(path).reject { |l| !l.match(wombat['linux']) }
+
+      # iterate around the log files and get the image location
+      time = Benchmark.measure do
+        logs.each do |log|
+          
+          # get the image uri
+          url = File.read(log).split("\n").grep(/OSDiskUri:/) {|x| x.split[1]}.last
+
+          next if url.nil?
+
+          # Use the storage library to copy the image from source to destination
+          uri = URI(url)
+
+          blob_name = uri.path.split(/\//).last
+
+          info "Copying: #{blob_name}"
+
+          status = blobs.copy_blob_from_uri(container_name, blob_name, url)
+
+          # Append the new location for the image to the log file
+          append_text = format("ManagedDiskOSDiskUri: https://%s.blob.core.windows.net/%s/%s", wombat['azure']['storage_account'], container_name, blob_name)
+          File.open(log, 'a') { |f| f.write(append_text) }
+          
+        end
+      end
+      
+      info (format("Images copied in %s", duration(time.real)))
 
     end
 

@@ -63,6 +63,7 @@
             "image_publisher": "{{ user `azure_image_publisher` }}",
             "image_offer": "{{ user `azure_image_offer` }}",
             "image_sku": "{{ user `azure_image_sku` }}",
+            "image_version": "{{ user `azure_image_version` }}",
             "location": "{{user `azure_location`}}",
             "vm_size": "Standard_DS3_v2",
             "communicator": "winrm",

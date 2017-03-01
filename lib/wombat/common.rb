@@ -60,7 +60,7 @@ module Wombat
               when 'gcp'
                 'A disk image was created:'
               when 'azure'
-                'OSDiskUri:'
+                'ManagedDiskOSDiskUri:'
               else
                 "#{wombat['aws']['region']}:"
               end
