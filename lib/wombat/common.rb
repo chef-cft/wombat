@@ -234,6 +234,9 @@ module Wombat
           @automate_uri = lock['amis'][region]['automate']
           @compliance_uri = lock['amis'][region]['compliance']
           @password = lock['workstations']['password']
+
+          # Set the Azure Tag used to identify Chef products in Azure
+          @chef_tag = azure_provider_tag
         when 'gce'
           region = lock['gce']['zone']
         end
@@ -276,6 +279,11 @@ module Wombat
       rescue JSON::ParserError => e
         false
       end
+    end
+
+    # Return the Azure Provider tag that should be applied to resource
+    def azure_provider_tag
+      "33194f91-eb5f-4110-827a-e95f640a9e46".upcase
     end
 
     # Connect to Azure using environment variables

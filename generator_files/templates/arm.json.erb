@@ -49,6 +49,10 @@
       "type": "Standard_LRS"
     },
 
+    "tagvalues": {
+      "provider": "<%= @chef_tag %>"
+    },
+
     "network": {
       "virtual": {
         "name": "ChefAutomate-VNET",
@@ -111,6 +115,9 @@
       "name": "[variables('network').virtual.name]",
       "apiVersion": "2015-06-15",
       "location": "[variables('location')]",
+      "tags": {
+        "provider": "[variables('tagvalues').provider]"
+      },
       "properties": {
         "addressSpace": {
           "addressPrefixes": [
@@ -137,6 +144,9 @@
       "name": "Workstation-<%= i.to_s %>-PublicIPAddress",
       "apiVersion": "2015-06-15",
       "location": "[variables('location')]",
+      "tags": {
+        "provider": "[variables('tagvalues').provider]"
+      },
       "properties": {
         "publicIPAllocationMethod": "[variables('network').ipAddresses.workstation.external.allocationMethod]",
         "dnsSettings": {
@@ -150,6 +160,9 @@
       "name": "Workstation-<%= i.to_s %>-NIC",
       "apiVersion": "2015-06-15",
       "location": "[variables('location')]",
+      "tags": {
+        "provider": "[variables('tagvalues').provider]"
+      },
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/', variables('network').virtual.name)]",
         "Microsoft.Network/publicIPAddresses/Workstation-<%= i.to_s %>-PublicIPAddress"
@@ -178,6 +191,9 @@
       "apiVersion": "2016-04-30-preview",
       "name": "Workstation-<%= i.to_s %>-VM-Image",
       "location": "[variables('location')]",
+      "tags": {
+        "provider": "[variables('tagvalues').provider]"
+      },
       "properties": {
         "storageProfile": {
           "osDisk": {
@@ -196,6 +212,9 @@
       "name": "Workstation-<%= i.to_s %>-VM",
       "apiVersion": "2016-04-30-preview",
       "location": "[variables('location')]",
+      "tags": {
+        "provider": "[variables('tagvalues').provider]"
+      },
       "dependsOn": [
         "Microsoft.Network/networkInterfaces/Workstation-<%= i.to_s %>-NIC",
         "Microsoft.Compute/images/Workstation-<%= i.to_s %>-VM-Image"
@@ -236,6 +255,9 @@
       "name": "BuildNode-<%= i.to_s %>-NIC",
       "apiVersion": "2015-06-15",
       "location": "[variables('location')]",
+      "tags": {
+        "provider": "[variables('tagvalues').provider]"
+      },
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/', variables('network').virtual.name)]"
       ],
@@ -260,6 +282,9 @@
       "apiVersion": "2016-04-30-preview",
       "name": "BuildNode-<%= i.to_s %>-VM-Image",
       "location": "[variables('location')]",
+      "tags": {
+        "provider": "[variables('tagvalues').provider]"
+      },
       "properties": {
         "storageProfile": {
           "osDisk": {
@@ -278,6 +303,9 @@
       "name": "BuildNode-<%= i.to_s %>-VM",
       "apiVersion": "2016-04-30-preview",
       "location": "[variables('location')]",
+      "tags": {
+        "provider": "[variables('tagvalues').provider]"
+      },
       "dependsOn": [
         "Microsoft.Network/networkInterfaces/BuildNode-<%= i.to_s %>-NIC",
         "Microsoft.Compute/images/BuildNode-<%= i.to_s %>-VM-Image"
@@ -318,6 +346,9 @@
       "name": "InfraNode-<%= name %>-NIC",
       "apiVersion": "2015-06-15",
       "location": "[variables('location')]",
+      "tags": {
+        "provider": "[variables('tagvalues').provider]"
+      },
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/', variables('network').virtual.name)]"
       ],
@@ -342,6 +373,9 @@
       "apiVersion": "2016-04-30-preview",
       "name": "InfraNode-<%= name %>-VM-Image",
       "location": "[variables('location')]",
+      "tags": {
+        "provider": "[variables('tagvalues').provider]"
+      },
       "properties": {
         "storageProfile": {
           "osDisk": {
@@ -360,6 +394,9 @@
       "name": "InfraNode-<%= name %>-VM",
       "apiVersion": "2016-04-30-preview",
       "location": "[variables('location')]",
+      "tags": {
+        "provider": "[variables('tagvalues').provider]"
+      },
       "dependsOn": [
         "Microsoft.Network/networkInterfaces/InfraNode-<%= name %>-NIC",
         "Microsoft.Compute/images/InfraNode-<%= name %>-VM-Image"
@@ -398,6 +435,9 @@
       "name": "ChefServer-NIC",
       "apiVersion": "2015-06-15",
       "location": "[variables('location')]",
+      "tags": {
+        "provider": "[variables('tagvalues').provider]"
+      },
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/', variables('network').virtual.name)]"
       ],
@@ -422,6 +462,9 @@
       "apiVersion": "2016-04-30-preview",
       "name": "ChefServer-VM-Image",
       "location": "[variables('location')]",
+      "tags": {
+        "provider": "[variables('tagvalues').provider]"
+      },
       "properties": {
         "storageProfile": {
           "osDisk": {
@@ -440,6 +483,9 @@
       "name": "ChefServer-VM",
       "apiVersion": "2016-04-30-preview",
       "location": "[variables('location')]",
+      "tags": {
+        "provider": "[variables('tagvalues').provider]"
+      },
       "dependsOn": [
         "Microsoft.Network/networkInterfaces/ChefServer-NIC",
         "Microsoft.Compute/images/ChefServer-VM-Image"
@@ -477,6 +523,9 @@
       "name": "AutomateServer-NIC",
       "apiVersion": "2015-06-15",
       "location": "[variables('location')]",
+      "tags": {
+        "provider": "[variables('tagvalues').provider]"
+      },
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/', variables('network').virtual.name)]"
       ],
@@ -501,6 +550,9 @@
       "apiVersion": "2016-04-30-preview",
       "name": "AutomateServer-VM-Image",
       "location": "[variables('location')]",
+      "tags": {
+        "provider": "[variables('tagvalues').provider]"
+      },
       "properties": {
         "storageProfile": {
           "osDisk": {
@@ -519,6 +571,9 @@
       "name": "AutomateServer-VM",
       "apiVersion": "2016-04-30-preview",
       "location": "[variables('location')]",
+      "tags": {
+        "provider": "[variables('tagvalues').provider]"
+      },
       "dependsOn": [
         "Microsoft.Network/networkInterfaces/AutomateServer-NIC",
         "Microsoft.Compute/images/AutomateServer-VM-Image"
@@ -556,6 +611,9 @@
       "name": "ComplianceServer-NIC",
       "apiVersion": "2015-06-15",
       "location": "[variables('location')]",
+      "tags": {
+        "provider": "[variables('tagvalues').provider]"
+      },
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/', variables('network').virtual.name)]"
       ],
@@ -580,6 +638,9 @@
       "apiVersion": "2016-04-30-preview",
       "name": "ComplianceServer-VM-Image",
       "location": "[variables('location')]",
+      "tags": {
+        "provider": "[variables('tagvalues').provider]"
+      },
       "properties": {
         "storageProfile": {
           "osDisk": {
@@ -598,6 +659,9 @@
       "name": "ComplianceServer-VM",
       "apiVersion": "2016-04-30-preview",
       "location": "[variables('location')]",
+      "tags": {
+        "provider": "[variables('tagvalues').provider]"
+      },
       "dependsOn": [
         "Microsoft.Network/networkInterfaces/ComplianceServer-NIC",
         "Microsoft.Compute/images/ComplianceServer-VM-Image"

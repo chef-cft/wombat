@@ -103,7 +103,8 @@ module Wombat
 
         # Create hash to be used as tags on the resource group
         tags = {
-          owner: ENV['USER']
+          owner: ENV['USER'],
+          provider: azure_provider_tag
         }
 
         # If an owner has been specified in the wombat file override the owner value
@@ -123,7 +124,7 @@ module Wombat
           wombat['azure']['tags'].each_with_index do |(key, value), index|
             tags[key] = value
 
-            if index == 13
+            if index == 12
               break
             end
           end
