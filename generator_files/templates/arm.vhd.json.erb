@@ -1,0 +1,576 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.1",
+  "parameters": {
+
+    "demoName": {
+      "metadata": {
+        "description": "Name of the customer or organization"
+      },
+      "type": "string",
+      "defaultValue": "<%= @demo %>"
+    },
+
+    "storageAccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the storage account that should be used to store the machine disks"
+      },
+      "defaultValue": "<%= @storage_account %>"
+    },
+
+    "adminPassword": {
+      "type": "string",
+      "metadata": {
+        "description": "Password associated with the specified user"
+      },
+      "defaultValue": "<%= @password %>"
+    },
+
+    "shortUniqueLength": {
+      "type": "int",
+      "metadata": {
+        "description": "Number of characters to be take from the unique string to make a short unique string"
+      },
+      "defaultValue": 4
+    }
+
+  },
+  "variables": {
+    
+    "unique": "[uniqueString(subscription().subscriptionId, resourceGroup().id, deployment().name)]",
+    "uniqueShort": "[substring(variables('unique'), 0, parameters('shortUniqueLength'))]",
+
+    "location": "[resourceGroup().location]",
+
+    "sa": {
+      "name": "[parameters('storageAccountName')]",
+      "container": "[concat('vhds-', variables('unique'))]",
+      "type": "Standard_LRS"
+    },
+
+    "network": {
+      "virtual": {
+        "name": "ChefAutomate-VNET",
+        "addressPrefix": "172.31.54.0/24"
+      },
+      "subnet": {
+        "name": "ChefAutomate-Subnet",
+        "addressPrefix": "172.31.54.0/24"
+      },
+      "ipAddresses": {
+        "chef": {
+          "internal": {
+            "address": "172.31.54.10",
+            "allocationMethod": "static"
+          }
+        },
+        "automate": {
+          "internal": {
+            "address": "172.31.54.11",
+            "allocationMethod": "static"
+          }
+        },
+        "compliance": {
+          "internal": {
+            "address": "172.31.54.12",
+            "allocationMethod": "static"
+          }
+        },
+        "workstation": {
+          "internal": {
+            "addressPrefix": "172.31.54.",
+            "allocationMethod": "static"
+          },
+          "external": {
+            "domainNameLabel": "[concat('ws-', variables('uniqueShort'))]",
+            "allocationMethod": "dynamic"
+          }
+        },
+        "buildnode": {
+          "internal": {
+            "addressPrefix": "172.31.54.",
+            "allocationMethod": "static"
+          }
+        },
+        "infranode": {
+          "internal": {
+            "addressPrefix": "172.31.54.",
+            "allocationMethod": "static"
+          }
+        }
+      }
+    },
+
+    "customData": "#cloud-config\nmanage_etc_hosts: true\n\npackage_update: false"
+  },
+  "resources": [
+
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[variables('network').virtual.name]",
+      "apiVersion": "2015-06-15",
+      "location": "[variables('location')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('network').virtual.addressPrefix]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('network').subnet.name]",
+            "properties": {
+              "addressPrefix": "[variables('network').subnet.addressPrefix]"
+            }
+          }
+        ]
+      }
+    },
+
+
+
+<% 1.upto(@workstations) do |i| -%>
+
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "Workstation-<%= i.to_s %>-PublicIPAddress",
+      "apiVersion": "2015-06-15",
+      "location": "[variables('location')]",
+      "properties": {
+        "publicIPAllocationMethod": "[variables('network').ipAddresses.workstation.external.allocationMethod]",
+        "dnsSettings": {
+          "domainNameLabel": "[concat(variables('network').ipAddresses.workstation.external.domainNameLabel, '-', '<%= i.to_s %>')]"
+        }
+      }
+    },
+
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "Workstation-<%= i.to_s %>-NIC",
+      "apiVersion": "2015-06-15",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', variables('network').virtual.name)]",
+        "Microsoft.Network/publicIPAddresses/Workstation-<%= i.to_s %>-PublicIPAddress"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "[variables('network').ipAddresses.workstation.internal.allocationMethod]",
+              "privateIPAddress": "[concat(variables('network').ipAddresses.workstation.internal.addressPrefix, '<%= 200 + i %>')]",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'Workstation-<%= i.to_s %>-PublicIPAddress')]"
+              },
+              "subnet": {
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('network').virtual.name), '/subnets/', variables('network').subnet.name)]"
+              }
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "Workstation-<%= i.to_s %>-VM",
+      "apiVersion": "2015-06-15",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "Microsoft.Network/networkInterfaces/Workstation-<%= i.to_s %>-NIC"
+      ],
+      "tags": {
+        "name": "[concat(parameters('demoName'), ' Workstation <%= i.to_s %>')]"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_DS2_v2"
+        },
+        "osProfile": {
+          "computerName": "[concat(variables('network').ipAddresses.workstation.external.domainNameLabel, '-', '<%= i.to_s %>')]",
+          "adminUsername": "azure",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+          "osDisk": {
+            "name": "workstation-<%= i.to_s %>-osdisk",
+            "osType": "windows",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "image": {
+              "uri": "<%= @workstation_ami[i] %>"
+            },
+            "vhd": {
+              "uri": "[concat('https://', variables('sa').name, '.blob.core.windows.net/', variables('sa').container, '/workstation-<%= i.to_s %>-osdisk.vhd')]"
+            }
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'Workstation-<%= i.to_s %>-NIC')]"
+            }
+          ]
+        }
+      }
+    },
+
+<% end %>
+
+<% 1.upto(@build_nodes) do |i| -%>
+
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "BuildNode-<%= i.to_s %>-NIC",
+      "apiVersion": "2015-06-15",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', variables('network').virtual.name)]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "[variables('network').ipAddresses.buildnode.internal.allocationMethod]",
+              "privateIPAddress": "[concat(variables('network').ipAddresses.buildnode.internal.addressPrefix, '<%= 50 + i %>')]",
+              "subnet": {
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('network').virtual.name), '/subnets/', variables('network').subnet.name)]"
+              }
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "BuildNode-<%= i.to_s %>-VM",
+      "apiVersion": "2015-06-15",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "Microsoft.Network/networkInterfaces/BuildNode-<%= i.to_s %>-NIC"
+      ],
+      "tags": {
+        "name": "[concat(parameters('demoName'), ' Build Node <%= i.to_s %>')]"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_DS2_v2"
+        },
+        "osProfile": {
+          "computerName": "build-node-<%= i.to_s %>",
+          "adminUsername": "ubuntu",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+          "osDisk": {
+            "name": "buildnode-<%= i.to_s %>-osdisk",
+            "osType": "linux",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "image": {
+              "uri": "<%= @build_node_ami[i] %>"
+            },
+            "vhd": {
+              "uri": "[concat('https://', variables('sa').name, '.blob.core.windows.net/', variables('sa').container, '/buildnode-<%= i.to_s %>-osdisk.vhd')]"
+            }
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'BuildNode-<%= i.to_s %>-NIC')]"
+            }
+          ]
+        }
+      }
+    },
+
+<% end %>
+
+<% @infra.sort.each do |name, _uri| -%>
+
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "InfraNode-<%= name %>-NIC",
+      "apiVersion": "2015-06-15",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', variables('network').virtual.name)]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "[variables('network').ipAddresses.infranode.internal.allocationMethod]",
+              "privateIPAddress": "[concat(variables('network').ipAddresses.infranode.internal.addressPrefix, '<%= 101 + @infra.keys.find_index(name) %>')]",
+              "subnet": {
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('network').virtual.name), '/subnets/', variables('network').subnet.name)]"
+              }
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "InfraNode-<%= name %>-VM",
+      "apiVersion": "2015-06-15",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "Microsoft.Network/networkInterfaces/InfraNode-<%= name %>-NIC"
+      ],
+      "tags": {
+        "name": "[concat(parameters('demoName'), ' Infra Node - <%= name %>')]"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_DS2_v2"
+        },
+        "osProfile": {
+          "computerName": "<%= name %>",
+          "adminUsername": "ubuntu",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+          "osDisk": {
+            "name": "infranode-<%= name %>-osdisk",
+            "osType": "linux",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "image": {
+              "uri": "<%= _uri %>"
+            },
+            "vhd": {
+              "uri": "[concat('https://', variables('sa').name, '.blob.core.windows.net/', variables('sa').container, '/infranode-<%= name %>-osdisk.vhd')]"
+            }
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'InfraNode-<%= name %>-NIC')]"
+            }
+          ]
+        }
+      }
+    },
+
+<% end %>
+
+  {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "ChefServer-NIC",
+      "apiVersion": "2015-06-15",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', variables('network').virtual.name)]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "[variables('network').ipAddresses.chef.internal.allocationMethod]",
+              "privateIPAddress": "[variables('network').ipAddresses.chef.internal.address]",
+              "subnet": {
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('network').virtual.name), '/subnets/', variables('network').subnet.name)]"
+              }
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "ChefServer-VM",
+      "apiVersion": "2015-06-15",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "Microsoft.Network/networkInterfaces/ChefServer-NIC"
+      ],
+      "tags": {
+        "name": "[concat(parameters('demoName'), ' Chef Server')]"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_F4s"
+        },
+        "osProfile": {
+          "computerName": "[concat('chef-', variables('uniqueShort'))]",
+          "customData": "[base64(concat(variables('customData'), '\n\nruncmd:\n - hostnamectl set-hostname chef\n - chef-server-ctl reconfigure'))]",
+          "adminUsername": "ubuntu",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+          "osDisk": {
+            "name": "chefserver-osdisk",
+            "osType": "linux",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "image": {
+              "uri": "<%= @chef_server_uri %>"
+            },
+            "vhd": {
+              "uri": "[concat('https://', variables('sa').name, '.blob.core.windows.net/', variables('sa').container, '/chefserver-osdisk.vhd')]"
+            }
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'ChefServer-NIC')]"
+            }
+          ]
+        }
+      }
+    },
+
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "AutomateServer-NIC",
+      "apiVersion": "2015-06-15",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', variables('network').virtual.name)]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "[variables('network').ipAddresses.automate.internal.allocationMethod]",
+              "privateIPAddress": "[variables('network').ipAddresses.automate.internal.address]",
+              "subnet": {
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('network').virtual.name), '/subnets/', variables('network').subnet.name)]"
+              }
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "AutomateServer-VM",
+      "apiVersion": "2015-06-15",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "Microsoft.Network/networkInterfaces/AutomateServer-NIC"
+      ],
+      "tags": {
+        "name": "[concat(parameters('demoName'), ' Automate Server')]"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_F4s"
+        },
+        "osProfile": {
+          "computerName": "[concat('chef-', variables('uniqueShort'))]",
+          "customData": "[base64(concat(variables('customData'), '\n\nruncmd:\n - hostnamectl set-hostname automate\n - chef-server-ctl reconfigure'))]",
+          "adminUsername": "ubuntu",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+          "osDisk": {
+            "name": "automateserver-osdisk",
+            "osType": "linux",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "image": {
+              "uri": "<%= @automate_uri %>"
+            },
+            "vhd": {
+              "uri": "[concat('https://', variables('sa').name, '.blob.core.windows.net/', variables('sa').container, '/automate-osdisk.vhd')]"
+            }
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'AutomateServer-NIC')]"
+            }
+          ]
+        }
+      }
+    },
+
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "ComplianceServer-NIC",
+      "apiVersion": "2015-06-15",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', variables('network').virtual.name)]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "[variables('network').ipAddresses.compliance.internal.allocationMethod]",
+              "privateIPAddress": "[variables('network').ipAddresses.compliance.internal.address]",
+              "subnet": {
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('network').virtual.name), '/subnets/', variables('network').subnet.name)]"
+              }
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "ComplianceServer-VM",
+      "apiVersion": "2015-06-15",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "Microsoft.Network/networkInterfaces/ComplianceServer-NIC"
+      ],
+      "tags": {
+        "name": "[concat(parameters('demoName'), ' Compliance Server')]"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_F4s"
+        },
+        "osProfile": {
+          "computerName": "[concat('chef-', variables('uniqueShort'))]",
+          "customData": "[base64(concat(variables('customData'), '\n\nruncmd:\n - hostnamectl set-hostname compliance\n - compliance-ctl reconfigure'))]",
+          "adminUsername": "ubuntu",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+          "osDisk": {
+            "name": "complianceserver-osdisk",
+            "osType": "linux",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "image": {
+              "uri": "<%= @compliance_uri %>"
+            },
+            "vhd": {
+              "uri": "[concat('https://', variables('sa').name, '.blob.core.windows.net/', variables('sa').container, '/compliance-osdisk.vhd')]"
+            }
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'ComplianceServer-NIC')]"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "outputs": {
+
+  }
+}
