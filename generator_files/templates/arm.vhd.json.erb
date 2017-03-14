@@ -102,7 +102,7 @@
       }
     },
 
-    "customData": "#cloud-config\nmanage_etc_hosts: true\n\npackage_update: false"
+    "customData": "#cloud-config\nmanage_etc_hosts: false\n\npackage_update: false"
   },
   "resources": [
 
@@ -263,7 +263,18 @@
         "osProfile": {
           "computerName": "build-node-<%= i.to_s %>",
           "adminUsername": "ubuntu",
-          "adminPassword": "[parameters('adminPassword')]"
+          "adminPassword": "[parameters('adminPassword')]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": "true",
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "/home/ubuntu/.ssh/authorized_keys",
+                  "keyData": "<%= @public_key -%>"
+                }
+              ]
+            }
+          }
         },
         "storageProfile": {
           "osDisk": {
@@ -335,7 +346,18 @@
         "osProfile": {
           "computerName": "<%= name %>",
           "adminUsername": "ubuntu",
-          "adminPassword": "[parameters('adminPassword')]"
+          "adminPassword": "[parameters('adminPassword')]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": "true",
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "/home/ubuntu/.ssh/authorized_keys",
+                  "keyData": "<%= @public_key -%>"
+                }
+              ]
+            }
+          }
         },
         "storageProfile": {
           "osDisk": {
@@ -406,7 +428,18 @@
           "computerName": "[concat('chef-', variables('uniqueShort'))]",
           "customData": "[base64(concat(variables('customData'), '\n\nruncmd:\n - hostnamectl set-hostname chef\n - chef-server-ctl reconfigure'))]",
           "adminUsername": "ubuntu",
-          "adminPassword": "[parameters('adminPassword')]"
+          "adminPassword": "[parameters('adminPassword')]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": "true",
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "/home/ubuntu/.ssh/authorized_keys",
+                  "keyData": "<%= @public_key -%>"
+                }
+              ]
+            }
+          }
         },
         "storageProfile": {
           "osDisk": {
@@ -475,7 +508,18 @@
           "computerName": "[concat('chef-', variables('uniqueShort'))]",
           "customData": "[base64(concat(variables('customData'), '\n\nruncmd:\n - hostnamectl set-hostname automate\n - chef-server-ctl reconfigure'))]",
           "adminUsername": "ubuntu",
-          "adminPassword": "[parameters('adminPassword')]"
+          "adminPassword": "[parameters('adminPassword')]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": "true",
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "/home/ubuntu/.ssh/authorized_keys",
+                  "keyData": "<%= @public_key -%>"
+                }
+              ]
+            }
+          }
         },
         "storageProfile": {
           "osDisk": {
@@ -544,7 +588,18 @@
           "computerName": "[concat('chef-', variables('uniqueShort'))]",
           "customData": "[base64(concat(variables('customData'), '\n\nruncmd:\n - hostnamectl set-hostname compliance\n - compliance-ctl reconfigure'))]",
           "adminUsername": "ubuntu",
-          "adminPassword": "[parameters('adminPassword')]"
+          "adminPassword": "[parameters('adminPassword')]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": "true",
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "/home/ubuntu/.ssh/authorized_keys",
+                  "keyData": "<%= @public_key -%>"
+                }
+              ]
+            }
+          }
         },
         "storageProfile": {
           "osDisk": {
