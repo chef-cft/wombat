@@ -60,7 +60,13 @@ module Wombat
               when 'gcp'
                 'A disk image was created:'
               when 'azure'
-                'ManagedDiskOSDiskUri:'
+
+                if !wombat['azure'].key?('use_managed_disks') || !wombat['azure']['use_managed_disks']
+                  '^OSDiskUri:'
+                else
+                  '^ManagedDiskOSDiskUri:'
+                end
+
               else
                 "#{wombat['aws']['region']}:"
               end
@@ -226,10 +232,18 @@ module Wombat
         when 'azure'
           region = lock['azure']['location']
           @storage_account = lock['azure']['storage_account']
+
           template_files = {
-            "arm.json.erb": "#{conf['stack_dir']}/#{@demo}.json",
-            "arm.tidy.json.erb": "#{conf['stack_dir']}/#{@demo}.tidy.json"
+            "arm.tidy.json.erb": format("%s/%s.tidy.json", conf['stack_dir'], @demo)
           }
+
+          # determine whether to use VHD or Managed Disks
+          if !lock['azure'].key?('use_managed_disks') || !lock['azure']['use_managed_disks']
+            template_files['arm.vhd.json.erb'] = format("%s/%s.json", conf['stack_dir'], @demo)
+          else
+            template_files['arm.md.json.erb'] = format("%s/%s.json", conf['stack_dir'], @demo)
+          end
+
           @chef_server_uri = lock['amis'][region]['chef-server']
           @automate_uri = lock['amis'][region]['automate']
           @compliance_uri = lock['amis'][region]['compliance']
