@@ -216,7 +216,7 @@ module Wombat
           status = blobs.copy_blob_from_uri(container_name, blob_name, url)
 
           # Append the new location for the image to the log file
-          append_text = format("ManagedDiskOSDiskUri: https://%s.blob.core.windows.net/%s/%s", wombat['azure']['storage_account'], container_name, blob_name)
+          append_text = format("\nManagedDiskOSDiskUri: https://%s.blob.core.windows.net/%s/%s", wombat['azure']['storage_account'], container_name, blob_name)
           File.open(log, 'a') { |f| f.write(append_text) }
           
         end

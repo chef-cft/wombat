@@ -1,4 +1,3 @@
-home = Dir.home
 chef_server_url = "https://#{node['demo']['domain_prefix']}chef.#{node['demo']['domain']}/organizations/#{node['demo']['org']}"
 conf_d_dir = File.join(home, '.chef', 'config.d')
 

@@ -1,4 +1,3 @@
-home = Dir.home
 chef_server_url = "https://#{node['demo']['domain_prefix']}chef.#{node['demo']['domain']}/organizations/#{node['demo']['org']}"
 automate_url = "https://#{node['demo']['domain_prefix']}automate.#{node['demo']['domain']}/e/#{node['demo']['enterprise']}"
 compliance_url = "https://#{node['demo']['domain_prefix']}compliance.#{node['demo']['domain']}"
