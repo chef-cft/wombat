@@ -190,7 +190,7 @@
         },
         "osProfile": {
           "computerName": "[concat(variables('network').ipAddresses.workstation.external.domainNameLabel, '-', '<%= i.to_s %>')]",
-          "adminUsername": "azure",
+          "adminUsername": "chef",
           "adminPassword": "[parameters('adminPassword')]"
         },
         "storageProfile": {

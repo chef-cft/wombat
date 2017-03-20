@@ -1,5 +1,4 @@
-home = Dir.home
-
+run_home = Dir.home
 directory "#{home}/.atom"
 
 cookbook_file "#{home}/.atom/config.cson" do
@@ -13,7 +12,7 @@ cookbook_file "#{home}/.atom/apm-bootstrap.list" do
 end
 
 execute 'install Atom packages' do
-  command "#{home}/AppData/Local/atom/bin/apm install --packages-file #{home}/.atom/apm-bootstrap.list"
+  command "#{run_home}/AppData/Local/atom/bin/apm install --packages-file #{home}/.atom/apm-bootstrap.list"
   action :run
   not_if { File.exist?("#{home}/.atom/packages/language-chef/README.md") }
 end

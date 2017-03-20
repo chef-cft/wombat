@@ -1,5 +1,3 @@
-home = Dir.home
-
 cookbook_file 'C:\tools\cmder\config\ConEmu.xml' do
   source 'cmder.xml'
   sensitive true

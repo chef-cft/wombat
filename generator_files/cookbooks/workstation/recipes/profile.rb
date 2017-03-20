@@ -1,5 +1,6 @@
-home = Dir.home
-modules = "#{home}/Documents/WindowsPowerShell/modules"
+modules = "C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\Modules"
+
+posh_git_ps = "Install-Module posh-git -Destination #{modules}"
 
 powershell_script 'Install PSGet' do
   code <<-EOH
@@ -8,9 +9,7 @@ powershell_script 'Install PSGet' do
 end
 
 powershell_script 'Install posh-git' do
-  code <<-EOH
-    Install-Module posh-git
-  EOH
+  code posh_git_ps
 end
 
 remote_file "#{home}/PSReadline.zip" do
@@ -28,11 +27,11 @@ powershell_script 'Extract PSReadline' do
   [System.Reflection.Assembly]::LoadWithPartialName("System.IO.Compression.FileSystem") | Out-Null
   [System.IO.Compression.ZipFile]::ExtractToDirectory('#{home}/PSReadLine.zip', '#{modules}/PSReadLine')
   EOH
-  not_if { File.exist?("#{home}/Documents/WindowsPowerShell/Modules/PSReadLine/PSReadline.dll") }
+  not_if { File.exist?("#{modules}/PSReadLine/PSReadline.dll") }
 end
 
 # PowerShell AllUsersAllHosts profile
-profile = "#{home}/Documents/WindowsPowerShell/Microsoft.PowerShell_profile.ps1"
+profile = "C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\profile.ps1"
 
 template profile do
   source 'ise_profile.ps1.erb'

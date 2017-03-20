@@ -1,4 +1,4 @@
-home = Dir.home
+
 
 %W(
   #{home}/.chef
