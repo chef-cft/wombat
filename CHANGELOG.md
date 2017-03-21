@@ -1,5 +1,17 @@
 # Change Log
 
+## [v0.5.0](https://github.com/chef-cft/wombat/tree/v0.5.0) (2017-03-21)
+[Full Changelog](https://github.com/chef-cft/wombat/compare/v0.4.3...v0.5.0)
+
+**Merged pull requests:**
+
+- no more Administrator [\#319](https://github.com/chef-cft/wombat/pull/319) ([binamov](https://github.com/binamov))
+- Select whether to use Managed Disks or not [\#317](https://github.com/chef-cft/wombat/pull/317) ([russellseymour](https://github.com/russellseymour))
+- azure enhancements [\#316](https://github.com/chef-cft/wombat/pull/316) ([binamov](https://github.com/binamov))
+- Added Azure Provide Tag for Chef to resources [\#314](https://github.com/chef-cft/wombat/pull/314) ([russellseymour](https://github.com/russellseymour))
+- Added support for Azure Managed Disks [\#312](https://github.com/chef-cft/wombat/pull/312) ([russellseymour](https://github.com/russellseymour))
+- Remove checksum verification for Google Chrome Chocolatey package [\#307](https://github.com/chef-cft/wombat/pull/307) ([nweddle](https://github.com/nweddle))
+
 ## [v0.4.3](https://github.com/chef-cft/wombat/tree/v0.4.3) (2017-02-23)
 [Full Changelog](https://github.com/chef-cft/wombat/compare/v0.4.2...v0.4.3)
 
