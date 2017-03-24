@@ -233,9 +233,7 @@ module Wombat
           region = lock['azure']['location']
           @storage_account = lock['azure']['storage_account']
 
-          template_files = {
-            "arm.tidy.json.erb": format("%s/%s.tidy.json", conf['stack_dir'], @demo)
-          }
+          template_files = {}
 
           # determine whether to use VHD or Managed Disks
           if !lock['azure'].key?('use_managed_disks') || !lock['azure']['use_managed_disks']

@@ -12,8 +12,9 @@ module Wombat
     def initialize(opts)
       @stack = opts.stack
       @cloud = opts.cloud.nil? ? "aws" : opts.cloud
-      @remove_all = opts.remove_all.nil? ? false : opts.remove_all
+      @force = opts.force.nil? ? false : opts.force
       @azure_async = opts.azure_async.nil? ? false : opts.azure_async
+      @wombat_yml = opts.wombat_yml unless opts.wombat_yml.nil?
     end
 
     def start
@@ -36,6 +37,9 @@ module Wombat
 
       when "azure"
 
+        # Configure the delete state
+        delete = false
+
         # Connect to Azure
         azure_conn = connect_azure()
 
@@ -43,51 +47,20 @@ module Wombat
         @resource_management_client = Azure::ARM::Resources::ResourceManagementClient.new(azure_conn)
         @resource_management_client.subscription_id = ENV['AZURE_SUBSCRIPTION_ID']
 
-        # Only delete the entire resource group if it has been explicitly set
-        if (@remove_all) 
+        # Check the stack that is being requested
+        # If it is the parent group display a warning before attempting to delete
+        if stack == wombat['name'] && !@force
+          warn("You are attempting to delete the resource group that contains your custom images.  If you wish to do this please specify the --force parameter on the command")
+        else
+          delete = true
+        end
+
+        if (delete)
           banner(format("Deleting resource group: %s", stack))
 
           resource_management_client.resource_groups.begin_delete(stack)
 
           info "Destroy operation accepted and will continue in the background."
-        else
-        
-          banner(format("Tidying resource group: %s", stack))
-
-          # Create new deployment using the tidy template so that the storage account is left
-          # behind but all the other resources are removed
-          template_file = File.read("#{conf['stack_dir']}/#{stack}.tidy.json")
-
-          # determine the name of the deployment
-          deployment_name = format('deploy-tidy-%s', Time.now().to_i)
-
-          # Create the deployment definition
-          deployment = Azure::ARM::Resources::Models::Deployment.new
-          deployment.properties = Azure::ARM::Resources::Models::DeploymentProperties.new
-          deployment.properties.mode = Azure::ARM::Resources::Models::DeploymentMode::Complete
-          deployment.properties.template = JSON.parse(template_file)
-
-          # Perform the deployment to the named resource group
-          begin
-            resource_management_client.deployments.begin_create_or_update_async(stack, deployment_name, deployment).value!
-          rescue MsRestAzure::AzureOperationError => operation_error
-            rest_error = operation_error.body['error']
-            deployment_active = rest_error['code'] == 'DeploymentActive'
-            if deployment_active
-              info format("Deployment for resource group '%s' is ongoing", stack)
-            else
-              warn rest_error
-              raise operation_error
-            end
-          end
-
-          # Monitor the deployment
-          if @azure_async
-            info "Deployment operation accepted.  Use the Azure Portal to check progress"
-          else
-            info "Removing Automate resources"
-            follow_azure_deployment(stack, deployment_name)
-          end
         end
       end
     end

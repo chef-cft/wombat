@@ -90,12 +90,16 @@ module Wombat
               options.cloud = opt
             end
 
-            opts.on("--all", "Remove entire Resource Group which includes images (Azure Only)") do |opt|
-              options.remove_all = opt
+            opts.on("--force", "Force the removal of the parent resource group") do |opt|
+              options.force = opt
             end
 
             opts.on("--async", "Delete resources asynchronously when not removing all, e.g. do not block command line.  (Azure Only)") do |opt|
               options.azure_async = opt
+            end
+
+            opts.on("--config CONFIG", "Specify a different yaml config (default is wombat.yml)") do |opt|
+              options.wombat_yml = opt
             end
 
           },
