@@ -58,28 +58,43 @@ module Wombat
       # Connect to Azure
       azure_conn = connect_azure()
 
+      # Create a resource client so that the resource groups can be interrogated
+      resource_management_client = Azure::ARM::Resources::ResourceManagementClient.new(azure_conn)
+      resource_management_client.subscription_id = ENV['AZURE_SUBSCRIPTION_ID']
+
       # Create a resource client so that the template can be deployed
       @network_management_client = Azure::ARM::Network::NetworkManagementClient.new(azure_conn)
       network_management_client.subscription_id = ENV['AZURE_SUBSCRIPTION_ID']
+      
+      # Return a list of all the resource groups that begin with the stack name
+      resource_groups = resource_management_client.resource_groups.list()
 
-      # Obtain a list of all the Public IP addresses in the stack
-      public_ip_addresses = network_management_client.public_ipaddresses.list(stack)
+      # filter the resource groups looking for thos that start with the stack name
+      filtered_groups = resource_groups.select { |n| n.name.start_with?(stack) }
 
-      banner(format("Public IP Addresses in '%s'", stack))
+      # iterate around the filtered resource groups idenfitying the public_ipaddresses in the group
+      filtered_groups.each do |group|
 
-      # Check that there are IP addresses in the stack
-      if public_ip_addresses.length == 0
+        # Obtain a list of all the Public IP addresses in the stack
+        public_ip_addresses = network_management_client.public_ipaddresses.list(group.name)
 
-        warn('No public IP addresses')
+        banner(format("Public IP Addresses in '%s'", group.name))
 
-      else
+        # Check that there are IP addresses in the stack
+        if public_ip_addresses.length == 0
 
-        # Iterate around the public IP addresses and output each one
-        public_ip_addresses.each do |public_ip_address|
+          warn('No public IP addresses')
 
-          # Output the details about the IP address
-          puts format("%s:\t%s (%s)", public_ip_address.name, public_ip_address.ip_address, public_ip_address.dns_settings.fqdn)
+        else
+
+          # Iterate around the public IP addresses and output each one
+          public_ip_addresses.each do |public_ip_address|
+
+            # Output the details about the IP address
+            puts format("%s:\t%s (%s)", public_ip_address.name, public_ip_address.ip_address, public_ip_address.dns_settings.fqdn)
+          end
         end
+
       end
     end
   end
