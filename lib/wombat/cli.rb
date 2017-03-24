@@ -121,6 +121,10 @@ module Wombat
             opts.on("--async", "Deploy stack asynchronously, e.g. do not block command line.  Only applies to Azure deployments.") do |opt|
               options.azure_async = opt
             end
+
+            opts.on("--config CONFIG", "Specify a different yaml config (default is wombat.yml)") do |opt|
+              options.wombat_yml = opt
+            end
           },
           argv: stack_argv_proc
         },

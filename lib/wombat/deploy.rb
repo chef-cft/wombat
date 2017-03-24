@@ -15,6 +15,7 @@ module Wombat
       @lock_opt = opts.update_lock
       @template_opt = opts.update_template
       @azure_async = opts.azure_async
+      @wombat_yml = opts.wombat_yml
     end
 
     def start
@@ -57,6 +58,9 @@ module Wombat
 
         # determine the name of the deployment
         deployment_name = format('deploy-%s', Time.now().to_i)
+
+        # determine the name of the resource group 
+        resource_group_name = format('%s-%s', stack, Time.now.strftime('%Y%m%d%H%M%S'))
         
         # Connect to azure
         azure_conn = connect_azure()
@@ -64,6 +68,13 @@ module Wombat
         # Create a resource client so that the template can be deployed
         @resource_management_client = Azure::ARM::Resources::ResourceManagementClient.new(azure_conn)
         @resource_management_client.subscription_id = ENV['AZURE_SUBSCRIPTION_ID']
+
+        # Create the resource group for the deployment
+        create_resource_group(resource_management_client,
+                              resource_group_name,
+                              wombat['azure']['location'],
+                              wombat['owner'],
+                              wombat['azure']['tags'])
 
         # Create the deployment definition
         deployment = Azure::ARM::Resources::Models::Deployment.new
@@ -73,7 +84,7 @@ module Wombat
 
         # Perform the deployment to the named resource group
         begin
-          resource_management_client.deployments.begin_create_or_update_async(stack, deployment_name, deployment).value!
+          resource_management_client.deployments.begin_create_or_update_async(resource_group_name, deployment_name, deployment).value!
         rescue MsRestAzure::AzureOperationError => operation_error
           rest_error = operation_error.body['error']
           deployment_active = rest_error['code'] == 'DeploymentActive'
