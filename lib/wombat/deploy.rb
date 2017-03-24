@@ -6,16 +6,18 @@ module Wombat
   class DeployRunner
     include Wombat::Common
 
-    attr_reader :stack, :cloud, :lock_opt, :template_opt
+    attr_reader :stack, :stack_name, :cloud, :lock_opt, :template_opt, :nosuffix
     attr_accessor :resource_management_client
 
     def initialize(opts)
       @stack = opts.stack
+      @stack_name = opts.stack_name
       @cloud = opts.cloud.nil? ? "aws" : opts.cloud
       @lock_opt = opts.update_lock
       @template_opt = opts.update_template
       @azure_async = opts.azure_async
       @wombat_yml = opts.wombat_yml
+      @nosuffix = opts.nosuffix.nil? ? false : true
     end
 
     def start
@@ -28,11 +30,19 @@ module Wombat
 
     def create_stack(stack)
 
+      # determine the filename of the stack
+      filename = stack
+
+      # work out the name of the stack to be created
+      if !@stack_name.nil?
+        stack = stack_name
+      end
+
       # Deploy the template to the correct stack
       case @cloud
       when "aws"
 
-        template_file = File.read("#{conf['stack_dir']}/#{stack}.json")
+        template_file = File.read("#{conf['stack_dir']}/#{filename}.json")
         cfn = ::Aws::CloudFormation::Client.new(region: lock['aws']['region'])
 
         banner("Creating CloudFormation stack")
@@ -54,14 +64,17 @@ module Wombat
         banner("Creating Azure RM stack")
 
         # determine the path to the arm template
-        template_file = File.read("#{conf['stack_dir']}/#{stack}.json")
+        template_file = File.read("#{conf['stack_dir']}/#{filename}.json")
 
         # determine the name of the deployment
         deployment_name = format('deploy-%s', Time.now().to_i)
 
-        # determine the name of the resource group 
-        resource_group_name = format('%s-%s', stack, Time.now.strftime('%Y%m%d%H%M%S'))
-        
+        # determine the name of the resource group
+        resource_group_name = stack
+        if nosuffix
+          resource_group_name = format('%s-%s', resource_group_name, Time.now.strftime('%Y%m%d%H%M%S'))
+        end
+     
         # Connect to azure
         azure_conn = connect_azure()
 
