@@ -43,6 +43,10 @@ directory '/etc/delivery' do
   mode '0644'
 end
 
+file '/var/opt/delivery/.telemetry.disabled' do
+  action :create
+end
+
 file '/etc/delivery/automate.pem' do
   content lazy { IO.read('/tmp/private.pem') }
   action :create
