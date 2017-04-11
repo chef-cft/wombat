@@ -71,7 +71,7 @@ module Wombat
 
         # determine the name of the resource group
         resource_group_name = stack
-        if nosuffix
+        if !nosuffix
           resource_group_name = format('%s-%s', resource_group_name, Time.now.strftime('%Y%m%d%H%M%S'))
         end
      
