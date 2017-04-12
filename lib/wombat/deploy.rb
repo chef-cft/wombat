@@ -102,7 +102,7 @@ module Wombat
           rest_error = operation_error.body['error']
           deployment_active = rest_error['code'] == 'DeploymentActive'
           if deployment_active
-            info format("Deployment for resource group '%s' is ongoing", stack)
+            info format("Deployment for resource group '%s' is ongoing", resource_group_name)
           else
             warn rest_error
             raise operation_error
@@ -113,7 +113,7 @@ module Wombat
         if @azure_async
           info "Deployment operation accepted.  Use the Azure Portal to check progress"
         else
-          follow_azure_deployment(stack, deployment_name)
+          follow_azure_deployment(resource_group_name, deployment_name)
         end
 
       end
