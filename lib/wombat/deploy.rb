@@ -78,9 +78,6 @@ module Wombat
           resource_group_name = format('%s-%s', resource_group_name, Time.now.strftime('%Y%m%d%H%M%S'))
         end
 
-     puts format("No Suffix: %s", nosuffix)
-     puts resource_group_name
-     exit
         # Connect to azure
         azure_conn = connect_azure()
 
