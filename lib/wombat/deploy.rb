@@ -35,6 +35,9 @@ module Wombat
 
       # work out the name of the stack to be created
       if !@stack_name.nil?
+
+        # As the stack name has been specified then set nosuffix
+        @nosuffix = true
         stack = stack_name
       end
 
@@ -74,7 +77,10 @@ module Wombat
         if !nosuffix
           resource_group_name = format('%s-%s', resource_group_name, Time.now.strftime('%Y%m%d%H%M%S'))
         end
-     
+
+     puts format("No Suffix: %s", nosuffix)
+     puts resource_group_name
+     exit
         # Connect to azure
         azure_conn = connect_azure()
 

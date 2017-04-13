@@ -130,12 +130,12 @@ module Wombat
               options.wombat_yml = opt
             end
 
-            opts.on("-n NAME", "--name NAME", "Name of the stack to create rather than the filename of the stack") do |opt|
+            opts.on("-n NAME", "--name NAME", "Name of the stack to create rather than the filename of the stack.  Implies --nosuffix.") do |opt|
               options.stack_name = opt
             end
 
             opts.on("--nosuffix", "Do not append timestamp to end of the stack (Azure Only)") do |opt|
-              options.noappend = opt
+              options.nosuffix = opt
             end
           },
           argv: stack_argv_proc
