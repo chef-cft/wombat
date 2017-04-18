@@ -81,9 +81,17 @@ template '/etc/delivery/delivery.rb' do
   )
 end
 
+# Addresses an edge case where rabbit times out on the reconfigure.
+execute 'Give delivery time to start up' do
+  command 'sleep 300'
+  action :run
+end
+
 execute 'delivery-ctl reconfigure' do
   command 'delivery-ctl reconfigure'
   action :run
+  retries 5
+  retry_delay 10
 end
 
 execute 'delivery-ctl create-enterprise' do
