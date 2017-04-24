@@ -8,6 +8,7 @@ end
 
 chocolatey_package 'GoogleChrome' do
   options '--ignorechecksum'
+  version '57.0.2987.13301'
 end
 
 include_recipe 'workstation::certs-keys'
