@@ -28,7 +28,7 @@ module Wombat
       # Delete the stack from the correct platform
       case @cloud
       when "aws"
-        cfn = Aws::CloudFormation::Client.new(region: lock['aws']['region'])
+        cfn = ::Aws::CloudFormation::Client.new(region: lock['aws']['region'])
 
         resp = cfn.delete_stack({
           stack_name: stack,
@@ -44,7 +44,7 @@ module Wombat
         azure_conn = connect_azure()
 
         # Create a resource client so that the resource group can be deleted
-        @resource_management_client = Azure::ARM::Resources::ResourceManagementClient.new(azure_conn)
+        @resource_management_client = ::Azure::ARM::Resources::ResourceManagementClient.new(azure_conn)
         @resource_management_client.subscription_id = ENV['AZURE_SUBSCRIPTION_ID']
 
         # Check the stack that is being requested
