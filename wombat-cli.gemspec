@@ -32,4 +32,5 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'azure_mgmt_storage', '~> 0.9'
   gem.add_dependency 'azure_mgmt_network', '~> 0.9'
   gem.add_dependency 'azure-storage', '~> 0.11.5.preview'
+  gem.add_dependency 'github_changelog_generator'
 end
