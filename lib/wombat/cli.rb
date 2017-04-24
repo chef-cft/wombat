@@ -90,12 +90,16 @@ module Wombat
               options.cloud = opt
             end
 
-            opts.on("--all", "Remove entire Resource Group which includes images (Azure Only)") do |opt|
-              options.remove_all = opt
+            opts.on("--force", "Force the removal of the parent resource group") do |opt|
+              options.force = opt
             end
 
             opts.on("--async", "Delete resources asynchronously when not removing all, e.g. do not block command line.  (Azure Only)") do |opt|
               options.azure_async = opt
+            end
+
+            opts.on("--config CONFIG", "Specify a different yaml config (default is wombat.yml)") do |opt|
+              options.wombat_yml = opt
             end
 
           },
@@ -120,6 +124,18 @@ module Wombat
 
             opts.on("--async", "Deploy stack asynchronously, e.g. do not block command line.  Only applies to Azure deployments.") do |opt|
               options.azure_async = opt
+            end
+
+            opts.on("--config CONFIG", "Specify a different yaml config (default is wombat.yml)") do |opt|
+              options.wombat_yml = opt
+            end
+
+            opts.on("-n NAME", "--name NAME", "Name of the stack to create rather than the filename of the stack.  Implies --nosuffix.") do |opt|
+              options.stack_name = opt
+            end
+
+            opts.on("--nosuffix", "Do not append timestamp to end of the stack (Azure Only)") do |opt|
+              options.nosuffix = opt
             end
           },
           argv: stack_argv_proc

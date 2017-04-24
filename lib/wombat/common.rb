@@ -233,9 +233,7 @@ module Wombat
           region = lock['azure']['location']
           @storage_account = lock['azure']['storage_account']
 
-          template_files = {
-            "arm.tidy.json.erb": format("%s/%s.tidy.json", conf['stack_dir'], @demo)
-          }
+          template_files = {}
 
           # determine whether to use VHD or Managed Disks
           if !lock['azure'].key?('use_managed_disks') || !lock['azure']['use_managed_disks']
@@ -366,6 +364,58 @@ module Wombat
     def deployment_state(rg_name, deployment_name)
       deployments = resource_management_client.deployments.get(rg_name, deployment_name)
       deployments.properties.provisioning_state
-    end    
+    end
+
+    def create_resource_group(resource_management_client, name, location, owner = nil, rgtags = {})
+
+      # Check that the resource group exists
+      banner(format("Checking for resource group: %s", name))
+      status = resource_management_client.resource_groups.check_existence(name)
+      if status
+        puts "resource group already exists"
+      else
+        puts format("creating new resource group in '%s'", location)
+
+        # Set the parameters for the resource group
+        resource_group = Azure::ARM::Resources::Models::ResourceGroup.new
+        resource_group.location = location
+
+        # Create hash to be used as tags on the resource group
+        tags = {
+          owner: ENV['USER'],
+          provider: azure_provider_tag
+        }
+
+        # If an owner has been specified in the wombat file override the owner value
+        if !owner.nil?
+          tags[:owner] = owner
+        end
+
+        # Determine if there are any tags specified in the azure wmbat section that need to be added
+        if !rgtags.nil? && rgtags.length > 0
+
+          # Check to see if there are more than 15 tags in which case output a warning
+          if rgtags.length > 14
+            warn ('More than 15 tags have been specified, only the first 15 will be added.  This is a restriction in Azure.')
+          end
+
+          # Iterate around the tags and add each one to the tags array, up to 15
+          rgtags.each_with_index do |(key, value), index|
+            tags[key] = value
+
+            if index == 12
+              break
+            end
+          end
+
+        end
+
+        # add the tags hash to the parameters
+        resource_group.tags = rgtags
+
+        # Create the resource group
+        resource_management_client.resource_groups.create_or_update(name, resource_group)
+      end    
+    end
   end
 end

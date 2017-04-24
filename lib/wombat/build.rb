@@ -89,54 +89,12 @@ module Wombat
       storage_management_client = Azure::ARM::Storage::StorageManagementClient.new(azure_conn)
       storage_management_client.subscription_id = subscription_id
 
-      # Check that the resource group exists
-      banner(format("Checking for resource group: %s", wombat['name']))
-      status = resource_management_client.resource_groups.check_existence(wombat['name'])
-      if status
-        puts "resource group already exists"
-      else
-        puts format("creating new resource group in '%s'", wombat['azure']['location'])
-
-        # Set the parameters for the resource group
-        resource_group = Azure::ARM::Resources::Models::ResourceGroup.new
-        resource_group.location = wombat['azure']['location']
-
-        # Create hash to be used as tags on the resource group
-        tags = {
-          owner: ENV['USER'],
-          provider: azure_provider_tag
-        }
-
-        # If an owner has been specified in the wombat file override the owner value
-        if wombat.key?('owner') && !wombat['owner'].nil?
-          tags[:owner] = wombat['owner']
-        end
-
-        # Determine if there are any tags specified in the azure wmbat section that need to be added
-        if wombat['azure'].key?('tags') && wombat['azure']['tags'].length > 0
-
-          # Check to see if there are more than 15 tags in which case output a warning
-          if wombat['azure']['tags'].length > 14
-            warn ('More than 15 tags have been specified, only the first 15 will be added.  This is a restriction in Azure.')
-          end
-
-          # Iterate around the tags and add each one to the tags array, up to 15
-          wombat['azure']['tags'].each_with_index do |(key, value), index|
-            tags[key] = value
-
-            if index == 12
-              break
-            end
-          end
-
-        end
-
-        # add the tags hash to the parameters
-        resource_group.tags = tags
-
-        # Create the resource group
-        resource_management_client.resource_groups.create_or_update(wombat['name'], resource_group)
-      end
+      # Create the resource group
+      create_resource_group(resource_management_client,
+                            wombat['name'],
+                            wombat['azure']['location'],
+                            wombat['owner'],
+                            wombat['azure']['tags'])
 
       # Check to see if the storage account already exists
       banner(format("Checking for storage account: %s", wombat['azure']['storage_account']))
