@@ -1,7 +1,14 @@
 # Change Log
 
-## [v0.6.0](https://github.com/chef-cft/wombat/tree/v0.6.0)
+## [v0.6.1](https://github.com/chef-cft/wombat/tree/HEAD)
 
+[Full Changelog](https://github.com/chef-cft/wombat/compare/v0.6.0...v0.6.1)
+
+**Merged pull requests:**
+
+- adds SAN to certs, missing default attributes [\#332](https://github.com/chef-cft/wombat/pull/332) ([binamov](https://github.com/binamov))
+
+## [v0.6.0](https://github.com/chef-cft/wombat/tree/v0.6.0) (2017-04-24)
 [Full Changelog](https://github.com/chef-cft/wombat/compare/v0.5.0...v0.6.0)
 
 **Closed issues:**
@@ -13,6 +20,7 @@
 
 **Merged pull requests:**
 
+- v0.6.0 [\#330](https://github.com/chef-cft/wombat/pull/330) ([binamov](https://github.com/binamov))
 - Pin Chrome to known working version. [\#329](https://github.com/chef-cft/wombat/pull/329) ([scarolan](https://github.com/scarolan))
 - Slow and steady wins the overextended metaphor. \(Sleeps for rabbit\) [\#327](https://github.com/chef-cft/wombat/pull/327) ([ChefRycar](https://github.com/ChefRycar))
 - remove hardcoded cert import loop [\#326](https://github.com/chef-cft/wombat/pull/326) ([andrewelizondo](https://github.com/andrewelizondo))
@@ -20,7 +28,14 @@
 - Stack names and Resource Groups in Azure [\#324](https://github.com/chef-cft/wombat/pull/324) ([russellseymour](https://github.com/russellseymour))
 
 ## [v0.5.0](https://github.com/chef-cft/wombat/tree/v0.5.0) (2017-03-21)
-[Full Changelog](https://github.com/chef-cft/wombat/compare/v0.4.3...v0.5.0)
+[Full Changelog](https://github.com/chef-cft/wombat/compare/release-0.5.0...v0.5.0)
+
+**Merged pull requests:**
+
+- Release 0.5.0 [\#320](https://github.com/chef-cft/wombat/pull/320) ([binamov](https://github.com/binamov))
+
+## [release-0.5.0](https://github.com/chef-cft/wombat/tree/release-0.5.0) (2017-03-20)
+[Full Changelog](https://github.com/chef-cft/wombat/compare/v0.4.3...release-0.5.0)
 
 **Implemented enhancements:**
 
@@ -35,7 +50,6 @@
 
 **Merged pull requests:**
 
-- Release 0.5.0 [\#320](https://github.com/chef-cft/wombat/pull/320) ([binamov](https://github.com/binamov))
 - no more Administrator [\#319](https://github.com/chef-cft/wombat/pull/319) ([binamov](https://github.com/binamov))
 - Select whether to use Managed Disks or not [\#317](https://github.com/chef-cft/wombat/pull/317) ([russellseymour](https://github.com/russellseymour))
 - azure enhancements [\#316](https://github.com/chef-cft/wombat/pull/316) ([binamov](https://github.com/binamov))
