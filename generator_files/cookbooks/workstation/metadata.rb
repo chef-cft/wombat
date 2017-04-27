@@ -7,6 +7,7 @@ long_description 'Configures a Windows workstation'
 version '0.4.3'
 supports 'windows'
 
+depends 'chocolatey'
 depends 'windows'
 depends 'hostsfile'
 depends 'chef-ingredient'
