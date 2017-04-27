@@ -1,5 +1,3 @@
-include_recipe 'chocolatey::default'
-
 node['demo']['pkgs'].each do |pkg|
   chocolatey_package pkg do
     options '--allow-empty-checksums'
