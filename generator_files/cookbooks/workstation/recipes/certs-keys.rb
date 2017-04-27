@@ -1,11 +1,11 @@
 
 
-%W(
-  #{home}/.chef
-  #{home}/.chef/trusted_certs
-  #{home}/.ssh
-).each do |directory|
-  directory directory
+%w(
+  .chef
+  .chef/trusted_certs
+  .ssh
+).each do |d|
+  directory "#{home}/#{d}"
 end
 
 template "#{home}/.ssh/config" do
@@ -19,7 +19,7 @@ template "#{home}/.ssh/config" do
   )
 end
 
-node['demo']['certs'].each do |f|
+%w(chef automate compliance).each do |f|
   file "#{home}/.chef/trusted_certs/#{node['demo']['domain_prefix']}#{f}_#{node['demo']['domain'].tr('.','_')}.crt" do
     content  lazy { IO.read("C:/Windows/Temp/#{f}.crt") }
     action :create
