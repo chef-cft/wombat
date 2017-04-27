@@ -36,6 +36,12 @@ default['demo']['pkgs'] = %w(
   cmder
 )
 
+default['demo']['certs'] = %w(
+  automate
+  chef
+  compliance
+)
+
 default['demo']['data_collector_token'] = '93a49a4f2482c64126f7b6015e6b0f30284287ee4054ff8807fb63d9cbd1c506'
 
 default['demo']['tutorial_url'] = 'https://learn.chef.io/tutorials/#chef-automate'
