@@ -103,7 +103,7 @@ node['demo']['users'].each do |user, info|
       action :run
       retries 5
       retry_delay 2
-      #not_if "delivery-ctl list-users | grep #{node['demo']['enterprise']}"
+      not_if "delivery-ctl list-users #{node['demo']['enterprise']} | grep #{user}"
     end
   else
     Chef::Log.info('Admin user already created with create-enterprise')
