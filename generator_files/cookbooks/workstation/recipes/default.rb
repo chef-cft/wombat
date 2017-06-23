@@ -11,8 +11,8 @@ end
 chocolatey_package 'GoogleChrome' do
   options '--ignorechecksum'
   version '57.0.2987.13301'
-  retries 10
-  retry_delay 60
+  retries 12
+  retry_delay 300
 end
 
 include_recipe 'workstation::certs-keys'
