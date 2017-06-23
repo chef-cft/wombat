@@ -4,7 +4,7 @@ maintainer_email 'you@example.com'
 license 'all_rights'
 description 'Installs/Configures build-node'
 long_description 'Installs/Configures build-node'
-version '0.3.0'
+version '0.3.1'
 
 depends 'chef-sugar'
 depends 'delivery-base'

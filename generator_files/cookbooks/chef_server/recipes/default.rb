@@ -7,6 +7,8 @@
 apt_update 'packages' do
   action :update
   only_if { node['platform_family'] == 'debian' }
+  retries 10
+  retry_delay 60
 end
 
 append_if_no_line "Add temporary hostsfile entry: #{node['ipaddress']}" do
