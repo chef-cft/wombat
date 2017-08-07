@@ -39,7 +39,8 @@
             "secret_key": "{{user `aws_secret_key`}}",
             "region": "{{user `aws_region`}}",
             "source_ami": "{{user `aws_source_ami`}}",
-            "instance_type": "m4.large",
+            "instance_type": "c4.large",
+            "ebs_optimized": true,
             "communicator": "winrm",
             "associate_public_ip_address": true,
             "winrm_port": 5985,
@@ -136,6 +137,23 @@
             "type": "windows-shell",
             "inline": [
                 "C:\\Windows\\System32\\sysprep\\sysprep.exe /quiet /generalize /oobe /shutdown"
+            ]
+        },
+        {
+            "only": [
+                "amazon-ebs"
+            ],
+            "type": "powershell",
+            "script": "{{template_dir}}/scripts/PreSysprep.ps1"
+        },
+        {
+            "only": [
+                "amazon-ebs"
+            ],
+            "type": "powershell",
+            "inline": [
+                "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\InitializeInstance.ps1 -Schedule",
+                "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\SysprepInstance.ps1 -NoShutdown"
             ]
         }
     ]

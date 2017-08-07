@@ -1,5 +1,3 @@
-
-
 %W(
   #{home}/.chef
   #{home}/.chef/trusted_certs
@@ -20,26 +18,24 @@ template "#{home}/.ssh/config" do
 end
 
 node['demo']['certs'].each do |f|
-  file "#{home}/.chef/trusted_certs/#{node['demo']['domain_prefix']}#{f}_#{node['demo']['domain'].tr('.','_')}.crt" do
-    content  lazy { IO.read("C:/Windows/Temp/#{f}.crt") }
+  file "#{home}/.chef/trusted_certs/#{node['demo']['domain_prefix']}#{f}_#{node['demo']['domain'].tr('.', '_')}.crt" do
+    content lazy { IO.read("C:/Windows/Temp/#{f}.crt") }
     action :create
   end
 
   powershell_script 'Install certs to Root CA' do
-    code <<-EOH
-      Import-Certificate -FilePath C:/Windows/Temp/#{f}.crt -CertStoreLocation Cert:/LocalMachine/Root
-    EOH
+    code "Import-Certificate -FilePath C:/Windows/Temp/#{f}.crt -CertStoreLocation Cert:/LocalMachine/Root"
   end
 end
 
 file "#{home}/.ssh/id_rsa.pub" do
-  content lazy { IO.read("C:/Windows/Temp/public.pub") }
+  content lazy { IO.read('C:/Windows/Temp/public.pub') }
   action :create
 end
 
 %W(#{home}/.chef/private.pem #{home}/.ssh/id_rsa).each do |path|
   file path do
-    content lazy { IO.read("C:/Windows/Temp/private.pem") }
+    content lazy { IO.read('C:/Windows/Temp/private.pem') }
     action :create
   end
 end

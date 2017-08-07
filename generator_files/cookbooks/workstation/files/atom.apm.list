@@ -2,6 +2,9 @@ base16-syntax
 git-difftool
 language-chef
 linter
+intentions
+busy-signal
+linter-ui-default
 linter-erb
 linter-foodcritic
 linter-js-yaml

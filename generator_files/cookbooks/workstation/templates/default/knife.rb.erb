@@ -5,6 +5,6 @@ node_name            '<%= @node_name %>'
 chef_server_url      '<%= @chef_server_url %>'
 client_key           "#{ENV['HOME']}/.chef/private.pem"
 trusted_certs_dir    "#{ENV['HOME']}/.chef/trusted_certs"
-cookbook_path        '~/cookbooks'
+cookbook_path        "#{ENV['HOME']}/cookbooks"
 data_collector.server_url '<%= @data_collector_url %>/data-collector/v0/'
-client_d_dir         '<%= @conf_d_dir %>'
+client_d_dir         "#{ENV['HOME']}/.chef/config.d"

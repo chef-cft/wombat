@@ -29,8 +29,8 @@ registry_key 'Set Chrome as default HTTP protocol association' do
   action :create
   key 'HKEY_CURRENT_USER\Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice'
   values [
-    {:name => 'Hash', :type => :string, :data => 'TW2AqyYVQlM='},
-    {:name => 'ProgId', :type => :string, :data => 'ChromeHTML'}
+    { name: 'Hash', type: :string, data: 'TW2AqyYVQlM=' },
+    { name: 'ProgId', type: :string, data: 'ChromeHTML' },
   ]
 end
 
@@ -38,21 +38,16 @@ registry_key 'Set Chrome as default HTTPS protocol association' do
   action :create
   key 'HKEY_CURRENT_USER\Software\Microsoft\Windows\Shell\Associations\UrlAssociations\https\UserChoice'
   values [
-    {:name => 'Hash', :type => :string, :data => '4N1og3kLvcE='},
-    {:name => 'ProgId', :type => :string, :data => 'ChromeHTML'}
+    { name: 'Hash', type: :string, data: '4N1og3kLvcE=' },
+    { name: 'ProgId', type: :string, data: 'ChromeHTML' },
   ]
 end
 
 # Enable ClearType for Chrome 52+
-registry_key "HKEY_CURRENT_USER\\Control Panel\\Desktop" do
-  values [{
-      :name => "FontSmoothing",
-      :type => :string,
-      :data => 2
-  },{
-      :name => "FontSmoothingType",
-      :type => :dword,
-      :data => 2
-  }]
+registry_key 'HKEY_CURRENT_USER\\Control Panel\\Desktop' do
+  values [
+    { name: 'FontSmoothing', type: :string, data: '2' },
+    { name: 'FontSmoothingType', type: :dword, data: 2 },
+  ]
   action :create
 end

@@ -9,7 +9,7 @@ org: marsupials
 certs: ['automate', 'chef', 'compliance']
 ttl: 6
 linux: ubuntu
-version: 0.2.1
+version: 0.3.0
 owner:
 products:
   chef: stable-latest
@@ -56,15 +56,16 @@ aws:
   # and are only applied to workstations currently
   # iam_roles: ['iam_role', 'iam_roles_buddy']
   source_image:
-    ubuntu: ami-8e0b9499
-    windows: ami-1c7ad77c
+    ubuntu: ami-70b67d10
+    windows: ami-48b4bf31
     centos: ami-6d1c2007
 azure:
   location: eastus
   storage_account:
+  use_managed_disks: true
   source_image:
     ubuntu: Canonical:UbuntuServer:14.04.5-LTS
-    windows: MicrosoftWindowsServer:WindowsServer:2012-R2-Datacenter
+    windows: MicrosoftWindowsServer:WindowsServer:2016-Datacenter
 gce:
   zone: us-east1-b
   project: wombat-gce

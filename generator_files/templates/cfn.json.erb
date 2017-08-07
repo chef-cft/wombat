@@ -1,7 +1,7 @@
 
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "wombat",
+  "Description": "wombat (<%= @version %>)",
   "Parameters": {
     "AvailabilityZone": {
       "Description": "Availability Zone",
@@ -349,7 +349,8 @@
     "WindowsWorkstation<%= i.to_s %>": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
-        "InstanceType": "m3.large",
+        "InstanceType": "c4.large",
+        "EbsOptimized" : "true",
 <% if @iam_roles -%>
         "IamInstanceProfile" : {"Ref" : "InstanceProfile"},
 <% end -%>
