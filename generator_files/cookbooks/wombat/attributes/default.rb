@@ -28,7 +28,6 @@ default['demo']['chef_server_url'] = "https://#{node['demo']['chef_fqdn']}/organ
 default['demo']['compliance_fqdn'] = "#{node['demo']['domain_prefix']}compliance.#{node['demo']['domain']}"
 
 default['demo']['pkgs'] = %w(
-  atom
   git
   hub
   gitextensions
