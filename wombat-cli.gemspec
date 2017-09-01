@@ -21,7 +21,7 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
-  gem.required_ruby_version = ">= 2.3.1"
+  gem.required_ruby_version = ">= 2.4.1"
 
   gem.add_dependency 'rake', '~> 11.2'
   gem.add_dependency 'berkshelf', '~> 5.0'
@@ -31,6 +31,6 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'azure_mgmt_resources', '~> 0.9'
   gem.add_dependency 'azure_mgmt_storage', '~> 0.9'
   gem.add_dependency 'azure_mgmt_network', '~> 0.9'
-  gem.add_dependency 'azure-storage', '~> 0.11.5.preview'
+  gem.add_dependency 'azure-storage', '~> 0.12.2.preview'
   gem.add_dependency 'github_changelog_generator'
 end
