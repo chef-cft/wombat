@@ -1,12 +1,12 @@
 
 ---
 driver:
-  name: ec2
-  aws_ssh_key_id: <%= ENV["EC2_SSH_KEY_NAME"] %>
-  security_group_ids: ["sg-401e0e25"]
-  region: us-west-2
-  instance_type: c4.large
-  ebs_optimized: true
+  name: azurerm
+
+driver_config:
+  subscription_id: <%= ENV["AZURE_SUBSCRIPTION_ID"] %>
+  location: 'westus2'
+  machine_size: 'Standard_DS3_v2'
 
 provisioner:
   name: chef_zero
@@ -17,14 +17,13 @@ verifier:
 
 platforms:
   - name: windows-2012r2
-    # driver_config:
-      # image_id: ami-8d0c07f4
+    driver_config:
+      image_urn: MicrosoftWindowsServer:WindowsServer:2012-R2-Datacenter:latest
+      os_type: windows
   - name: windows-2016
-    # driver_config:
-      # image_id: ami-48b4bf31
-
-transport:
-  ssh_key: <%= ENV["EC2_SSH_KEY_PATH"] %>
+    driver_config:
+      image_urn: MicrosoftWindowsServer:WindowsServer:2016-Datacenter:latest
+      os_type: windows
 
 suites:
   - name: default
@@ -43,4 +42,4 @@ suites:
         workstations: 1
         workstation-number: 1
         versions:
-          chefdk: stable-latest
+          chefdk: 'stable-latest'

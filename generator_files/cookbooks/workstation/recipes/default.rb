@@ -1,3 +1,7 @@
+powershell_script 'Disable Windows Defender Realtime Monitoring' do
+  code 'Set-MpPreference -DisableRealtimeMonitoring 1'
+end
+
 include_recipe 'chocolatey::default'
 
 node['demo']['pkgs'].each do |pkg|
@@ -7,8 +11,7 @@ node['demo']['pkgs'].each do |pkg|
 end
 
 chocolatey_package 'GoogleChrome' do
-  options '--ignorechecksum'
-  version '57.0.2987.13301'
+  options '--ignore-checksum'
 end
 
 include_recipe 'workstation::certs-keys'

@@ -1,11 +1,15 @@
+
+---
 driver:
   name: vagrant
   provider: virtualbox
+  linked_clone: true
+  customize:
+    memory: 4096
 
 provisioner:
   name: chef_zero
-  # chef_omnibus_install_options: -P chefdk
-  # chef_omnibus_root: c:/opscode/chefdk
+  require_chef_omnibus: latest
 
 verifier:
   name: inspec
@@ -14,9 +18,25 @@ platforms:
   - name: windows-2012r2
     driver_config:
       box: mwrock/Windows2012R2
+  - name: windows-2016
+    driver_config:
+      box: mwrock/Windows2016
 
 suites:
   - name: default
     run_list:
       - recipe[mock_data]
       - recipe[workstation]
+    attributes:
+      chocolatey:
+        upgrade: true
+      demo:
+        domain_prefix: ''
+        domain: 'animals.biz'
+        enterprise: 'mammals'
+        org: 'marsupials'
+        hosts:
+        workstations: 1
+        workstation-number: 1
+        versions:
+          chefdk: stable-latest

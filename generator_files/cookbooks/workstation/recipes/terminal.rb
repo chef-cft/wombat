@@ -5,7 +5,7 @@ cookbook_file 'C:\tools\cmder\config\ConEmu.xml' do
 end
 
 windows_shortcut "#{home}/Desktop/cmder.lnk" do
-  target "C:\\tools\\cmder\\cmder.exe"
-  description "Launch Notepad"
-  iconlocation "C:\\tools\\cmder\\cmder.exe, 0"
+  target 'C:\\tools\\cmder\\Cmder.exe'
+  description 'Launch Notepad'
+  iconlocation 'C:\\tools\\cmder\\cmder.exe,0'
 end
