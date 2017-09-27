@@ -1,7 +1,22 @@
 # Change Log
 
-## [v0.6.1](https://github.com/chef-cft/wombat/tree/HEAD)
+## [v0.6.2](https://github.com/chef-cft/wombat/tree/v0.6.2) (2017-09-27)
+[Full Changelog](https://github.com/chef-cft/wombat/compare/v0.6.1...v0.6.2)
 
+**Fixed bugs:**
+
+- client\_key in knife.rb needs a relative path to work with berks [\#337](https://github.com/chef-cft/wombat/issues/337)
+- Latest Google Chrome \(58\) broke all our SSL [\#328](https://github.com/chef-cft/wombat/issues/328)
+
+**Merged pull requests:**
+
+- Upgrade to Windows Server 2016 for workstation Packer template [\#340](https://github.com/chef-cft/wombat/pull/340) ([nweddle](https://github.com/nweddle))
+- adds relative path to client\_key in knife.rb, fixes \#337 [\#338](https://github.com/chef-cft/wombat/pull/338) ([binamov](https://github.com/binamov))
+- we should be idempotent right? [\#336](https://github.com/chef-cft/wombat/pull/336) ([andrewelizondo](https://github.com/andrewelizondo))
+- my mama told me not to run with knives [\#335](https://github.com/chef-cft/wombat/pull/335) ([binamov](https://github.com/binamov))
+- relative paths ftw [\#334](https://github.com/chef-cft/wombat/pull/334) ([binamov](https://github.com/binamov))
+
+## [v0.6.1](https://github.com/chef-cft/wombat/tree/v0.6.1) (2017-04-27)
 [Full Changelog](https://github.com/chef-cft/wombat/compare/v0.6.0...v0.6.1)
 
 **Merged pull requests:**
