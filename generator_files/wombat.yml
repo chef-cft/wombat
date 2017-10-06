@@ -63,6 +63,7 @@ azure:
   location: eastus
   storage_account:
   use_managed_disks: true
+  workstation_script_url:
   source_image:
     ubuntu: Canonical:UbuntuServer:14.04.5-LTS
     windows: MicrosoftWindowsServer:WindowsServer:2016-Datacenter
