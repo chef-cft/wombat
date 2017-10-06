@@ -33,6 +33,38 @@
         "description": "Number of characters to be take from the unique string to make a short unique string"
       },
       "defaultValue": 4
+    },
+
+    "azureClientId": {
+      "type": "string",
+      "metadata": {
+        "description": "Azure Client ID to be used when running Test Kitchen AzureRM"
+      },
+      "defaultValue": ""
+    },
+
+    "azureClientSecret": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Secret associated with the specified client id"
+      },
+      "defaultValue": ""
+    },
+
+    "azureTenantId": {
+      "type": "string",
+      "metadata": {
+        "description": "Azure Tenant ID to be used when running Test Kitchen AzureRM"
+      },
+      "defaultValue": ""
+    },
+
+    "workstationScriptUrl": {
+      "type": "string",
+      "metadata": {
+        "description": "URL to the PowerShell script that will configure the workstation with SPN environment variables"
+      },
+      "defaultValue": "<%= @workstation_script_url %>"
     }
 
   },
@@ -106,7 +138,15 @@
       }
     },
 
-    "customData": "#cloud-config\nmanage_etc_hosts: false\n\npackage_update: false"
+    "spn": {
+      "client_id": "[parameters('azureClientId')]",
+      "client_secret": "[parameters('azureClientSecret')]",
+      "tenant_id": "[parameters('azureTenantId')]"
+    },
+
+    "customData": "#cloud-config\nmanage_etc_hosts: false\n\npackage_update: false",
+
+    "workstationScriptUrl": "[parameters('workstationScriptUrl)']"
   },
   "resources": [
 
@@ -242,6 +282,31 @@
               "id": "[resourceId('Microsoft.Network/networkInterfaces', 'Workstation-<%= i.to_s %>-NIC')]"
             }
           ]
+        }
+      }
+    },
+
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "Workstation-<%= i.to_s %>-SPNEnvVars",
+      "apiVersion": "2015-06-15",
+      "location": "[variables('location')]",
+      "condition": "[greater(length(variables('workstationScriptUrl')), 0)]",
+      "dependsOn": [
+        "Microsoft.Compute/virtualMachines/Workstation-<%= i.to_s %>-VM"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Compute",
+        "type": "CustomScriptExtension",
+        "typeHandlerVersion": "1.9",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "fileUris": [
+            "[variables('workstationScriptUrl')]"
+          ]
+        },
+        "protectedSettings": {
+          "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File .\\SetSPNEnvVars.ps1 -clientid \"', variables('spn').client_id ,'\" -clientsecret \"', variables('spn').clientsecret, '\" -tenantid \"', variables('spn').tenantid, '\" > windows-workstation.log')]"
         }
       }
     },

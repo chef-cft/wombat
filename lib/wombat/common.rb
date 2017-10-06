@@ -247,6 +247,7 @@ module Wombat
           @compliance_uri = lock['amis'][region]['compliance']
           @password = lock['workstations']['password']
           @public_key = File.read("#{conf['key_dir']}/public.pub").chomp
+          @workstation_script_url = lock['azure']['workstation_script_url']
 
           # Set the Azure Tag used to identify Chef products in Azure
           @chef_tag = azure_provider_tag

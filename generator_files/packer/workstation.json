@@ -134,23 +134,6 @@
             "only": [
                 "azure-arm"
             ],
-            "type": "file",
-            "source": "{{template_dir}}/scripts/SetSPNEnvVars.ps1",
-            "destination": "C:\\Windows\\Temp"
-        },
-        {
-            "only": [
-                "azure-arm"
-            ],
-            "type": "powershell",
-            "inline": [
-                "C:\\Windows\\Temp\\SetSPNEnvVars.ps1 -clientid \"{{user `azure_client_id`}}\" -clientsecret \"{{user `azure_client_secret`}}\" -tenantid \"{{user `azure_tenant_id`}}\""
-            ]
-        },
-        {
-            "only": [
-                "azure-arm"
-            ],
             "type": "windows-shell",
             "inline": [
                 "C:\\Windows\\System32\\sysprep\\sysprep.exe /quiet /generalize /oobe /shutdown"
