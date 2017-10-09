@@ -1,5 +1,9 @@
 powershell_script 'Disable Windows Defender Realtime Monitoring' do
   code 'Set-MpPreference -DisableRealtimeMonitoring 1'
+
+  guard_interpreter :powershell_script
+
+  not_if '[String]::IsNullOrEmpty((Get-Command -Name Set-MpPreference -ErrorAction SilentlyContinue))'
 end
 
 include_recipe 'chocolatey::default'
