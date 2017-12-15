@@ -34,6 +34,7 @@ template File.join(conf_dir, 'client.rb') do
       :chef_server_url => node['demo']['chef_server_url'],
       :name => node['demo']['node-name'],
       :automate_fqdn => node['demo']['automate_fqdn']
+      :conf_dir => conf_dir
   })
 end
 
