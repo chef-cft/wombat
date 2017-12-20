@@ -5,8 +5,8 @@
 # Copyright (c) 2016 The Authors, All Rights Reserved.
 
 if node['platform'] == 'windows'
-  node.default['push_jobs']['package_url'] = "https://packages.chef.io/files/stable/push-jobs-client/2.4.5/windows/2012r2/push-jobs-client-2.4.5-1-x64.msi"
-  node.default['push_jobs']['package_checksum'] = "b586ac7ed6a421cf0a81b2ac8e900441c6836b69f1b6ccee87aa40fb24486b19"
+  node.default['push_jobs']['package_url'] = "https://packages.chef.io/files/stable/push-jobs-client/2.1.4/windows/2012/push-jobs-client-2.1.4-1-x86.msi"
+  node.default['push_jobs']['package_checksum'] = "3b979f8d362738c8ac126ace0e80122a4cbc53425d5f8cf9653cdd79eca16d62"
 
   conf_dir = "C:/chef"
   tmp_dir = "C:/Windows/Temp"
