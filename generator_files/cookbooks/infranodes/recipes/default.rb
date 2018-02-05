@@ -56,6 +56,4 @@ node.set['push_jobs']['chef']['chef_server_url'] = node['demo']['chef_server_url
 node.set['push_jobs']['chef']['node_name'] = node['demo']['node-name']
 node.default['push_jobs']['allow_unencrypted'] = true
 
-if node['platform'] == 'linux'
-  include_recipe 'push-jobs'
-end
+include_recipe 'push-jobs' if node['platform'] == 'linux'
