@@ -52,8 +52,9 @@ directory File.join(conf_dir, 'trusted_certs')
   end
 end
 ###
-node.set['push_jobs']['chef']['chef_server_url'] = node['demo']['chef_server_url']
-node.set['push_jobs']['chef']['node_name'] = node['demo']['node-name']
-node.default['push_jobs']['allow_unencrypted'] = true
-
-include_recipe 'push-jobs' if node['platform'] == 'linux'
+if node['platform'] == 'linux'
+  node.set['push_jobs']['chef']['chef_server_url'] = node['demo']['chef_server_url']
+  node.set['push_jobs']['chef']['node_name'] = node['demo']['node-name']
+  node.default['push_jobs']['allow_unencrypted'] = true
+  include_recipe 'push-jobs'
+end
