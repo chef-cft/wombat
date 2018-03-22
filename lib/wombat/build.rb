@@ -363,6 +363,7 @@ module Wombat
       cmd.insert(2, "--var build-nodes=#{wombat['build-nodes']['count']}")
       cmd.insert(2, "--var winrm_password=#{wombat['workstations']['password']}")
       cmd.insert(2, "--var winrm_username=Administrator")
+      cmd.insert(2, "--var wombat_ver=#{wombat['version']}")
       cmd.insert(2, "--var workstation-number=#{options['workstation-number']}") if template =~ /workstation/
       cmd.insert(2, "--var workstations=#{wombat['workstations']['count']}")
       cmd.insert(2, "--var aws_source_ami=#{base_image(template, builder, options)}") if builder =~ /amazon-ebs/
