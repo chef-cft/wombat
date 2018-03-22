@@ -1,5 +1,11 @@
 # Change Log
 
+## [v0.7.3](https://github.com/chef-cft/wombat/tree/v0.7.3) (2018-3-22)
+[Full Changelog](https://github.com/chef-cft/wombat/compare/v0.7.2...v0.7.3)
+
+**Merged pull requests:**
+- Adding wombat version to packer variables for tagging [\#348](https://github.com/chef-cft/wombat/pull/348)
+
 ## [v0.7.2](https://github.com/chef-cft/wombat/tree/v0.7.2) (2018-3-22)
 [Full Changelog](https://github.com/chef-cft/wombat/compare/v0.6.2...v0.7.2)
 
