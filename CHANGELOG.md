@@ -1,5 +1,10 @@
 # Change Log
 
+## [v0.7.2](https://github.com/chef-cft/wombat/tree/v0.7.2) (2018-3-22)
+[Full Changelog](https://github.com/chef-cft/wombat/compare/v0.6.2...v0.7.2)
+
+**Merged pull requests:**
+- MVP Mixed-Infra support. [\#347](https://github.com/chef-cft/wombat/pull/347)
 ## [v0.6.2](https://github.com/chef-cft/wombat/tree/v0.6.2) (2017-09-27)
 [Full Changelog](https://github.com/chef-cft/wombat/compare/v0.6.1...v0.6.2)
 
