@@ -158,7 +158,7 @@ module Wombat
       # iterate around the log files and get the image location
       time = Benchmark.measure do
         logs.each do |log|
-          
+
           # get the image uri
           url = File.read(log).split("\n").grep(/OSDiskUri:/) {|x| x.split[1]}.last
 
@@ -176,10 +176,10 @@ module Wombat
           # Append the new location for the image to the log file
           append_text = format("\nManagedDiskOSDiskUri: https://%s.blob.core.windows.net/%s/%s", wombat['azure']['storage_account'], container_name, blob_name)
           File.open(log, 'a') { |f| f.write(append_text) }
-          
+
         end
       end
-      
+
       info (format("Images copied in %s", duration(time.real)))
 
     end
@@ -201,8 +201,13 @@ module Wombat
         if template_name =~ /infranodes/
           infranodes.each do |name, _rl|
             next if name.empty?
+            if wombat['infranodes'][name]['platform'] == "windows"
+              infra_template = template_name + '-windows'
+            else
+              infra_template = template_name
+            end
             proc_hash[name] = {
-              'template' => template_name,
+              'template' => infra_template,
               'options' => {
                 'node-name' => name,
                 'os' => wombat['infranodes'][name]['platform']
@@ -381,7 +386,7 @@ module Wombat
           cmd.insert(2, "--var azure_image_sku=#{base_image_parts[2]}")
           cmd.insert(2, "--var azure_image_version=#{base_image_parts[3]}") if base_image_parts.length == 4
         end
-      
+
         cmd.insert(2, "--var azure_resource_group=#{wombat['name']}")
         cmd.insert(2, "--var azure_storage_account=#{wombat['azure']['storage_account']}")
       end

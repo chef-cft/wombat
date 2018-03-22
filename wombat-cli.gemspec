@@ -28,9 +28,9 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'net-ssh', '~> 3.2'
   gem.add_dependency 'parallel', '~> 1.9'
   gem.add_dependency 'aws-sdk', '~> 2.5'
-  gem.add_dependency 'azure_mgmt_resources', '~> 0.9'
-  gem.add_dependency 'azure_mgmt_storage', '~> 0.9'
-  gem.add_dependency 'azure_mgmt_network', '~> 0.9'
-  gem.add_dependency 'azure-storage', '~> 0.12.2.preview'
+  gem.add_dependency 'azure_mgmt_resources', '= 0.14.0'
+  gem.add_dependency 'azure_mgmt_storage', '= 0.14.0'
+  gem.add_dependency 'azure_mgmt_network', '= 0.14.0'
+  gem.add_dependency 'azure-storage', '~> 0.14.0.preview'
   gem.add_dependency 'github_changelog_generator'
 end

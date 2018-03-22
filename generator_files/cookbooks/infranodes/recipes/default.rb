@@ -5,8 +5,9 @@
 # Copyright (c) 2016 The Authors, All Rights Reserved.
 
 if node['platform'] == 'windows'
-  node.default['push_jobs']['package_url'] = "https://packages.chef.io/stable/windows/2008r2/push-jobs-client-2.1.1-1-x86.msi"
-  node.default['push_jobs']['package_checksum'] = "b8e76d54bb931949bcc94a6c764ccebda0e6957820b0c3fe62c96e6c3a184d9f"
+  # Shouldn't need pushy on windows nodes for the time being, and timeouts are blocking builds.
+  # node.default['push_jobs']['package_url'] = "https://packages.chef.io/files/stable/push-jobs-client/2.1.4/windows/2012/push-jobs-client-2.1.4-1-x86.msi"
+  # node.default['push_jobs']['package_checksum'] = "3b979f8d362738c8ac126ace0e80122a4cbc53425d5f8cf9653cdd79eca16d62"
 
   conf_dir = "C:/chef"
   tmp_dir = "C:/Windows/Temp"
@@ -33,7 +34,8 @@ template File.join(conf_dir, 'client.rb') do
   variables({
       :chef_server_url => node['demo']['chef_server_url'],
       :name => node['demo']['node-name'],
-      :automate_fqdn => node['demo']['automate_fqdn']
+      :automate_fqdn => node['demo']['automate_fqdn'],
+      :conf_dir => conf_dir
   })
 end
 
@@ -50,8 +52,9 @@ directory File.join(conf_dir, 'trusted_certs')
   end
 end
 ###
-node.set['push_jobs']['chef']['chef_server_url'] = node['demo']['chef_server_url']
-node.set['push_jobs']['chef']['node_name'] = node['demo']['node-name']
-node.default['push_jobs']['allow_unencrypted'] = true
-
-include_recipe 'push-jobs'
+if node['platform'] == 'linux'
+  node.set['push_jobs']['chef']['chef_server_url'] = node['demo']['chef_server_url']
+  node.set['push_jobs']['chef']['node_name'] = node['demo']['node-name']
+  node.default['push_jobs']['allow_unencrypted'] = true
+  include_recipe 'push-jobs'
+end
