@@ -34,10 +34,13 @@ end
   end
 end
 
-chef_ingredient 'chef-server' do
+chef_server "#{node['demo']['chef_fqdn']}" do
   action [ :install, :reconfigure ]
   channel node['demo']['versions']['chef-server'].split('-')[0].to_sym
   version node['demo']['versions']['chef-server'].split('-')[1]
+  addons manage: { config: '' },
+         :"push-jobs-server" => { config: '' }
+  accept_license true
   config <<-EOH
 api_fqdn 'chef.#{node['demo']['domain']}'
 data_collector['root_url'] = 'https://#{node['demo']['domain_prefix']}automate.#{node['demo']['domain']}/data-collector/v0/'
@@ -54,48 +57,6 @@ end
 
 # Use an execute block so we don't revert the config.
 execute 'chef-server-ctl reconfigure'
-
-if node['platform'] == 'centos'
-  # hardcoding this one as other permutations are known broken
-  filename = 'opscode-push-jobs-server-1.1.6-1.x86_64.rpm'
-  rpm_path = File.join(Chef::Config[:file_cache_path], filename)
-
-  remote_file rpm_path do
-    source "https://packages.chef.io/stable/el/6/#{filename}"
-    action :create_if_missing
-    notifies :install, 'rpm_package[push-jobs-server]', :immediately
-  end
-
-  rpm_package 'push-jobs-server' do
-    action :install
-    source rpm_path
-    #not_if ""
-  end
-else
-  chef_ingredient 'push-jobs-server' do
-    channel node['demo']['versions']['push-jobs-server'].split('-')[0].to_sym
-    version node['demo']['versions']['push-jobs-server'].split('-')[1]
-    action  :install
-  end
-end
-
-chef_ingredient 'push-jobs-server' do
-  action :reconfigure
-end
-
-chef_ingredient 'manage' do
-  channel node['demo']['versions']['manage'].split('-')[0].to_sym
-  version node['demo']['versions']['manage'].split('-')[1]
-  action  :install
-end
-
-# Another execute block. Keep our temp config until we finish.
-execute 'chef-server-ctl reconfigure'
-
-chef_ingredient 'manage' do
-  accept_license true
-  action :reconfigure
-end
 
 include_recipe 'chef_server::bootstrap_users'
 

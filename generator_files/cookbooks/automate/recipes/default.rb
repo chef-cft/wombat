@@ -29,10 +29,14 @@ execute 'chmod' do
   action :nothing
 end
 
-chef_ingredient 'delivery' do
+chef_automate "#{node['demo']['automate_fqdn']}" do
+  accept_license true
   channel node['demo']['versions']['automate'].split('-')[0].to_sym
   version node['demo']['versions']['automate'].split('-')[1]
-  action :install
+  enterprise node['demo']['enterprise']
+  builder_pem lazy { IO.read('/tmp/public.pub') }
+  license lazy{ IO.read('/tmp/delivery.license') }
+  action :install 
 end
 
 directory '/var/opt/delivery'
@@ -49,18 +53,6 @@ end
 
 file '/etc/delivery/automate.pem' do
   content lazy { IO.read('/tmp/private.pem') }
-  action :create
-  sensitive true
-end
-
-file '/var/opt/delivery/license/delivery.license' do
-  content lazy { IO.read('/tmp/delivery.license') }
-  action :create
-  sensitive true
-end
-
-file '/etc/delivery/builder_key.pub' do
-  content lazy { IO.read('/tmp/public.pub') }
   action :create
   sensitive true
 end
@@ -86,14 +78,6 @@ execute 'delivery-ctl reconfigure' do
   action :run
   retries 5
   retry_delay 10
-end
-
-execute 'delivery-ctl create-enterprise' do
-  command "delivery-ctl create-enterprise #{node['demo']['enterprise']} --password #{node['demo']['users']['admin']['password']} --ssh-pub-key-file=/etc/delivery/builder_key.pub"
-  action :run
-  retries 5
-  retry_delay 2
-  not_if "delivery-ctl list-enterprises | grep #{node['demo']['enterprise']}"
 end
 
 node['demo']['users'].each do |user, info|

@@ -4,7 +4,7 @@ maintainer_email 'you@example.com'
 license 'all_rights'
 description 'Installs/Configures automate'
 long_description 'Installs/Configures automate'
-version '0.2.2'
+version '0.3.0'
 
 depends 'chef-ingredient'
 depends 'line'
