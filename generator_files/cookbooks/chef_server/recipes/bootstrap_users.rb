@@ -9,7 +9,7 @@ require 'cheffish'
 OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 
 config = {
-  :chef_server_url => 'https://chef',
+  :chef_server_url => "#{node['demo']['chef_server_url']}",
   :options => {
     :client_name => 'pivotal',
     :signing_key_filename => '/etc/opscode/pivotal.pem',
