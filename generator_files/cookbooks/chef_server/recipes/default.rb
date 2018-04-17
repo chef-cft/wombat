@@ -35,7 +35,7 @@ end
 end
 
 chef_server "#{node['demo']['chef_fqdn']}" do
-  action [ :install, :reconfigure ]
+  action :create
   channel node['demo']['versions']['chef-server'].split('-')[0].to_sym
   version node['demo']['versions']['chef-server'].split('-')[1]
   addons manage: { config: '' },

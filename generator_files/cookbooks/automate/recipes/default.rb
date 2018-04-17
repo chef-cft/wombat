@@ -36,7 +36,7 @@ chef_automate "#{node['demo']['automate_fqdn']}" do
   enterprise node['demo']['enterprise']
   builder_pem lazy { IO.read('/tmp/public.pub') }
   license lazy{ IO.read('/tmp/delivery.license') }
-  action :install 
+  action :create 
 end
 
 directory '/var/opt/delivery'
