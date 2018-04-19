@@ -14,12 +14,14 @@ config = {
     :client_name => 'pivotal',
     :signing_key_filename => '/etc/opscode/pivotal.pem',
     :ssl_verify_mode => :verify_none
+    :verify_api_cert => false
   }
 }
 
 #taken from cheffish
 node['demo']['users'].each do |user, info|
   chef_user user do
+    chef_server config
     admin true
     display_name user
     email info['email']

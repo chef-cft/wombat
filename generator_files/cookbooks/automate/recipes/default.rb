@@ -63,6 +63,7 @@ end
 
 chef_automate "#{node['demo']['automate_fqdn']}" do
   accept_license true
+  sensitive true
   channel node['demo']['versions']['automate'].split('-')[0].to_sym
   version node['demo']['versions']['automate'].split('-')[1]
   enterprise node['demo']['enterprise']
@@ -71,7 +72,7 @@ chef_automate "#{node['demo']['automate_fqdn']}" do
   chef_user_pem lazy { IO.read('/etc/delivery/automate.pem') }
   validation_pem lazy { IO.read('/etc/delivery/automate.pem') }
   builder_pem lazy { IO.read('/etc/delivery/automate.pem') }
-  license '/tmp/delivery.license'
+  license lazy { IO.read('/tmp/delivery.license') }
   config <<-EOS
     nginx['ssl_protocols'] = 'TLSv1.2'
     insights['enable'] = true
