@@ -49,6 +49,10 @@ profiles["root_url"] = "https://#{node['demo']['domain_prefix']}automate.#{node[
 EOH
 end
 
+chef_ingredient 'chef-server' do
+  action :nothing
+end
+
 # Temporarily reduced timeout to speed up the build.
 append_if_no_line "Append a 1ms timeout for the data collector" do
   path "/etc/opscode/chef-server.rb"
