@@ -20,7 +20,6 @@ config = {
 #taken from cheffish
 node['demo']['users'].each do |user, info|
   chef_user user do
-    chef_server config
     admin true
     display_name user
     email info['email']

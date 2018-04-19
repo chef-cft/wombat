@@ -76,7 +76,7 @@ chef_automate "#{node['demo']['automate_fqdn']}" do
   chef_user 'automate'
   chef_user_pem lazy { IO.read('/etc/delivery/automate.pem') }
   validation_pem lazy { IO.read('/etc/delivery/automate.pem') }
-  builder_pem lazy { IO.read('/tmp/private.pem') }
+  builder_pem lazy { IO.read('/etc/delivery/automate.pem') }
   license 'delivery.license'
   config <<-EOS
     nginx['ssl_protocols'] = 'TLSv1.2'
