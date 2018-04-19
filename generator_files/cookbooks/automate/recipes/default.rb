@@ -29,16 +29,6 @@ execute 'chmod' do
   action :nothing
 end
 
-chef_automate "#{node['demo']['automate_fqdn']}" do
-  accept_license true
-  channel node['demo']['versions']['automate'].split('-')[0].to_sym
-  version node['demo']['versions']['automate'].split('-')[1]
-  enterprise node['demo']['enterprise']
-  builder_pem lazy { IO.read('/tmp/public.pub') }
-  license lazy{ IO.read('/tmp/delivery.license') }
-  action :create 
-end
-
 directory '/var/opt/delivery'
 directory '/var/opt/delivery/license'
 directory '/var/opt/delivery/nginx'
@@ -71,6 +61,19 @@ template '/etc/delivery/delivery.rb' do
     chef_server_url: node['demo']['chef_server_url'],
     delivery_fqdn: node['demo']['automate_fqdn']
   )
+end
+
+chef_automate "#{node['demo']['automate_fqdn']}" do
+  accept_license true
+  channel node['demo']['versions']['automate'].split('-')[0].to_sym
+  version node['demo']['versions']['automate'].split('-')[1]
+  enterprise node['demo']['enterprise']
+  chef_server node['demo']['chef_server_url']
+  chef_user 'automate'
+  chef_user_pem lazy { IO.read('/etc/delivery/automate.pem') }
+  builder_pem lazy { IO.read('/tmp/public.pub') }
+  license lazy{ IO.read('/tmp/delivery.license') }
+  action :create 
 end
 
 execute 'delivery-ctl reconfigure' do
