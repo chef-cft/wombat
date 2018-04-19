@@ -63,6 +63,7 @@ chef_automate "#{node['demo']['automate_fqdn']}" do
   chef_server node['demo']['chef_server_url']
   chef_user 'automate'
   chef_user_pem lazy { IO.read('/etc/delivery/automate.pem') }
+  validation_pem lazy { IO.read('/etc/delivery/automate.pem') }
   builder_pem lazy { IO.read('/tmp/public.pub') }
   license lazy{ IO.read('/tmp/delivery.license') }
   config <<-EOS

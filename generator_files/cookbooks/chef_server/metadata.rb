@@ -6,6 +6,6 @@ description 'Installs/Configures chef-server'
 long_description 'Installs/Configures chef-server'
 version '0.4.0'
 
-depends 'chef-ingredient', '>= 0.18.5'
+depends 'chef-ingredient'
 depends 'line'
 depends 'wombat'
