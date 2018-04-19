@@ -29,6 +29,12 @@ execute 'chmod' do
   action :nothing
 end
 
+user 'delivery'
+
+group 'delivery' do
+  members 'delivery'
+end
+
 directory '/var/opt/delivery'
 directory '/var/opt/delivery/license'
 directory '/var/opt/delivery/nginx'
