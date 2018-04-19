@@ -13,7 +13,7 @@ config = {
   :options => {
     :client_name => 'pivotal',
     :signing_key_filename => '/etc/opscode/pivotal.pem',
-    :ssl_verify_mode => :verify_none
+    :ssl_verify_mode => :verify_none,
     :verify_api_cert => false
   }
 }
