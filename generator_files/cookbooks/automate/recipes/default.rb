@@ -55,14 +55,6 @@ end
   end
 end
 
-template '/etc/delivery/delivery.rb' do
-  source 'delivery.erb'
-  variables(
-    chef_server_url: node['demo']['chef_server_url'],
-    delivery_fqdn: node['demo']['automate_fqdn']
-  )
-end
-
 chef_automate "#{node['demo']['automate_fqdn']}" do
   accept_license true
   channel node['demo']['versions']['automate'].split('-')[0].to_sym
@@ -73,6 +65,11 @@ chef_automate "#{node['demo']['automate_fqdn']}" do
   chef_user_pem lazy { IO.read('/etc/delivery/automate.pem') }
   builder_pem lazy { IO.read('/tmp/public.pub') }
   license lazy{ IO.read('/tmp/delivery.license') }
+  config <<-EOS
+    nginx['ssl_protocols'] = 'TLSv1.2'
+    insights['enable'] = true
+    compliance_profiles['enable'] = true
+  EOS
   action :create 
 end
 
